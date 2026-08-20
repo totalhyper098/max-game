@@ -2,300 +2,172 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>GameVault — Board Games</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  -webkit-tap-highlight-color:transparent;
-}
+<title>GameVault</title>
 
-:root{
-  --bg:#031b14;
-  --bg2:#06271d;
-  --glass:rgba(255,255,255,.055);
-  --glass2:rgba(255,255,255,.09);
-  --border:rgba(220,178,73,.28);
-  --gold:#d8ad45;
-  --gold2:#f0ce76;
-  --text:#f4ead1;
-  --muted:#9fae9f;
-  --green:#087448;
-  --green2:#0a9b60;
-}
+<link rel="stylesheet" href="style.css">
 
-html,body{
-  width:100%;
-  min-height:100%;
-  background:
-    radial-gradient(circle at 50% -10%,rgba(25,130,88,.24),transparent 35%),
-    radial-gradient(circle at 90% 70%,rgba(13,83,55,.2),transparent 35%),
-    var(--bg);
-  color:var(--text);
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-}
+</head>
 
-body{
-  overflow-x:hidden;
-}
+<body>
 
-button{
-  font:inherit;
-  color:inherit;
-  border:0;
-  cursor:pointer;
-}
+<div class="app">
 
-.app{
-  width:100%;
-  max-width:520px;
-  min-height:100vh;
-  margin:auto;
-  padding-bottom:90px;
-  position:relative;
-}
+<!-- Header -->
 
-/* ---------- COMMON ---------- */
+<header>
 
-.glass{
-  background:linear-gradient(
-    135deg,
-    rgba(255,255,255,.09),
-    rgba(255,255,255,.025)
-  );
-  border:1px solid var(--border);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    0 15px 40px rgba(0,0,0,.25);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-}
+<div class="logo">
+🎮
+</div>
 
-.gold{
-  color:var(--gold2);
-}
+<div>
+<h1>GameVault</h1>
+<p>Classic Board Games</p>
+</div>
 
-.muted{
-  color:var(--muted);
-}
+<button>
+🔔
+</button>
 
-.hidden{
-  display:none!important;
-}
+</header>
 
-/* ---------- HEADER ---------- */
 
-.header{
-  padding:20px 18px 12px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:linear-gradient(
-    rgba(3,27,20,.95),
-    rgba(3,27,20,.72),
-    transparent
-  );
-}
 
-.brand{
-  display:flex;
-  align-items:center;
-  gap:11px;
-}
+<!-- Home -->
 
-.brand-logo{
-  width:42px;
-  height:42px;
-  border-radius:14px;
-  display:grid;
-  place-items:center;
-  color:#1e1607;
-  font-weight:900;
-  background:linear-gradient(145deg,#ffe394,#b87c21);
-  box-shadow:0 8px 25px rgba(216,173,69,.18);
-}
+<section class="home">
 
-.brand h1{
-  font-size:18px;
-  letter-spacing:.5px;
-}
+<div class="hero">
 
-.brand span{
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-  margin-top:2px;
-}
+<h2>Play Classic Games</h2>
 
-.header-actions{
-  display:flex;
-  gap:8px;
-}
+<p>
+Carrom, Ludo, Chess and more board games in one place.
+</p>
 
-.icon-btn{
-  width:42px;
-  height:42px;
-  border-radius:14px;
-  display:grid;
-  place-items:center;
-  background:rgba(255,255,255,.055);
-  border:1px solid rgba(255,255,255,.08);
-  font-size:18px;
-}
+<button class="play">
+Start Playing
+</button>
 
-/* ---------- HOME ---------- */
+</div>
 
-.page{
-  padding:8px 16px 20px;
-}
 
-.hero{
-  min-height:245px;
-  border-radius:26px;
-  overflow:hidden;
-  position:relative;
-  margin:10px 0 22px;
-  background:
-    linear-gradient(120deg,rgba(0,0,0,.1),rgba(0,0,0,.72)),
-    radial-gradient(circle at 70% 30%,#2d965f,#083a29 52%,#041c15);
-  border:1px solid rgba(216,173,69,.34);
-  box-shadow:0 25px 60px rgba(0,0,0,.35);
-}
 
-.hero-board{
-  position:absolute;
-  width:205px;
-  height:205px;
-  right:-25px;
-  top:15px;
-  transform:rotate(7deg);
-  border:13px solid #69451f;
-  border-radius:20px;
-  background:#d7b57b;
-  box-shadow:
-    0 20px 40px rgba(0,0,0,.5),
-    inset 0 0 0 4px #9c6c37;
-}
+<h3>Popular Games</h3>
 
-.hero-board:before{
-  content:"";
-  position:absolute;
-  inset:17px;
-  border:2px solid #714a25;
-}
 
-.hero-board:after{
-  content:"";
-  position:absolute;
-  width:45px;
-  height:45px;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  border:2px solid #74502c;
-  box-shadow:
-    -42px -42px 0 -16px #111,
-    42px -42px 0 -16px #f5eee0,
-    -42px 42px 0 -16px #111,
-    42px 42px 0 -16px #f5eee0;
-}
+<div class="games">
 
-.hero-content{
-  position:relative;
-  z-index:2;
-  padding:27px 22px;
-  max-width:62%;
-}
 
-.eyebrow{
-  font-size:10px;
-  letter-spacing:2px;
-  color:var(--gold2);
-  font-weight:800;
-  margin-bottom:9px;
-}
+<div class="card" onclick="openGame('carrom')">
 
-.hero h2{
-  font-size:31px;
-  line-height:1;
-  margin-bottom:10px;
-}
+<div class="icon">
+⚪
+</div>
 
-.hero p{
-  color:#b7c4b8;
-  font-size:12px;
-  line-height:1.5;
-  margin-bottom:18px;
-}
+<h2>Carrom</h2>
 
-.primary-btn{
-  padding:12px 18px;
-  border-radius:14px;
-  color:#241a08;
-  font-weight:800;
-  font-size:12px;
-  background:linear-gradient(145deg,#f5d57b,#bd882a);
-  box-shadow:0 9px 24px rgba(216,173,69,.2);
-}
+<p>
+Multiplayer • AI • Offline
+</p>
 
-.section-title{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin:10px 2px 12px;
-}
+</div>
 
-.section-title h3{
-  font-size:16px;
-}
 
-.section-title span{
-  font-size:11px;
-  color:var(--muted);
-}
 
-.games{
-  display:flex;
-  flex-direction:column;
-  gap:13px;
-}
+<div class="card" onclick="openGame('ludo')">
 
-.game-card{
-  height:205px;
-  border-radius:22px;
-  overflow:hidden;
-  position:relative;
-  border:1px solid rgba(216,173,69,.28);
-  box-shadow:0 15px 35px rgba(0,0,0,.27);
-  transition:.25s;
-  cursor:pointer;
-}
+<div class="icon">
+🎲
+</div>
 
-.game-card:active{
-  transform:scale(.985);
-}
+<h2>Ludo</h2>
 
-.game-art{
-  position:absolute;
-  inset:0;
-  background-size:cover;
-  background-position:center;
-}
+<p>
+2-4 Players • Online
+</p>
 
-.carrom-art{
-  background:
-    linear-gradient(180deg,transparent 30%,rgba(2,20,14,.92)),
-    radial-gradient(circle at 50% 50%,#e0bc7e 0 22%,transparent 23%),
-    linear-gradient(145deg,#855322,#d6a763 48%,#553419);
-}
+</div>
 
-.ludo-art{
-  background:
-    linear-gradient(180deg,transparent
+
+
+<div class="card" onclick="openGame('chess')">
+
+<div class="icon">
+♟️
+</div>
+
+<h2>Chess</h2>
+
+<p>
+Strategy • AI
+</p>
+
+</div>
+
+
+
+<div class="card" onclick="openGame('pool')">
+
+<div class="icon">
+🎱
+</div>
+
+<h2>Pool</h2>
+
+<p>
+8 Ball Pool
+</p>
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+<!-- Bottom Navigation -->
+
+
+<nav>
+
+<button>
+🏠
+<span>Home</span>
+</button>
+
+
+<button>
+🎮
+<span>Games</span>
+</button>
+
+
+<button>
+🎁
+<span>Rewards</span>
+</button>
+
+
+<button>
+👤
+<span>Profile</span>
+</button>
+
+
+</nav>
+
+
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
