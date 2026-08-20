@@ -1,174 +1,98 @@
 <link rel="stylesheet" href="style.css">
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>GameVault</title>
-
-<link rel="stylesheet" href="style.css">
-
-</head>
-
-<body>
-
 <div class="app">
 
-<!-- Header -->
+<header class="header">
+    <div class="brand">
+        <div class="brand-logo">🎮</div>
+        <div>
+            <h1>GameVault</h1>
+            <span>Classic Board Games</span>
+        </div>
+    </div>
 
-<header>
-
-<div class="logo">
-🎮
-</div>
-
-<div>
-<h1>GameVault</h1>
-<p>Classic Board Games</p>
-</div>
-
-<button>
-🔔
-</button>
-
+    <button class="icon-btn">🔔</button>
 </header>
 
 
+<!-- GAME CAROUSEL TABS -->
 
-<!-- Home -->
+<div class="game-tabs">
 
-<section class="home">
+    <div class="tab active">
+        🏠
+        <span>Home</span>
+    </div>
 
-<div class="hero">
+    <div class="tab">
+        ⚪
+        <span>Carrom</span>
+    </div>
 
-<h2>Play Classic Games</h2>
+    <div class="tab">
+        ♟️
+        <span>Chess</span>
+    </div>
 
-<p>
-Carrom, Ludo, Chess and more board games in one place.
-</p>
+    <div class="tab">
+        🎱
+        <span>Pool</span>
+    </div>
 
-<button class="play">
-Start Playing
-</button>
-
-</div>
-
-
-
-<h3>Popular Games</h3>
-
-
-<div class="games">
-
-
-<div class="card" onclick="openGame('carrom')">
-
-<div class="icon">
-⚪
-</div>
-
-<h2>Carrom</h2>
-
-<p>
-Multiplayer • AI • Offline
-</p>
+    <div class="tab">
+        🎲
+        <span>Ludo</span>
+    </div>
 
 </div>
 
 
+<!-- CONTENT AREA -->
 
-<div class="card" onclick="openGame('ludo')">
-
-<div class="icon">
-🎲
-</div>
-
-<h2>Ludo</h2>
-
-<p>
-2-4 Players • Online
-</p>
-
-</div>
+<div class="content">
 
 
+<section class="game-page active">
+    <h2>Welcome to GameVault</h2>
+    <p>Play all classic board games in one place.</p>
 
-<div class="card" onclick="openGame('chess')">
-
-<div class="icon">
-♟️
-</div>
-
-<h2>Chess</h2>
-
-<p>
-Strategy • AI
-</p>
-
-</div>
-
-
-
-<div class="card" onclick="openGame('pool')">
-
-<div class="icon">
-🎱
-</div>
-
-<h2>Pool</h2>
-
-<p>
-8 Ball Pool
-</p>
-
-</div>
-
-
-</div>
-
-
+    <div class="featured">
+        🔥 Featured Games
+    </div>
 </section>
 
 
+<section class="game-page">
+    <h2>Carrom</h2>
+    <p>Multiplayer • AI • Offline</p>
 
-<!-- Bottom Navigation -->
-
-
-<nav>
-
-<button>
-🏠
-<span>Home</span>
-</button>
+    <button>Play Carrom</button>
+</section>
 
 
-<button>
-🎮
-<span>Games</span>
-</button>
+<section class="game-page">
+    <h2>Chess</h2>
+    <p>AI • Online • Local</p>
+
+    <button>Play Chess</button>
+</section>
 
 
-<button>
-🎁
-<span>Rewards</span>
-</button>
+<section class="game-page">
+    <h2>Pool</h2>
+    <p>8 Ball Pool</p>
+
+    <button>Play Pool</button>
+</section>
 
 
-<button>
-👤
-<span>Profile</span>
-</button>
+<section class="game-page">
+    <h2>Ludo</h2>
+    <p>2-4 Players • Online</p>
 
-
-</nav>
-
+    <button>Play Ludo</button>
+</section>
 
 
 </div>
 
-
-<script src="script.js"></script>
-
-</body>
-</html>
+</div>
