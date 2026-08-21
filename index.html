@@ -1,98 +1,916 @@
-<link rel="stylesheet" href="style.css">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#061c17">
+<title>GameVault</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+:root{
+  --bg:#061c17;
+  --bg2:#082820;
+  --glass:rgba(255,255,255,.075);
+  --glass2:rgba(255,255,255,.11);
+  --border:rgba(255,255,255,.12);
+  --text:#f5f7f4;
+  --muted:#9ca9a4;
+  --gold:#f3bd4f;
+  --green:#36d27d;
+  --shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+html,body{
+  width:100%;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+button{
+  font:inherit;
+  border:0;
+  cursor:pointer;
+  color:inherit;
+}
+
+.app{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 20% 0%,rgba(36,165,111,.18),transparent 30%),
+    radial-gradient(circle at 90% 20%,rgba(38,112,82,.13),transparent 28%),
+    linear-gradient(180deg,#071f19 0%,#041611 100%);
+  padding-bottom:105px;
+}
+
+/* ---------- TOP BAR ---------- */
+
+.topbar{
+  height:76px;
+  padding:0 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:rgba(4,20,16,.72);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.brand-mark{
+  width:42px;
+  height:42px;
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(145deg,#e6b94d,#9b681d);
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,.55),
+    0 8px 22px rgba(226,164,45,.18);
+  font-size:22px;
+}
+
+.brand-text{
+  font-size:21px;
+  font-weight:850;
+  letter-spacing:-.8px;
+}
+
+.brand-text span{
+  color:var(--gold);
+}
+
+.top-actions{
+  display:flex;
+  gap:9px;
+}
+
+.icon-btn{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  display:grid;
+  place-items:center;
+  font-size:18px;
+  transition:.2s;
+}
+
+.icon-btn:active{
+  transform:scale(.92);
+}
+
+/* ---------- MAIN ---------- */
+
+.content{
+  width:min(100%,620px);
+  margin:auto;
+  padding:20px 16px 0;
+}
+
+/* profile */
+
+.profile{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.welcome{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:4px;
+}
+
+.username{
+  font-size:25px;
+  font-weight:850;
+  letter-spacing:-.8px;
+}
+
+.avatar{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:
+    linear-gradient(145deg,#314f45,#102c24);
+  border:2px solid rgba(243,189,79,.55);
+  box-shadow:0 7px 25px rgba(0,0,0,.3);
+  font-size:23px;
+}
+
+/* ---------- HERO ---------- */
+
+.hero{
+  position:relative;
+  overflow:hidden;
+  border-radius:27px;
+  min-height:190px;
+  padding:24px;
+  margin-bottom:28px;
+  background:
+    radial-gradient(circle at 90% 20%,rgba(242,185,67,.25),transparent 30%),
+    linear-gradient(135deg,#123e31,#0a2820 55%,#071b16);
+  border:1px solid rgba(255,255,255,.11);
+  box-shadow:var(--shadow);
+}
+
+.hero:before{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  right:-65px;
+  top:-65px;
+  border:1px solid rgba(243,189,79,.2);
+  box-shadow:
+    0 0 0 24px rgba(243,189,79,.035),
+    0 0 0 48px rgba(243,189,79,.025);
+}
+
+.hero-content{
+  position:relative;
+  z-index:2;
+  max-width:70%;
+}
+
+.hero-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:11px;
+  font-weight:800;
+  color:#f6cf72;
+  text-transform:uppercase;
+  letter-spacing:1.3px;
+  margin-bottom:9px;
+}
+
+.hero h1{
+  font-size:29px;
+  line-height:1.04;
+  letter-spacing:-1.3px;
+  margin-bottom:9px;
+}
+
+.hero p{
+  color:#a9b9b3;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.hero-play{
+  margin-top:17px;
+  padding:11px 20px;
+  border-radius:13px;
+  background:linear-gradient(145deg,#f4c75c,#d99b29);
+  color:#152018;
+  font-weight:850;
+  font-size:13px;
+  box-shadow:0 8px 22px rgba(222,164,45,.2);
+}
+
+.hero-art{
+  position:absolute;
+  right:16px;
+  bottom:14px;
+  width:130px;
+  height:130px;
+  opacity:.95;
+}
+
+/* ---------- SECTION ---------- */
+
+.section-head{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  margin:0 3px 13px;
+}
+
+.section-title{
+  font-size:20px;
+  font-weight:850;
+  letter-spacing:-.5px;
+}
+
+.section-link{
+  color:#d8b75f;
+  font-size:12px;
+  font-weight:750;
+}
+
+/* ---------- GAME CARDS ---------- */
+
+.games{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.game-card{
+  position:relative;
+  min-height:168px;
+  overflow:hidden;
+  border-radius:23px;
+  padding:0;
+  background:rgba(255,255,255,.065);
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:0 14px 35px rgba(0,0,0,.22);
+  text-align:left;
+  transition:transform .18s,border-color .18s;
+}
+
+.game-card:active{
+  transform:scale(.985);
+}
+
+.game-art{
+  height:116px;
+  width:100%;
+  position:relative;
+  overflow:hidden;
+}
+
+.game-info{
+  min-height:52px;
+  padding:10px 15px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:rgba(3,17,13,.5);
+  backdrop-filter:blur(12px);
+}
+
+.game-name{
+  font-size:16px;
+  font-weight:850;
+}
+
+.game-sub{
+  color:#8fa19a;
+  font-size:11px;
+  margin-top:3px;
+}
+
+.players{
+  padding:7px 10px;
+  border-radius:10px;
+  background:rgba(255,255,255,.075);
+  border:1px solid rgba(255,255,255,.08);
+  font-size:10px;
+  font-weight:750;
+  color:#cdd6d2;
+}
+
+/* ---------- MINI CARROM ---------- */
+
+.carrom{
+  background:
+    radial-gradient(circle at 50% 50%,#d6b47a 0 27%,transparent 28%),
+    linear-gradient(145deg,#6f3d1f,#b8793d 45%,#6b381e);
+}
+
+.carrom-board{
+  position:absolute;
+  width:92px;
+  height:92px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  border:7px solid #4b2817;
+  background:#d8b77d;
+  box-shadow:0 5px 15px rgba(0,0,0,.35);
+}
+
+.carrom-board:before{
+  content:"";
+  position:absolute;
+  inset:14px;
+  border:1px solid #7e5a38;
+}
+
+.pocket{
+  position:absolute;
+  width:12px;
+  height:12px;
+  background:#111;
+  border-radius:50%;
+}
+
+.p1{top:3px;left:3px}
+.p2{top:3px;right:3px}
+.p3{bottom:3px;left:3px}
+.p4{bottom:3px;right:3px}
+
+.coins{
+  position:absolute;
+  width:34px;
+  height:34px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+}
+
+.coin{
+  position:absolute;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  border:1px solid rgba(0,0,0,.3);
+}
+
+.black{background:#171717}
+.white{background:#f0e6d0}
+.red{background:#d83b32}
+
+/* ---------- MINI LUDO ---------- */
+
+.ludo{
+  background:linear-gradient(135deg,#152b38,#234c46);
+}
+
+.ludo-board{
+  position:absolute;
+  width:110px;
+  height:110px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  padding:7px;
+  gap:3px;
+  background:#e9d5a5;
+  border:5px solid #4b2e1b;
+  border-radius:8px;
+}
+
+.ludo-zone{
+  border-radius:6px;
+  display:grid;
+  place-items:center;
+}
+
+.red-zone{background:#e04a43}
+.blue-zone{background:#3c8ee8}
+.green-zone{background:#5ec85b}
+.yellow-zone{background:#f3c548}
+
+.ludo-center{
+  position:absolute;
+  width:35px;
+  height:35px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) rotate(45deg);
+  background:linear-gradient(135deg,#e04a43 50%,#3c8ee8 50%);
+  border:2px solid #fff1;
+}
+
+/* ---------- CHESS ---------- */
+
+.chess{
+  background:linear-gradient(135deg,#071f28,#163e3e);
+}
+
+.chess-board{
+  position:absolute;
+  width:108px;
+  height:108px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  border:5px solid #302219;
+  box-shadow:0 7px 20px rgba(0,0,0,.35);
+}
+
+.square:nth-child(odd){background:#eee5c6}
+.square:nth-child(even){background:#73975a}
+
+.chess-board .square:nth-child(16n+1),
+.chess-board .square:nth-child(16n+3),
+.chess-board .square:nth-child(16n+5),
+.chess-board .square:nth-child(16n+7),
+.chess-board .square:nth-child(16n+10),
+.chess-board .square:nth-child(16n+12),
+.chess-board .square:nth-child(16n+14),
+.chess-board .square:nth-child(16n+16){
+  background:#73975a;
+}
+
+.chess-piece{
+  position:absolute;
+  font-size:17px;
+  filter:drop-shadow(0 2px 1px rgba(0,0,0,.45));
+}
+
+.cp1{left:10px;top:6px}
+.cp2{left:29px;top:7px}
+.cp3{left:49px;top:7px}
+.cp4{left:69px;top:6px}
+.cp5{left:89px;top:6px}
+
+.cp6{left:10px;bottom:5px}
+.cp7{left:29px;bottom:5px}
+.cp8{left:49px;bottom:5px}
+.cp9{left:69px;bottom:5px}
+
+/* ---------- POOL ---------- */
+
+.pool{
+  background:linear-gradient(145deg,#064d3d,#087257);
+}
+
+.pool-table{
+  position:absolute;
+  width:180px;
+  height:92px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  background:#075a45;
+  border:9px solid #75401e;
+  border-radius:18px;
+  box-shadow:0 7px 20px rgba(0,0,0,.4);
+}
+
+.pool-pocket{
+  position:absolute;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#111;
+}
+
+.pp1{left:1px;top:1px}
+.pp2{right:1px;top:1px}
+.pp3{left:1px;bottom:1px}
+.pp4{right:1px;bottom:1px}
+
+.pool-ball{
+  position:absolute;
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 2px 3px #0007;
+}
+
+.ball1{left:65%;top:42%}
+.ball2{left:69%;top:49%;background:#f0b52f}
+.ball3{left:73%;top:55%;background:#e44740}
+.ball4{left:77%;top:49%;background:#4e87e7}
+
+/* ---------- QUICK PLAY ---------- */
+
+.quick{
+  margin-top:27px;
+  padding:17px;
+  border-radius:22px;
+  background:linear-gradient(135deg,rgba(40,183,112,.12),rgba(255,255,255,.04));
+  border:1px solid rgba(76,207,142,.17);
+}
+
+.quick-title{
+  font-size:15px;
+  font-weight:850;
+  margin-bottom:4px;
+}
+
+.quick-sub{
+  color:#899b94;
+  font-size:11px;
+  margin-bottom:13px;
+}
+
+.quick-buttons{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+}
+
+.quick-btn{
+  padding:12px;
+  border-radius:13px;
+  background:rgba(255,255,255,.065);
+  border:1px solid rgba(255,255,255,.08);
+  text-align:left;
+  font-size:12px;
+  font-weight:750;
+}
+
+/* ---------- BOTTOM NAV ---------- */
+
+.bottom-nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:100;
+  height:82px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  background:rgba(4,17,14,.88);
+  backdrop-filter:blur(24px);
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+.nav-item{
+  background:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  color:#72837d;
+  font-size:10px;
+  font-weight:750;
+}
+
+.nav-icon{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  font-size:20px;
+}
+
+.nav-item.active{
+  color:#f3c75f;
+}
+
+.nav-item.active .nav-icon{
+  background:rgba(243,199,95,.10);
+}
+
+/* ---------- MODAL ---------- */
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  display:none;
+  align-items:flex-end;
+  background:rgba(0,0,0,.58);
+  backdrop-filter:blur(8px);
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:100%;
+  max-width:620px;
+  margin:auto auto 0;
+  padding:23px 18px 30px;
+  background:
+    linear-gradient(180deg,rgba(19,49,40,.98),rgba(5,22,17,.99));
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:28px 28px 0 0;
+  box-shadow:0 -20px 70px rgba(0,0,0,.45);
+  animation:slideUp .25s ease;
+}
+
+@keyframes slideUp{
+  from{transform:translateY(30px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+.modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:19px;
+}
+
+.modal-title{
+  font-size:22px;
+  font-weight:850;
+}
+
+.close{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  background:rgba(255,255,255,.07);
+}
+
+.mode-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.mode{
+  padding:17px 13px;
+  text-align:left;
+  border-radius:17px;
+  background:rgba(255,255,255,.065);
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.mode strong{
+  display:block;
+  font-size:14px;
+  margin-bottom:4px;
+}
+
+.mode span{
+  font-size:10px;
+  color:#879991;
+}
+
+@media(min-width:700px){
+  .content{
+    padding-top:30px;
+  }
+
+  .games{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .game-card{
+    min-height:190px;
+  }
+
+  .game-art{
+    height:135px;
+  }
+
+  .bottom-nav{
+    left:50%;
+    transform:translateX(-50%);
+    width:620px;
+    border-radius:22px 22px 0 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
 <div class="app">
 
-<header class="header">
+  <!-- TOP BAR -->
+  <header class="topbar">
     <div class="brand">
-        <div class="brand-logo">🎮</div>
-        <div>
-            <h1>GameVault</h1>
-            <span>Classic Board Games</span>
+      <div class="brand-mark">♜</div>
+      <div class="brand-text">Game<span>Vault</span></div>
+    </div>
+
+    <div class="top-actions">
+      <button class="icon-btn" aria-label="Notifications">♢</button>
+      <button class="icon-btn" aria-label="Profile" onclick="openProfile()">●</button>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <!-- PROFILE -->
+    <section class="profile">
+      <div>
+        <div class="welcome">WELCOME BACK</div>
+        <div class="username">Ready to play?</div>
+      </div>
+      <div class="avatar">♟</div>
+    </section>
+
+    <!-- HERO -->
+    <section class="hero">
+
+      <div class="hero-content">
+        <div class="hero-kicker">✦ GAMEVAULT ARENA</div>
+
+        <h1>Pick a game.<br>Make your move.</h1>
+
+        <p>
+          Challenge friends, create a room and compete
+          across your favourite classic games.
+        </p>
+
+        <button class="hero-play" onclick="openQuickPlay()">
+          PLAY NOW →
+        </button>
+      </div>
+
+      <div class="hero-art">
+        <div class="chess-board" style="width:115px;height:115px;">
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="square"></div><div class="square"></div>
+          <div class="chess-piece cp1">♜</div>
+          <div class="chess-piece cp2">♞</div>
+          <div class="chess-piece cp3">♝</div>
+          <div class="chess-piece cp4">♛</div>
+          <div class="chess-piece cp5">♚</div>
+          <div class="chess-piece cp6">♙</div>
+          <div class="chess-piece cp7">♘</div>
+          <div class="chess-piece cp8">♗</div>
+          <div class="chess-piece cp9">♕</div>
         </div>
+      </div>
+
+    </section>
+
+    <!-- GAMES -->
+    <div class="section-head">
+      <div class="section-title">Play Games</div>
+      <div class="section-link">VIEW ALL</div>
     </div>
 
-    <button class="icon-btn">🔔</button>
-</header>
+    <section class="games">
 
+      <!-- CARROM -->
+      <button class="game-card" onclick="openGame('Carrom')">
+        <div class="game-art carrom">
 
-<!-- GAME CAROUSEL TABS -->
+          <div class="carrom-board">
+            <div class="pocket p1"></div>
+            <div class="pocket p2"></div>
+            <div class="pocket p3"></div>
+            <div class="pocket p4"></div>
 
-<div class="game-tabs">
+            <div class="coins">
+              <i class="coin black" style="left:12px;top:2px"></i>
+              <i class="coin white" style="left:21px;top:8px"></i>
+              <i class="coin black" style="left:4px;top:14px"></i>
+              <i class="coin red" style="left:13px;top:13px"></i>
+              <i class="coin white" style="left:22px;top:21px"></i>
+              <i class="coin black" style="left:5px;top:25px"></i>
+              <i class="coin white" style="left:14px;top:26px"></i>
+            </div>
+          </div>
 
-    <div class="tab active">
-        🏠
-        <span>Home</span>
-    </div>
+        </div>
 
-    <div class="tab">
-        ⚪
-        <span>Carrom</span>
-    </div>
+        <div class="game-info">
+          <div>
+            <div class="game-name">Carrom</div>
+            <div class="game-sub">Classic board • Real-time</div>
+          </div>
+          <div class="players">2–4 PLAYERS</div>
+        </div>
+      </button>
 
-    <div class="tab">
-        ♟️
-        <span>Chess</span>
-    </div>
+      <!-- LUDO -->
+      <button class="game-card" onclick="openGame('Ludo')">
+        <div class="game-art ludo">
 
-    <div class="tab">
-        🎱
-        <span>Pool</span>
-    </div>
+          <div class="ludo-board">
+            <div class="ludo-zone red-zone">● ●</div>
+            <div class="ludo-zone blue-zone">● ●</div>
+            <div class="ludo-zone green-zone">● ●</div>
+            <div class="ludo-zone yellow-zone">● ●</div>
+            <div class="ludo-center"></div>
+          </div>
 
-    <div class="tab">
-        🎲
-        <span>Ludo</span>
-    </div>
+        </div>
 
-</div>
+        <div class="game-info">
+          <div>
+            <div class="game-name">Ludo</div>
+            <div class="game-sub">Roll, race and rule</div>
+          </div>
+          <div class="players">2–4 PLAYERS</div>
+        </div>
+      </button>
 
+      <!-- CHESS -->
+      <button class="game-card" onclick="openGame('Chess')">
+        <div class="game-art chess">
 
-<!-- CONTENT AREA -->
+          <div class="chess-board">
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
 
-<div class="content">
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
 
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
 
-<section class="game-page active">
-    <h2>Welcome to GameVault</h2>
-    <p>Play all classic board games in one place.</p>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
 
-    <div class="featured">
-        🔥 Featured Games
-    </div>
-</section>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
 
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
 
-<section class="game-page">
-    <h2>Carrom</h2>
-    <p>Multiplayer • AI • Offline</p>
-
-    <button>Play Carrom</button>
-</section>
-
-
-<section class="game-page">
-    <h2>Chess</h2>
-    <p>AI • Online • Local</p>
-
-    <button>Play Chess</button>
-</section>
-
-
-<section class="game-page">
-    <h2>Pool</h2>
-    <p>8 Ball Pool</p>
-
-    <button>Play Pool</button>
-</section>
-
-
-<section class="game-page">
-    <h2>Ludo</h2>
-    <p>2-4 Players • Online</p>
-
-    <button>Play Ludo</button>
-</section>
-
-
-</div>
-
-</div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
+            <div class="square"></div><div class="square"></div>
