@@ -998,3 +998,18 @@ function createCarrom(){
   carromState.coins=[
     {
       x:center,
+      <script>
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("GameVault JavaScript is alive");
+
+    const buttons = document.querySelectorAll(".play");
+
+    console.log("Play buttons found:", buttons.length);
+
+    buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            alert("PLAY NOW IS WORKING");
+        });
+    });
+});
+</script>
