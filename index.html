@@ -2,26 +2,43 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#07110e">
+<meta name="apple-mobile-web-app-capable" content="yes">
 
 <title>GameVault — Board Games</title>
 
 <style>
+/* =========================================================
+   GAMEVAULT
+   Premium Board Game Hub
+   Home UI — self contained
+========================================================= */
+
 :root{
   --bg:#06110d;
-  --bg2:#0a1b14;
-  --card:#0d2119;
-  --line:rgba(255,255,255,.09);
-  --text:#f5f8f5;
-  --muted:#8ea39a;
+  --bg2:#091a14;
+  --panel:#0d2119;
+  --panel2:#102a20;
+
+  --white:#f5f7f4;
+  --muted:#91a59b;
 
   --green:#baff4b;
-  --green2:#83d83b;
-  --gold:#ffd45a;
+  --green2:#79d635;
 
-  --shadow:0 20px 60px rgba(0,0,0,.35);
+  --gold:#f4c95d;
+  --gold2:#ffdf83;
+
+  --line:rgba(255,255,255,.09);
+  --lineGold:rgba(244,201,93,.25);
+
+  --shadow:0 25px 70px rgba(0,0,0,.45);
 }
+
+/* =========================================================
+   RESET
+========================================================= */
 
 *{
   margin:0;
@@ -38,17 +55,19 @@ body{
   min-height:100vh;
   background:
     radial-gradient(
-      circle at 50% -15%,
-      rgba(72,155,94,.20),
-      transparent 38%
+      circle at 50% -10%,
+      rgba(44,120,76,.28),
+      transparent 35%
     ),
-    linear-gradient(
-      180deg,
-      #07140f 0%,
-      #06110d 45%,
-      #04100c 100%
-    );
-  color:var(--text);
+    radial-gradient(
+      circle at 100% 60%,
+      rgba(28,85,56,.14),
+      transparent 35%
+    ),
+    var(--bg);
+
+  color:var(--white);
+
   font-family:
     Inter,
     system-ui,
@@ -61,16 +80,14 @@ body{
 }
 
 button{
-  border:0;
-  outline:0;
   font:inherit;
+  border:0;
   cursor:pointer;
 }
 
 button:active{
-  transform:scale(.97);
+  transform:scale(.96);
 }
-
 
 /* =========================================================
    APP
@@ -78,11 +95,10 @@ button:active{
 
 .app{
   width:100%;
-  max-width:1180px;
+  max-width:1200px;
   margin:auto;
-  padding-bottom:105px;
+  padding-bottom:110px;
 }
-
 
 /* =========================================================
    HEADER
@@ -99,14 +115,9 @@ button:active{
   align-items:center;
   justify-content:space-between;
 
-  padding:0 20px;
+  padding:0 22px;
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(5,17,12,.97),
-      rgba(5,17,12,.84)
-    );
+  background:rgba(5,15,11,.82);
 
   border-bottom:1px solid var(--line);
 
@@ -121,28 +132,28 @@ button:active{
 }
 
 .brandLogo{
-  width:42px;
-  height:42px;
+  width:43px;
+  height:43px;
 
   display:grid;
   place-items:center;
 
   border-radius:14px;
 
-  color:#17220d;
-
-  font-size:20px;
-  font-weight:900;
-
   background:
     linear-gradient(
       145deg,
-      #ddff79,
-      #83d63a
+      var(--gold2),
+      var(--gold)
     );
 
+  color:#18220f;
+
+  font-weight:1000;
+  font-size:20px;
+
   box-shadow:
-    0 8px 28px rgba(150,235,70,.18);
+    0 8px 25px rgba(244,201,93,.18);
 }
 
 .brandName{
@@ -170,203 +181,268 @@ button:active{
 
   border-radius:13px;
 
-  color:#dce8e1;
+  color:#e8eee9;
 
-  background:rgba(255,255,255,.045);
+  background:rgba(255,255,255,.055);
+
   border:1px solid var(--line);
 
   transition:.2s;
 }
 
 .headerButton:hover{
-  border-color:rgba(186,255,75,.28);
-  background:rgba(186,255,75,.07);
+  background:rgba(255,255,255,.09);
+  border-color:rgba(186,255,75,.22);
 }
-
-.profileMini{
-  position:relative;
-}
-
-.profileMini::after{
-  content:"";
-
-  position:absolute;
-  right:3px;
-  bottom:3px;
-
-  width:8px;
-  height:8px;
-
-  border-radius:50%;
-
-  background:#71e64b;
-  border:2px solid #07140f;
-}
-
 
 /* =========================================================
-   MAIN
+   HERO
 ========================================================= */
 
-.main{
-  padding:24px 18px 30px;
-}
+.hero{
+  margin:22px 20px 0;
 
+  min-height:340px;
 
-/* =========================================================
-   HERO / CAROUSEL
-========================================================= */
-
-.carousel{
   position:relative;
-
-  width:100%;
-  min-height:310px;
 
   overflow:hidden;
 
   border-radius:30px;
 
-  border:1px solid rgba(186,255,75,.13);
+  border:1px solid var(--lineGold);
 
   background:
     radial-gradient(
       circle at 78% 45%,
-      rgba(57,145,82,.35),
-      transparent 32%
+      rgba(186,255,75,.12),
+      transparent 25%
     ),
     linear-gradient(
-      120deg,
-      #0d291e,
-      #082017 55%,
-      #06140e
+      115deg,
+      #07140f 0%,
+      #0b2419 52%,
+      #102e20 100%
     );
 
   box-shadow:var(--shadow);
 }
 
-.carouselContent{
-  position:relative;
-  z-index:5;
+.heroGlow{
+  position:absolute;
 
-  max-width:560px;
+  width:380px;
+  height:380px;
 
-  padding:42px 40px;
+  right:-130px;
+  top:-100px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(186,255,75,.18),
+      transparent 65%
+    );
+
+  filter:blur(5px);
 }
 
-.badge{
+.heroContent{
+  position:relative;
+  z-index:4;
+
+  max-width:610px;
+
+  padding:55px 45px;
+}
+
+.heroBadge{
   display:inline-flex;
   align-items:center;
   gap:7px;
 
-  padding:7px 12px;
+  padding:8px 12px;
 
-  border-radius:99px;
+  border-radius:999px;
 
   color:var(--green);
 
   background:rgba(186,255,75,.08);
 
-  border:1px solid rgba(186,255,75,.17);
+  border:1px solid rgba(186,255,75,.2);
 
   font-size:10px;
   font-weight:900;
-  letter-spacing:1px;
+
+  letter-spacing:1.3px;
 }
 
-.carousel h1{
+.heroBadge i{
+  width:6px;
+  height:6px;
+
+  border-radius:50%;
+
+  background:var(--green);
+
+  box-shadow:
+    0 0 12px var(--green);
+}
+
+.hero h1{
   margin-top:18px;
 
   font-size:
-    clamp(38px,7vw,68px);
+    clamp(
+      43px,
+      7vw,
+      76px
+    );
 
-  line-height:.9;
+  line-height:.88;
 
-  letter-spacing:-3.5px;
+  letter-spacing:-4px;
 }
 
-.carousel h1 span{
+.hero h1 span{
   color:var(--green);
 }
 
-.carousel p{
-  max-width:470px;
+.heroText{
+  max-width:520px;
 
-  margin-top:18px;
+  margin-top:20px;
 
-  color:#aebfb6;
+  color:#aebeb6;
 
-  font-size:13px;
-  line-height:1.65;
+  font-size:14px;
+
+  line-height:1.6;
 }
 
-.carouselButton{
-  margin-top:22px;
+.heroButton{
+  margin-top:25px;
 
-  padding:12px 18px;
+  padding:13px 19px;
 
-  border-radius:13px;
+  border-radius:14px;
 
-  color:#16230d;
+  color:#13220e;
 
   background:
     linear-gradient(
       135deg,
-      #d8ff72,
-      #86d63d
+      #d5ff72,
+      #82d83c
     );
 
   font-size:12px;
-  font-weight:900;
+  font-weight:950;
 
   box-shadow:
-    0 10px 30px rgba(142,224,57,.14);
+    0 10px 30px rgba(139,230,63,.16);
 }
 
+/* =========================================================
+   HERO BOARD VISUAL
+========================================================= */
 
-/* ---------- CAROUSEL BOARD ART ---------- */
-
-.carouselArt{
+.heroBoard{
   position:absolute;
 
-  right:7%;
+  right:50px;
   top:50%;
 
-  width:245px;
-  height:245px;
+  width:230px;
+  height:230px;
 
   transform:
     translateY(-50%)
     rotate(7deg);
 
-  border-radius:20px;
+  border-radius:24px;
 
   background:
     linear-gradient(
       145deg,
-      #a46c32,
-      #d6a866,
-      #74451f
+      #9c672e,
+      #d4a35f,
+      #71441f
     );
 
-  border:13px solid #75471f;
+  border:10px solid #5d381b;
 
   box-shadow:
-    0 30px 60px rgba(0,0,0,.55),
-    inset 0 0 0 3px #4e2c15;
+    0 30px 70px rgba(0,0,0,.55),
+    inset 0 0 0 3px #c58b48;
+
+  animation:
+    boardFloat 5s ease-in-out infinite;
 }
 
-.carouselArt::before{
-  content:"";
-
+.heroBoardInner{
   position:absolute;
 
   inset:17px;
 
-  border:2px solid #74491f;
+  border:2px solid #70431f;
+
+  background:#d8b57a;
 }
 
-.carouselArt::after{
+.heroPocket{
+  position:absolute;
+
+  width:28px;
+  height:28px;
+
+  border-radius:50%;
+
+  background:#17130f;
+
+  box-shadow:
+    inset 0 3px 5px rgba(255,255,255,.12);
+}
+
+.p1{
+  left:9px;
+  top:9px;
+}
+
+.p2{
+  right:9px;
+  top:9px;
+}
+
+.p3{
+  left:9px;
+  bottom:9px;
+}
+
+.p4{
+  right:9px;
+  bottom:9px;
+}
+
+.heroCenter{
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  width:60px;
+  height:60px;
+
+  transform:translate(-50%,-50%);
+
+  border-radius:50%;
+
+  border:2px solid #77491f;
+}
+
+.heroCenter:after{
   content:"";
 
   position:absolute;
@@ -374,462 +450,637 @@ button:active{
   left:50%;
   top:50%;
 
-  width:48px;
-  height:48px;
+  width:15px;
+  height:15px;
 
   transform:translate(-50%,-50%);
 
   border-radius:50%;
 
-  border:2px solid #74491f;
+  background:#9b1f27;
 
-  box-shadow:
-    -67px -67px 0 -21px #151515,
-     67px -67px 0 -21px #eee9df,
-    -67px  67px 0 -21px #151515,
-     67px  67px 0 -21px #eee9df;
+  border:3px solid #68171c;
 }
 
+.coin{
+  position:absolute;
+
+  width:18px;
+  height:18px;
+
+  border-radius:50%;
+
+  box-shadow:
+    0 3px 4px rgba(0,0,0,.35);
+}
+
+.coin.black{
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #555,
+      #111 55%,
+      #050505
+    );
+}
+
+.coin.white{
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #fff,
+      #ddd 55%,
+      #aaa
+    );
+}
+
+.c1{left:65px;top:75px}
+.c2{left:100px;top:58px}
+.c3{left:137px;top:78px}
+.c4{left:82px;top:118px}
+.c5{left:120px;top:115px}
 
 /* =========================================================
    SECTION HEADER
 ========================================================= */
 
-.sectionHeader{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-
-  margin:36px 2px 15px;
+.section{
+  padding:0 20px;
 }
 
-.sectionHeader h2{
-  font-size:23px;
+.sectionHeader{
+  margin-top:38px;
+  margin-bottom:17px;
+
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+}
+
+.sectionTitle{
+  font-size:25px;
+  font-weight:850;
+
   letter-spacing:-1px;
 }
 
-.sectionHeader p{
+.sectionSub{
   color:var(--muted);
+
   font-size:11px;
+
+  letter-spacing:.7px;
 }
 
-
 /* =========================================================
-   GAME CARDS
+   GAME GRID
 ========================================================= */
 
-.games{
+.gameGrid{
   display:grid;
 
   grid-template-columns:
-    repeat(2,minmax(0,1fr));
+    repeat(
+      2,
+      minmax(0,1fr)
+    );
 
-  gap:17px;
+  gap:18px;
 }
+
+/* =========================================================
+   GAME CARD
+========================================================= */
 
 .gameCard{
   position:relative;
 
-  min-height:320px;
+  min-height:360px;
 
   overflow:hidden;
 
-  border-radius:25px;
+  border-radius:27px;
 
   border:1px solid var(--line);
 
-  background:#0a1d15;
+  background:#0b1c15;
 
   box-shadow:
-    0 14px 45px rgba(0,0,0,.25);
+    0 18px 45px rgba(0,0,0,.28);
 
   transition:
-    transform .25s,
-    border-color .25s;
+    transform .35s ease,
+    border-color .35s ease,
+    box-shadow .35s ease;
+
+  cursor:pointer;
 }
 
 .gameCard:hover{
-  transform:translateY(-5px);
+  transform:translateY(-7px);
 
   border-color:
-    rgba(186,255,75,.25);
+    rgba(186,255,75,.3);
+
+  box-shadow:
+    0 28px 65px rgba(0,0,0,.42);
 }
 
+.gameCard:active{
+  transform:scale(.985);
+}
 
 /* =========================================================
-   GAME VISUALS
-   NO EXTERNAL IMAGES
+   GAME VISUAL AREA
 ========================================================= */
 
 .gameVisual{
   position:absolute;
+
   inset:0;
 
   overflow:hidden;
 }
 
-
-/* ---------- COMMON DARK OVERLAY ---------- */
-
-.gameVisual::after{
+.gameVisual:after{
   content:"";
 
   position:absolute;
+
   inset:0;
 
   background:
     linear-gradient(
       180deg,
-      transparent 25%,
-      rgba(2,10,7,.25) 45%,
-      rgba(2,10,7,.94) 100%
+      rgba(0,0,0,.03) 20%,
+      rgba(0,0,0,.25) 48%,
+      rgba(3,12,8,.96) 94%
     );
 }
-
 
 /* =========================================================
    CARROM VISUAL
 ========================================================= */
 
-.carromVisual{
-  background:
-    radial-gradient(
-      circle at center,
-      #d9b274 0 18%,
-      #c7985b 19%,
-      #a76d34 42%,
-      #70431e 72%,
-      #3b2110 100%
-    );
-}
-
-.carromVisual .board{
+.carromScene{
   position:absolute;
 
-  width:210px;
-  height:210px;
+  width:250px;
+  height:250px;
 
   left:50%;
-  top:42%;
+  top:34%;
 
   transform:
     translate(-50%,-50%)
     rotate(-5deg);
 
-  border:11px solid #6d401d;
+  border-radius:24px;
 
-  background:#d5aa6d;
+  background:
+    linear-gradient(
+      145deg,
+      #a56c31,
+      #d5a25b,
+      #75451f
+    );
 
-  border-radius:14px;
+  border:10px solid #543119;
 
   box-shadow:
-    0 20px 35px rgba(0,0,0,.4),
-    inset 0 0 0 3px #a06c35;
+    0 30px 50px rgba(0,0,0,.45),
+    inset 0 0 0 3px #c28746;
+
+  transition:.5s;
 }
 
-.carromVisual .board::before{
+.gameCard:hover .carromScene{
+  transform:
+    translate(-50%,-50%)
+    rotate(-3deg)
+    scale(1.04);
+}
+
+.carromSurface{
+  position:absolute;
+
+  inset:17px;
+
+  background:#d8b67d;
+
+  border:2px solid #744b26;
+}
+
+.carromLine{
+  position:absolute;
+
+  border:1px solid #7a4c25;
+}
+
+.carromLine.outer{
+  inset:17px;
+}
+
+.carromCenter{
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  width:58px;
+  height:58px;
+
+  transform:translate(-50%,-50%);
+
+  border-radius:50%;
+
+  border:2px solid #74451f;
+}
+
+.carromCenter:after{
   content:"";
 
   position:absolute;
 
-  inset:16px;
-
-  border:2px solid #71451f;
-}
-
-.carromVisual .center{
-  position:absolute;
-
-  width:43px;
-  height:43px;
+  width:14px;
+  height:14px;
 
   left:50%;
   top:50%;
 
   transform:translate(-50%,-50%);
 
-  border:2px solid #75491f;
   border-radius:50%;
+
+  background:#9e1822;
 }
 
-.carromVisual .coin{
+.carromPocket{
   position:absolute;
 
-  width:14px;
-  height:14px;
+  width:25px;
+  height:25px;
+
+  border-radius:50%;
+
+  background:#17120e;
+}
+
+.cp1{left:5px;top:5px}
+.cp2{right:5px;top:5px}
+.cp3{left:5px;bottom:5px}
+.cp4{right:5px;bottom:5px}
+
+.carromPiece{
+  position:absolute;
+
+  width:18px;
+  height:18px;
 
   border-radius:50%;
 
   box-shadow:
-    0 2px 4px rgba(0,0,0,.35);
+    0 3px 4px rgba(0,0,0,.35);
 }
 
-.carromVisual .black{
-  background:#171717;
+.carromPiece.black{
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #777,
+      #181818 60%
+    );
 }
 
-.carromVisual .white{
-  background:#eee7d8;
+.carromPiece.white{
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #fff,
+      #d6d6d6 65%
+    );
 }
 
-.carromVisual .red{
-  background:#c9343b;
-}
-
+.cc1{left:65px;top:72px}
+.cc2{left:105px;top:64px}
+.cc3{left:138px;top:78px}
+.cc4{left:84px;top:108px}
+.cc5{left:122px;top:110px}
+.cc6{left:151px;top:103px}
 
 /* =========================================================
    LUDO VISUAL
 ========================================================= */
 
-.ludoVisual{
-  background:
-    radial-gradient(
-      circle at 50% 40%,
-      #305f42,
-      #163b29 48%,
-      #07150f 100%
-    );
-}
-
-.ludoBoard{
+.ludoScene{
   position:absolute;
 
   left:50%;
-  top:43%;
+  top:35%;
 
-  width:205px;
-  height:205px;
+  width:250px;
+  height:250px;
 
-  transform:
-    translate(-50%,-50%)
-    rotate(-2deg);
+  transform:translate(-50%,-50%) rotate(2deg);
 
-  display:grid;
+  background:#eee6d2;
 
-  grid-template-columns:repeat(3,1fr);
-  grid-template-rows:repeat(3,1fr);
+  border-radius:22px;
 
-  padding:9px;
-
-  gap:3px;
-
-  border-radius:15px;
-
-  background:#e5d7aa;
+  padding:12px;
 
   box-shadow:
-    0 22px 45px rgba(0,0,0,.5);
+    0 30px 55px rgba(0,0,0,.48);
+
+  transition:.5s;
 }
 
-.ludoZone{
-  border-radius:9px;
+.gameCard:hover .ludoScene{
+  transform:
+    translate(-50%,-50%)
+    rotate(1deg)
+    scale(1.04);
+}
+
+.ludoCorner{
+  position:absolute;
+
+  width:90px;
+  height:90px;
+
+  border-radius:13px;
 
   display:grid;
   place-items:center;
 }
 
 .ludoRed{
-  background:#df4d4d;
+  left:12px;
+  top:12px;
+  background:#e54c4c;
 }
 
 .ludoGreen{
-  background:#64c956;
-}
-
-.ludoBlue{
-  background:#4d82df;
+  right:12px;
+  top:12px;
+  background:#48b96c;
 }
 
 .ludoYellow{
-  background:#e8c84d;
+  left:12px;
+  bottom:12px;
+  background:#f2c84b;
+}
+
+.ludoBlue{
+  right:12px;
+  bottom:12px;
+  background:#4d91e8;
+}
+
+.ludoHome{
+  width:52px;
+  height:52px;
+
+  border-radius:9px;
+
+  background:white;
+
+  box-shadow:
+    inset 0 0 0 3px rgba(0,0,0,.08);
+}
+
+.ludoPath{
+  position:absolute;
+
+  left:102px;
+  top:12px;
+
+  width:46px;
+  height:226px;
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  grid-template-rows:
+    repeat(13,1fr);
+}
+
+.ludoCell{
+  border:1px solid rgba(0,0,0,.12);
+  background:#f8f3e7;
 }
 
 .ludoCenter{
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  transform:translate(-50%,-50%);
+
+  width:72px;
+  height:72px;
+
+  clip-path:polygon(
+    50% 0,
+    100% 50%,
+    50% 100%,
+    0 50%
+  );
+
   background:
     conic-gradient(
-      #df4d4d 0 25%,
-      #e8c84d 25% 50%,
-      #64c956 50% 75%,
-      #4d82df 75% 100%
+      #e54c4c 0 25%,
+      #f2c84b 25% 50%,
+      #4d91e8 50% 75%,
+      #48b96c 75% 100%
     );
 }
-
-.ludoDot{
-  width:12px;
-  height:12px;
-
-  border-radius:50%;
-
-  background:#fff;
-
-  box-shadow:
-    0 2px 4px rgba(0,0,0,.25);
-}
-
 
 /* =========================================================
    CHESS VISUAL
 ========================================================= */
 
-.chessVisual{
-  background:
-    radial-gradient(
-      circle at center,
-      #4d3825,
-      #21170f 70%
-    );
-}
-
-.chessBoard{
+.chessScene{
   position:absolute;
 
-  left:50%;
-  top:43%;
+  width:250px;
+  height:250px;
 
-  width:215px;
-  height:215px;
+  left:50%;
+  top:34%;
 
   transform:
     translate(-50%,-50%)
-    rotate(-3deg);
+    rotate(2deg);
 
   display:grid;
 
-  grid-template-columns:repeat(8,1fr);
+  grid-template-columns:
+    repeat(8,1fr);
 
-  border:8px solid #68421f;
+  border:9px solid #53351e;
 
-  border-radius:8px;
+  border-radius:16px;
 
   overflow:hidden;
 
   box-shadow:
-    0 25px 50px rgba(0,0,0,.55);
+    0 30px 55px rgba(0,0,0,.5);
+
+  transition:.5s;
+}
+
+.gameCard:hover .chessScene{
+  transform:
+    translate(-50%,-50%)
+    rotate(1deg)
+    scale(1.04);
 }
 
 .chessSquare{
   display:grid;
   place-items:center;
 
-  font-size:17px;
+  font-size:23px;
 }
 
-.chessLight{
-  background:#e4c18a;
+.chessSquare.light{
+  background:#e5c68e;
 }
 
-.chessDark{
-  background:#79502d;
+.chessSquare.dark{
+  background:#79502e;
 }
 
+.chessPieceVisual{
+  filter:
+    drop-shadow(
+      0 3px 2px rgba(0,0,0,.45)
+    );
+}
 
 /* =========================================================
    POOL VISUAL
 ========================================================= */
 
-.poolVisual{
-  background:
-    radial-gradient(
-      circle at center,
-      #123e32,
-      #06150f 75%
-    );
-}
-
-.poolTable{
+.poolScene{
   position:absolute;
 
   left:50%;
-  top:43%;
+  top:35%;
 
-  width:245px;
-  height:140px;
+  width:270px;
+  height:180px;
 
   transform:
     translate(-50%,-50%)
-    rotate(-2deg);
+    perspective(500px)
+    rotateX(5deg);
 
-  border-radius:17px;
+  border-radius:18px;
+
+  padding:18px;
 
   background:
     linear-gradient(
-      135deg,
-      #71431e,
-      #4b2a14
+      145deg,
+      #61391d,
+      #9b6333,
+      #553018
     );
 
-  padding:15px;
-
   box-shadow:
-    0 25px 50px rgba(0,0,0,.55);
+    0 30px 55px rgba(0,0,0,.55);
+
+  transition:.5s;
+}
+
+.gameCard:hover .poolScene{
+  transform:
+    translate(-50%,-50%)
+    perspective(500px)
+    rotateX(5deg)
+    scale(1.04);
 }
 
 .poolCloth{
+  position:relative;
+
   width:100%;
   height:100%;
-
-  position:relative;
 
   border-radius:8px;
 
   background:
     radial-gradient(
-      circle,
-      #16835e,
-      #07543c
+      circle at 50% 50%,
+      #157b50,
+      #07583a
     );
+
+  box-shadow:
+    inset 0 0 0 3px #094b32;
 }
 
-.pocket{
+.poolPocket{
   position:absolute;
 
-  width:17px;
-  height:17px;
+  width:24px;
+  height:24px;
 
   border-radius:50%;
 
-  background:#07100c;
-
-  box-shadow:
-    inset 0 2px 5px rgba(255,255,255,.08);
+  background:#10100d;
 }
 
-.pocket.tl{left:-5px;top:-5px}
-.pocket.tr{right:-5px;top:-5px}
-.pocket.bl{left:-5px;bottom:-5px}
-.pocket.br{right:-5px;bottom:-5px}
+.pp1{left:-7px;top:-7px}
+.pp2{right:-7px;top:-7px}
+.pp3{left:-7px;bottom:-7px}
+.pp4{right:-7px;bottom:-7px}
 
 .poolBall{
   position:absolute;
 
-  width:17px;
-  height:17px;
+  width:22px;
+  height:22px;
 
   border-radius:50%;
 
-  background:#fff;
-
   box-shadow:
-    0 3px 6px rgba(0,0,0,.4);
+    0 3px 4px rgba(0,0,0,.35);
+
+  border:1px solid rgba(255,255,255,.25);
 }
 
-.poolBall.one{
-  left:50%;
-  top:50%;
+.ballWhite{
+  background:#f5f4ed;
 }
 
-.poolBall.two{
-  left:56%;
-  top:43%;
-  background:#f3d13e;
+.ballYellow{
+  background:#f4cf45;
 }
 
-.poolBall.three{
-  left:56%;
-  top:57%;
-  background:#df4545;
+.ballRed{
+  background:#d94141;
 }
 
+.ballBlue{
+  background:#377fd5;
+}
+
+.ball8{
+  background:#111;
+}
+
+.pb1{left:42%;top:39%}
+.pb2{left:49%;top:48%}
+.pb3{left:56%;top:39%}
+.pb4{left:50%;top:59%}
+.pb5{left:63%;top:48%}
 
 /* =========================================================
    CARD CONTENT
@@ -838,42 +1089,45 @@ button:active{
 .gameContent{
   position:absolute;
 
-  left:20px;
-  right:20px;
-  bottom:18px;
-
   z-index:10;
+
+  left:21px;
+  right:21px;
+  bottom:20px;
 }
 
-.gameIcon{
-  width:43px;
-  height:43px;
+.gameTag{
+  display:inline-flex;
 
-  display:grid;
-  place-items:center;
+  padding:6px 9px;
 
-  border-radius:13px;
+  border-radius:8px;
 
-  background:
-    rgba(0,0,0,.38);
+  background:rgba(0,0,0,.35);
 
-  border:1px solid
-    rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.12);
 
-  backdrop-filter:blur(12px);
+  color:#cbd7d0;
 
-  font-size:21px;
+  font-size:9px;
 
-  margin-bottom:11px;
+  font-weight:800;
+
+  letter-spacing:.8px;
 }
 
 .gameContent h3{
-  font-size:27px;
-  letter-spacing:-1.1px;
+  margin-top:9px;
+
+  font-size:28px;
+
+  line-height:1;
+
+  letter-spacing:-1.2px;
 }
 
 .gameContent p{
-  margin-top:5px;
+  margin-top:6px;
 
   color:#b2c1b9;
 
@@ -881,570 +1135,339 @@ button:active{
 }
 
 .gameBottom{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
   margin-top:15px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
 }
 
-.playerText{
-  color:#a8b9b1;
+.gamePlayers{
+  color:#9eafa6;
 
   font-size:10px;
-  font-weight:800;
+
+  font-weight:700;
+
   letter-spacing:.5px;
 }
 
 .playButton{
-  padding:10px 15px;
+  padding:11px 16px;
 
   border-radius:12px;
 
-  color:#15220e;
+  color:#14230f;
 
   background:
     linear-gradient(
       135deg,
-      #d5ff6e,
-      #85d83b
+      #d5ff72,
+      #80d53a
     );
 
   font-size:11px;
-  font-weight:900;
+
+  font-weight:950;
 
   box-shadow:
-    0 8px 20px rgba(133,216,59,.12);
+    0 8px 20px rgba(125,218,53,.13);
+
+  transition:.2s;
 }
 
+.playButton:hover{
+  transform:translateY(-2px);
+}
 
 /* =========================================================
-   BOTTOM NAV
+   BOTTOM NAVIGATION
 ========================================================= */
 
 .bottomNav{
   position:fixed;
 
   left:50%;
-  bottom:10px;
-
-  z-index:150;
-
-  width:
-    min(
-      560px,
-      calc(100% - 22px)
-    );
-
-  height:68px;
+  bottom:0;
 
   transform:translateX(-50%);
+
+  z-index:200;
+
+  width:min(720px,100%);
+
+  height:76px;
+
+  padding:
+    7px 10px
+    env(safe-area-inset-bottom)
+    7px 10px;
 
   display:grid;
 
   grid-template-columns:
-    repeat(5,1fr);
-
-  align-items:center;
-
-  padding:5px 7px;
-
-  border-radius:22px;
+    repeat(4,1fr);
 
   background:
-    rgba(9,25,19,.92);
+    rgba(5,16,12,.94);
 
   border:
-    1px solid
-    rgba(255,255,255,.10);
+    1px solid var(--line);
 
-  box-shadow:
-    0 20px 55px rgba(0,0,0,.48);
+  border-bottom:0;
 
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
+  border-radius:
+    22px 22px 0 0;
+
+  backdrop-filter:blur(25px);
 }
 
 .navItem{
-  height:58px;
+  position:relative;
 
   display:flex;
 
   flex-direction:column;
 
   align-items:center;
+
   justify-content:center;
 
   gap:4px;
 
-  color:#71857b;
+  color:#70847a;
 
   background:transparent;
 
-  border-radius:17px;
+  font-size:10px;
+
+  font-weight:800;
 
   transition:.2s;
 }
 
 .navIcon{
-  width:27px;
-  height:27px;
+  width:35px;
+  height:30px;
 
   display:grid;
   place-items:center;
 
   font-size:19px;
-}
 
-.navLabel{
-  font-size:9px;
-  font-weight:800;
+  border-radius:11px;
+
+  transition:.2s;
 }
 
 .navItem.active{
   color:var(--green);
-
-  background:
-    rgba(186,255,75,.075);
 }
 
 .navItem.active .navIcon{
-  filter:
-    drop-shadow(
-      0 0 7px
-      rgba(186,255,75,.35)
-    );
-}
-
-
-/* =========================================================
-   PAGE SECTIONS
-========================================================= */
-
-.pageSection{
-  display:none;
-
-  padding:30px 18px 120px;
-}
-
-.pageSection.active{
-  display:block;
-}
-
-.pageTitle{
-  font-size:30px;
-  letter-spacing:-1.5px;
-}
-
-.pageSubtitle{
-  color:var(--muted);
-  margin-top:7px;
-  font-size:12px;
-}
-
-
-/* =========================================================
-   REWARDS
-========================================================= */
-
-.rewardHero{
-  margin-top:22px;
-
-  padding:25px;
-
-  border-radius:24px;
-
-  background:
-    radial-gradient(
-      circle at 85% 25%,
-      rgba(255,212,90,.15),
-      transparent 30%
-    ),
-    linear-gradient(
-      135deg,
-      #152d21,
-      #0b1c15
-    );
-
-  border:1px solid var(--line);
-}
-
-.rewardCoin{
-  width:55px;
-  height:55px;
-
-  display:grid;
-  place-items:center;
-
-  border-radius:50%;
-
-  color:#422f09;
-
-  background:
-    linear-gradient(
-      145deg,
-      #ffe58b,
-      #d69d2e
-    );
-
-  font-size:24px;
-}
-
-.rewardHero h2{
-  margin-top:17px;
-  font-size:25px;
-}
-
-.rewardHero p{
-  color:var(--muted);
-  margin-top:7px;
-  font-size:12px;
-}
-
-
-/* =========================================================
-   RANKING
-========================================================= */
-
-.rankList{
-  display:flex;
-  flex-direction:column;
-
-  gap:10px;
-
-  margin-top:23px;
-}
-
-.rankItem{
-  display:flex;
-  align-items:center;
-
-  gap:12px;
-
-  padding:14px;
-
-  border-radius:17px;
-
-  background:rgba(255,255,255,.035);
-
-  border:1px solid var(--line);
-}
-
-.rankNumber{
-  width:32px;
-  height:32px;
-
-  display:grid;
-  place-items:center;
-
-  border-radius:10px;
-
-  background:rgba(186,255,75,.08);
-
-  color:var(--green);
-
-  font-size:12px;
-  font-weight:900;
-}
-
-.rankAvatar{
-  width:38px;
-  height:38px;
-
-  display:grid;
-  place-items:center;
-
-  border-radius:50%;
+  color:#16230f;
 
   background:
     linear-gradient(
       135deg,
-      #274f39,
-      #10291e
-    );
-}
-
-.rankInfo{
-  flex:1;
-}
-
-.rankInfo strong{
-  font-size:13px;
-}
-
-.rankInfo small{
-  display:block;
-
-  color:var(--muted);
-
-  margin-top:2px;
-
-  font-size:10px;
-}
-
-.rankScore{
-  color:var(--gold);
-
-  font-size:12px;
-  font-weight:900;
-}
-
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-.profileCard{
-  margin-top:23px;
-
-  padding:25px;
-
-  border-radius:25px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #11291f,
-      #0a1b14
+      #d4ff6e,
+      #83d83a
     );
 
-  border:1px solid var(--line);
+  box-shadow:
+    0 6px 17px rgba(137,225,56,.18);
 }
 
-.profileAvatar{
-  width:68px;
-  height:68px;
+.navBadge{
+  position:absolute;
+
+  top:5px;
+  right:calc(50% - 22px);
+
+  min-width:14px;
+  height:14px;
+
+  padding:0 4px;
 
   display:grid;
   place-items:center;
 
-  border-radius:22px;
+  border-radius:99px;
 
-  color:#17220d;
+  color:#10200c;
 
-  background:
-    linear-gradient(
-      135deg,
-      #d9ff78,
-      #79d336
-    );
+  background:var(--gold);
 
-  font-size:27px;
+  font-size:7px;
+  font-weight:950;
 }
-
-.profileCard h2{
-  margin-top:17px;
-}
-
-.profileCard p{
-  margin-top:4px;
-
-  color:var(--muted);
-
-  font-size:11px;
-}
-
-.profileStats{
-  display:grid;
-
-  grid-template-columns:
-    repeat(3,1fr);
-
-  gap:8px;
-
-  margin-top:22px;
-}
-
-.stat{
-  padding:13px 5px;
-
-  text-align:center;
-
-  border-radius:14px;
-
-  background:rgba(255,255,255,.04);
-
-  border:1px solid var(--line);
-}
-
-.stat strong{
-  display:block;
-
-  color:var(--green);
-
-  font-size:16px;
-}
-
-.stat span{
-  display:block;
-
-  margin-top:3px;
-
-  color:var(--muted);
-
-  font-size:9px;
-}
-
 
 /* =========================================================
-   GAME MODAL
+   SIMPLE PAGE OVERLAY
 ========================================================= */
 
-.modal{
+.pageOverlay{
   position:fixed;
+
   inset:0;
 
   z-index:300;
 
   display:none;
 
-  align-items:flex-end;
-  justify-content:center;
-
   background:
-    rgba(0,0,0,.7);
+    radial-gradient(
+      circle at 50% 0,
+      rgba(60,150,90,.18),
+      transparent 40%
+    ),
+    var(--bg);
 
-  backdrop-filter:blur(14px);
+  overflow:auto;
 }
 
-.modal.show{
-  display:flex;
+.pageOverlay.show{
+  display:block;
 }
 
-.modalBox{
-  width:
-    min(
-      560px,
-      100%
-    );
+.overlayHeader{
+  height:72px;
 
-  padding:24px;
+  position:sticky;
 
-  border-radius:
-    28px 28px 0 0;
+  top:0;
 
-  background:
-    linear-gradient(
-      180deg,
-      #10271e,
-      #081811
-    );
-
-  border:
-    1px solid
-    var(--line);
-
-  box-shadow:
-    0 -20px 70px
-    rgba(0,0,0,.45);
-
-  animation:
-    modalUp .25s ease;
-}
-
-@keyframes modalUp{
-  from{
-    transform:translateY(40px);
-    opacity:0;
-  }
-
-  to{
-    transform:translateY(0);
-    opacity:1;
-  }
-}
-
-.modalTop{
   display:flex;
 
   align-items:center;
-  justify-content:space-between;
+
+  gap:13px;
+
+  padding:0 18px;
+
+  background:
+    rgba(5,15,11,.9);
+
+  border-bottom:1px solid var(--line);
+
+  backdrop-filter:blur(20px);
 }
 
-.modalTop h2{
-  font-size:24px;
-}
+.backButton{
+  width:42px;
+  height:42px;
 
-.closeButton{
-  width:38px;
-  height:38px;
-
-  border-radius:12px;
+  border-radius:13px;
 
   color:white;
 
   background:
-    rgba(255,255,255,.06);
+    rgba(255,255,255,.055);
 
   border:1px solid var(--line);
 }
 
-.modalDescription{
+.overlayTitle{
+  font-size:18px;
+  font-weight:900;
+}
+
+.overlayBody{
+  max-width:800px;
+
+  margin:auto;
+
+  padding:25px 18px 110px;
+}
+
+.infoCard{
+  padding:22px;
+
+  border-radius:22px;
+
+  border:1px solid var(--line);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.055),
+      rgba(255,255,255,.025)
+    );
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,.2);
+}
+
+.infoCard + .infoCard{
+  margin-top:14px;
+}
+
+.infoCard h2{
+  font-size:22px;
+}
+
+.infoCard p{
+  margin-top:8px;
+
   color:var(--muted);
 
-  margin-top:7px;
+  line-height:1.6;
 
-  font-size:12px;
+  font-size:13px;
 }
 
-.modeGrid{
+.rewardRow{
+  display:flex;
+
+  align-items:center;
+
+  gap:14px;
+
+  padding:15px 0;
+
+  border-bottom:1px solid var(--line);
+}
+
+.rewardRow:last-child{
+  border-bottom:0;
+}
+
+.rewardIcon{
+  width:45px;
+  height:45px;
+
   display:grid;
+  place-items:center;
 
-  grid-template-columns:
-    repeat(2,1fr);
-
-  gap:10px;
-
-  margin-top:20px;
-}
-
-.modeButton{
-  padding:17px 10px;
-
-  text-align:left;
-
-  border-radius:16px;
-
-  color:white;
+  border-radius:14px;
 
   background:
-    rgba(255,255,255,.04);
+    rgba(186,255,75,.08);
 
-  border:1px solid var(--line);
-
-  transition:.2s;
-}
-
-.modeButton:hover{
-  border-color:
-    rgba(186,255,75,.25);
-
-  background:
-    rgba(186,255,75,.06);
-}
-
-.modeIcon{
   font-size:21px;
 }
 
-.modeButton strong{
-  display:block;
-
-  margin-top:8px;
-
-  font-size:12px;
+.rewardText{
+  flex:1;
 }
 
-.modeButton small{
+.rewardText strong{
+  display:block;
+
+  font-size:13px;
+}
+
+.rewardText span{
   display:block;
 
   margin-top:3px;
 
   color:var(--muted);
 
-  font-size:9px;
+  font-size:11px;
 }
-
 
 /* =========================================================
    TOAST
@@ -1454,9 +1477,12 @@ button:active{
   position:fixed;
 
   left:50%;
-  bottom:92px;
+  bottom:94px;
 
   z-index:500;
+
+  max-width:
+    calc(100% - 30px);
 
   transform:
     translate(-50%,20px);
@@ -1465,18 +1491,20 @@ button:active{
 
   pointer-events:none;
 
-  padding:
-    11px 15px;
+  padding:12px 16px;
 
   border-radius:13px;
 
-  background:#122a20;
+  background:#10271e;
 
   border:1px solid var(--line);
 
+  box-shadow:
+    0 15px 40px rgba(0,0,0,.35);
+
   color:white;
 
-  font-size:11px;
+  font-size:12px;
 
   transition:.25s;
 }
@@ -1488,149 +1516,256 @@ button:active{
     translate(-50%,0);
 }
 
-
 /* =========================================================
-   RESPONSIVE
+   ANIMATIONS
 ========================================================= */
 
-@media(max-width:760px){
+@keyframes boardFloat{
+
+  0%,100%{
+    transform:
+      translateY(-50%)
+      rotate(7deg);
+  }
+
+  50%{
+    transform:
+      translateY(-54%)
+      rotate(5deg);
+  }
+}
+
+@keyframes fadeUp{
+
+  from{
+    opacity:0;
+    transform:translateY(14px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.hero,
+.gameCard{
+  animation:
+    fadeUp .6s ease both;
+}
+
+.gameCard:nth-child(2){
+  animation-delay:.08s;
+}
+
+.gameCard:nth-child(3){
+  animation-delay:.16s;
+}
+
+.gameCard:nth-child(4){
+  animation-delay:.24s;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media(max-width:850px){
+
+  .heroBoard{
+    right:20px;
+    width:200px;
+    height:200px;
+  }
+
+  .heroContent{
+    max-width:58%;
+  }
+
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px){
 
   .header{
-    height:65px;
-    padding:0 14px;
+    height:64px;
+
+    padding:
+      0 14px;
+  }
+
+  .brandLogo{
+    width:39px;
+    height:39px;
+
+    border-radius:12px;
   }
 
   .brandName{
     font-size:18px;
   }
 
-  .brandLogo{
-    width:39px;
-    height:39px;
-    border-radius:13px;
-  }
-
   .headerButton{
     width:39px;
     height:39px;
+
+    border-radius:12px;
   }
 
-  .main{
-    padding:15px 12px 20px;
+  .hero{
+    min-height:335px;
+
+    margin:
+      14px 13px 0;
+
+    border-radius:25px;
   }
 
-  .carousel{
-    min-height:310px;
-    border-radius:24px;
+  .heroContent{
+    max-width:100%;
+
+    padding:
+      30px 22px;
   }
 
-  .carouselContent{
-    padding:28px 22px;
+  .hero h1{
+    font-size:
+      clamp(
+        40px,
+        13vw,
+        58px
+      );
+
+    letter-spacing:-3px;
   }
 
-  .carousel h1{
-    font-size:43px;
-    letter-spacing:-2.5px;
+  .heroText{
+    max-width:300px;
+
+    font-size:12px;
   }
 
-  .carousel p{
-    max-width:260px;
-  }
+  .heroBoard{
+    width:150px;
+    height:150px;
 
-  .carouselArt{
-    width:170px;
-    height:170px;
-
-    right:-25px;
+    right:-20px;
     top:46%;
 
-    border-width:9px;
+    opacity:.38;
   }
 
-  .carouselArt::before{
-    inset:12px;
-  }
-
-  .carouselArt::after{
-    width:32px;
-    height:32px;
-
-    box-shadow:
-      -45px -45px 0 -15px #151515,
-       45px -45px 0 -15px #eee9df,
-      -45px  45px 0 -15px #151515,
-       45px  45px 0 -15px #eee9df;
+  .section{
+    padding:
+      0 13px;
   }
 
   .sectionHeader{
-    margin-top:29px;
+    margin-top:31px;
   }
 
-  .sectionHeader h2{
+  .sectionTitle{
     font-size:20px;
   }
 
-  .games{
+  .gameGrid{
     grid-template-columns:1fr;
-    gap:13px;
+
+    gap:14px;
   }
 
   .gameCard{
-    min-height:295px;
+    min-height:330px;
+
+    border-radius:23px;
+  }
+
+  .carromScene,
+  .ludoScene,
+  .chessScene{
+    width:220px;
+    height:220px;
+
+    top:34%;
+  }
+
+  .poolScene{
+    width:245px;
+    height:165px;
+
+    top:34%;
+  }
+
+  .gameContent{
+    left:17px;
+    right:17px;
+    bottom:17px;
   }
 
   .gameContent h3{
     font-size:25px;
   }
 
-  .gameVisual .board{
-    width:190px;
-    height:190px;
+  .bottomNav{
+    height:72px;
+
+    border-radius:
+      19px 19px 0 0;
   }
 
-  .ludoBoard{
-    width:185px;
-    height:185px;
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media(max-width:380px){
+
+  .hero h1{
+    font-size:38px;
   }
 
-  .chessBoard{
+  .heroBoard{
+    width:125px;
+    height:125px;
+  }
+
+  .gameCard{
+    min-height:315px;
+  }
+
+  .carromScene,
+  .ludoScene,
+  .chessScene{
     width:195px;
     height:195px;
   }
 
-  .poolTable{
-    width:220px;
-    height:125px;
+  .poolScene{
+    width:215px;
+    height:145px;
   }
 
-  .pageSection{
-    padding:
-      25px 13px 120px;
-  }
 }
 
-@media(max-width:380px){
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
 
-  .headerRight{
-    gap:4px;
+@media(prefers-reduced-motion:reduce){
+
+  *,
+  *::before,
+  *::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+    transition-duration:.01ms!important;
   }
 
-  .headerButton{
-    width:36px;
-    height:36px;
-  }
-
-  .carousel h1{
-    font-size:38px;
-  }
-
-  .carouselArt{
-    opacity:.7;
-  }
-
-  .modeGrid{
-    grid-template-columns:1fr;
-  }
 }
 </style>
 </head>
@@ -1639,7 +1774,6 @@ button:active{
 <body>
 
 <div class="app">
-
 
 <!-- =======================================================
      HEADER
@@ -1650,7 +1784,7 @@ button:active{
   <div class="brand">
 
     <div class="brandLogo">
-      ♟
+      GV
     </div>
 
     <div class="brandName">
@@ -1665,14 +1799,17 @@ button:active{
     <button
       class="headerButton"
       id="soundButton"
-      aria-label="Sound">
+      aria-label="Sound"
+      onclick="toggleSound()"
+    >
       ♪
     </button>
 
     <button
-      class="headerButton profileMini"
+      class="headerButton"
+      aria-label="Profile"
       onclick="openPage('profile')"
-      aria-label="Profile">
+    >
       ◉
     </button>
 
@@ -1681,112 +1818,130 @@ button:active{
 </header>
 
 
-
 <!-- =======================================================
-     HOME
+     HERO
 ======================================================= -->
 
-<main
-  class="main"
-  id="homePage">
+<section class="hero">
+
+  <div class="heroGlow"></div>
 
 
-  <!-- HERO -->
+  <div class="heroContent">
 
-  <section class="carousel">
-
-    <div class="carouselContent">
-
-      <div class="badge">
-        ● PREMIUM BOARD GAMING
-      </div>
-
-      <h1>
-        PLAY<br>
-        <span>YOUR</span><br>
-        GAME.
-      </h1>
-
-      <p>
-        Carrom, Ludo, Chess and Pool —
-        all your favourite classic board games
-        inside one modern gaming arena.
-      </p>
-
-      <button
-        class="carouselButton"
-        onclick="document.getElementById('games').scrollIntoView({behavior:'smooth'})">
-        EXPLORE GAMES
-      </button>
-
+    <div class="heroBadge">
+      <i></i>
+      PREMIUM BOARD GAMING
     </div>
 
 
-    <div class="carouselArt"></div>
+    <h1>
+      PLAY<br>
+      <span>WITHOUT</span><br>
+      LIMITS.
+    </h1>
 
-  </section>
 
-
-
-  <!-- GAMES -->
-
-  <div
-    class="sectionHeader"
-    id="games">
-
-    <div>
-      <h2>
-        Choose your game
-      </h2>
-    </div>
-
-    <p>
-      4 GAMES
+    <p class="heroText">
+      Carrom, Ludo, Chess and Pool —
+      your favourite classic board games
+      inside one modern gaming hub.
     </p>
+
+
+    <button
+      class="heroButton"
+      onclick="scrollToGames()"
+    >
+      EXPLORE GAMES
+    </button>
 
   </div>
 
 
+  <!-- CSS CARROM BOARD -->
 
-  <section class="games">
+  <div class="heroBoard">
+
+    <div class="heroBoardInner">
+
+      <div class="heroPocket p1"></div>
+      <div class="heroPocket p2"></div>
+      <div class="heroPocket p3"></div>
+      <div class="heroPocket p4"></div>
+
+      <div class="heroCenter"></div>
+
+      <div class="coin black c1"></div>
+      <div class="coin white c2"></div>
+      <div class="coin black c3"></div>
+      <div class="coin white c4"></div>
+      <div class="coin black c5"></div>
+
+    </div>
+
+  </div>
+
+</section>
 
 
-    <!-- CARROM -->
+<!-- =======================================================
+     GAMES
+======================================================= -->
+
+<section
+  class="section"
+  id="gamesSection"
+>
+
+  <div class="sectionHeader">
+
+    <h2 class="sectionTitle">
+      Choose your game
+    </h2>
+
+    <span class="sectionSub">
+      4 GAMES
+    </span>
+
+  </div>
+
+
+  <div class="gameGrid">
+
+
+    <!-- ===================================================
+         CARROM
+    ==================================================== -->
 
     <article
       class="gameCard"
-      onclick="openGame('Carrom','🪙')">
+      onclick="openGame('Carrom')"
+    >
 
-      <div class="gameVisual carromVisual">
+      <div class="gameVisual">
 
-        <div class="board">
+        <div class="carromScene">
 
-          <div class="center"></div>
+          <div class="carromSurface">
 
-          <span
-            class="coin black"
-            style="left:35%;top:35%">
-          </span>
+            <div class="carromLine outer"></div>
 
-          <span
-            class="coin white"
-            style="left:45%;top:38%">
-          </span>
+            <div class="carromPocket cp1"></div>
+            <div class="carromPocket cp2"></div>
+            <div class="carromPocket cp3"></div>
+            <div class="carromPocket cp4"></div>
 
-          <span
-            class="coin red"
-            style="left:55%;top:48%">
-          </span>
+            <div class="carromCenter"></div>
 
-          <span
-            class="coin white"
-            style="left:62%;top:55%">
-          </span>
+            <div class="carromPiece black cc1"></div>
+            <div class="carromPiece white cc2"></div>
+            <div class="carromPiece black cc3"></div>
+            <div class="carromPiece white cc4"></div>
+            <div class="carromPiece black cc5"></div>
+            <div class="carromPiece white cc6"></div>
 
-          <span
-            class="coin black"
-            style="left:40%;top:60%">
-          </span>
+          </div>
 
         </div>
 
@@ -1795,9 +1950,9 @@ button:active{
 
       <div class="gameContent">
 
-        <div class="gameIcon">
-          🪙
-        </div>
+        <span class="gameTag">
+          CLASSIC
+        </span>
 
         <h3>
           Carrom
@@ -1809,14 +1964,15 @@ button:active{
 
         <div class="gameBottom">
 
-          <span class="playerText">
+          <span class="gamePlayers">
             2–4 PLAYERS
           </span>
 
           <button
             class="playButton"
-            onclick="event.stopPropagation();openGame('Carrom','🪙')">
-            PLAY
+            onclick="event.stopPropagation();openGame('Carrom')"
+          >
+            PLAY NOW
           </button>
 
         </div>
@@ -1826,42 +1982,94 @@ button:active{
     </article>
 
 
-
-    <!-- LUDO -->
+    <!-- ===================================================
+         LUDO
+    ==================================================== -->
 
     <article
       class="gameCard"
-      onclick="openGame('Ludo','🎲')">
+      onclick="openGame('Ludo')"
+    >
 
-      <div class="gameVisual ludoVisual">
+      <div class="gameVisual">
 
-        <div class="ludoBoard">
+        <div class="ludoScene">
 
-          <div class="ludoZone ludoRed">
-            <span class="ludoDot"></span>
+          <div class="ludoCorner ludoRed">
+            <div class="ludoHome"></div>
           </div>
 
-          <div class="ludoZone ludoGreen">
-            <span class="ludoDot"></span>
+          <div class="ludoCorner ludoGreen">
+            <div class="ludoHome"></div>
           </div>
 
-          <div class="ludoZone ludoYellow">
-            <span class="ludoDot"></span>
+          <div class="ludoCorner ludoYellow">
+            <div class="ludoHome"></div>
           </div>
 
-          <div class="ludoZone ludoBlue">
-            <span class="ludoDot"></span>
+          <div class="ludoCorner ludoBlue">
+            <div class="ludoHome"></div>
           </div>
+
+
+          <div class="ludoPath">
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+            <div class="ludoCell"></div>
+
+          </div>
+
 
           <div class="ludoCenter"></div>
-
-          <div class="ludoZone ludoBlue"></div>
-
-          <div class="ludoZone ludoYellow"></div>
-
-          <div class="ludoZone ludoGreen"></div>
-
-          <div class="ludoZone ludoRed"></div>
 
         </div>
 
@@ -1870,28 +2078,29 @@ button:active{
 
       <div class="gameContent">
 
-        <div class="gameIcon">
-          🎲
-        </div>
+        <span class="gameTag">
+          DICE GAME
+        </span>
 
         <h3>
           Ludo
         </h3>
 
         <p>
-          Roll the dice and race home.
+          Roll the dice and race your pieces home.
         </p>
 
         <div class="gameBottom">
 
-          <span class="playerText">
+          <span class="gamePlayers">
             2–4 PLAYERS
           </span>
 
           <button
             class="playButton"
-            onclick="event.stopPropagation();openGame('Ludo','🎲')">
-            PLAY
+            onclick="event.stopPropagation();openGame('Ludo')"
+          >
+            PLAY NOW
           </button>
 
         </div>
@@ -1901,88 +2110,90 @@ button:active{
     </article>
 
 
-
-    <!-- CHESS -->
+    <!-- ===================================================
+         CHESS
+    ==================================================== -->
 
     <article
       class="gameCard"
-      onclick="openGame('Chess','♟')">
+      onclick="openGame('Chess')"
+    >
 
-      <div class="gameVisual chessVisual">
+      <div class="gameVisual">
 
-        <div class="chessBoard">
+        <div class="chessScene">
 
-          <div class="chessSquare chessLight">♜</div>
-          <div class="chessSquare chessDark">♞</div>
-          <div class="chessSquare chessLight">♝</div>
-          <div class="chessSquare chessDark">♛</div>
-          <div class="chessSquare chessLight">♚</div>
-          <div class="chessSquare chessDark">♝</div>
-          <div class="chessSquare chessLight">♞</div>
-          <div class="chessSquare chessDark">♜</div>
+          <div class="chessSquare light">♜</div>
+          <div class="chessSquare dark">♞</div>
+          <div class="chessSquare light">♝</div>
+          <div class="chessSquare dark">♛</div>
+          <div class="chessSquare light">♚</div>
+          <div class="chessSquare dark">♝</div>
+          <div class="chessSquare light">♞</div>
+          <div class="chessSquare dark">♜</div>
 
-          <div class="chessSquare chessDark">♟</div>
-          <div class="chessSquare chessLight">♟</div>
-          <div class="chessSquare chessDark">♟</div>
-          <div class="chessSquare chessLight">♟</div>
-          <div class="chessSquare chessDark">♟</div>
-          <div class="chessSquare chessLight">♟</div>
-          <div class="chessSquare chessDark">♟</div>
-          <div class="chessSquare chessLight">♟</div>
+          <div class="chessSquare dark">♟</div>
+          <div class="chessSquare light">♟</div>
+          <div class="chessSquare dark">♟</div>
+          <div class="chessSquare light">♟</div>
+          <div class="chessSquare dark">♟</div>
+          <div class="chessSquare light">♟</div>
+          <div class="chessSquare dark">♟</div>
+          <div class="chessSquare light">♟</div>
 
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
 
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
 
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
 
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
-          <div class="chessSquare chessDark"></div>
-          <div class="chessSquare chessLight"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
+          <div class="chessSquare dark"></div>
+          <div class="chessSquare light"></div>
 
-          <div class="chessSquare chessLight">♙</div>
-          <div class="chessSquare chessDark">♙</div>
-          <div class="chessSquare chessLight">♙</div>
-          <div class="chessSquare chessDark">♙</div>
-          <div class="chessSquare chessLight">♙</div>
-          <div class="chessSquare chessDark">♙</div>
-          <div class="chessSquare chessLight">♙</div>
-          <div class="chessSquare chessDark">♙</div>
+          <div class="chessSquare light">♙</div>
+          <div class="chessSquare dark">♙</div>
+          <div class="chessSquare light">♙</div>
+          <div class="chessSquare dark">♙</div>
+          <div class="chessSquare light">♙</div>
+          <div class="chessSquare dark">♙</div>
+          <div class="chessSquare light">♙</div>
+          <div class="chessSquare dark">♙</div>
 
-          <div class="chessSquare chessDark">♖</div>
-          <div class="chessSquare chessLight">♘</div>
-          <div class="chessSquare chessDark">♗</div>
-          <div class="chessSquare chessLight">♕</div>
-          <div class="chessSquare chessDark">♔</div>
-          <div class="chessSquare chessLight">♗</div>
-          <div class="chessSquare chessDark">♘</div>
-          <div class="chessSquare chessLight">♖</div>
+          <div class="chessSquare dark">♖</div>
+          <div class="chessSquare light">♘</div>
+          <div class="chessSquare dark">♗</div>
+          <div class="chessSquare light">♕</div>
+          <div class="chessSquare dark">♔</div>
+          <div class="chessSquare light">♗</div>
+          <div class="chessSquare dark">♘</div>
+          <div class="chessSquare light">♖</div>
 
         </div>
 
@@ -1991,9 +2202,9 @@ button:active{
 
       <div class="gameContent">
 
-        <div class="gameIcon">
-          ♟
-        </div>
+        <span class="gameTag">
+          STRATEGY
+        </span>
 
         <h3>
           Chess
@@ -2005,14 +2216,15 @@ button:active{
 
         <div class="gameBottom">
 
-          <span class="playerText">
+          <span class="gamePlayers">
             2 PLAYERS
           </span>
 
           <button
             class="playButton"
-            onclick="event.stopPropagation();openGame('Chess','♟')">
-            PLAY
+            onclick="event.stopPropagation();openGame('Chess')"
+          >
+            PLAY NOW
           </button>
 
         </div>
@@ -2022,27 +2234,36 @@ button:active{
     </article>
 
 
-
-    <!-- POOL -->
+    <!-- ===================================================
+         POOL
+    ==================================================== -->
 
     <article
       class="gameCard"
-      onclick="openGame('8-Ball Pool','🎱')">
+      onclick="openGame('8-Ball Pool')"
+    >
 
-      <div class="gameVisual poolVisual">
+      <div class="gameVisual">
 
-        <div class="poolTable">
+        <div class="poolScene">
 
           <div class="poolCloth">
 
-            <span class="pocket tl"></span>
-            <span class="pocket tr"></span>
-            <span class="pocket bl"></span>
-            <span class="pocket br"></span>
+            <div class="poolPocket pp1"></div>
+            <div class="poolPocket pp2"></div>
+            <div class="poolPocket pp3"></div>
+            <div class="poolPocket pp4"></div>
 
-            <span class="poolBall one"></span>
-            <span class="poolBall two"></span>
-            <span class="poolBall three"></span>
+
+            <div class="poolBall ballWhite pb1"></div>
+
+            <div class="poolBall ballYellow pb2"></div>
+
+            <div class="poolBall ballRed pb3"></div>
+
+            <div class="poolBall ballBlue pb4"></div>
+
+            <div class="poolBall ball8 pb5"></div>
 
           </div>
 
@@ -2053,9 +2274,9 @@ button:active{
 
       <div class="gameContent">
 
-        <div class="gameIcon">
-          🎱
-        </div>
+        <span class="gameTag">
+          POOL TABLE
+        </span>
 
         <h3>
           8-Ball Pool
@@ -2067,14 +2288,15 @@ button:active{
 
         <div class="gameBottom">
 
-          <span class="playerText">
+          <span class="gamePlayers">
             2 PLAYERS
           </span>
 
           <button
             class="playButton"
-            onclick="event.stopPropagation();openGame('8-Ball Pool','🎱')">
-            PLAY
+            onclick="event.stopPropagation();openGame('8-Ball Pool')"
+          >
+            PLAY NOW
           </button>
 
         </div>
@@ -2084,208 +2306,9 @@ button:active{
     </article>
 
 
-  </section>
-
-</main>
-
-
-
-<!-- =======================================================
-     REWARDS PAGE
-======================================================= -->
-
-<section
-  class="pageSection"
-  id="rewardsPage">
-
-  <h1 class="pageTitle">
-    Rewards
-  </h1>
-
-  <p class="pageSubtitle">
-    Earn rewards by playing and completing challenges.
-  </p>
-
-  <div class="rewardHero">
-
-    <div class="rewardCoin">
-      ✦
-    </div>
-
-    <h2>
-      Your Rewards
-    </h2>
-
-    <p>
-      Reward system will be connected
-      with the game economy later.
-    </p>
-
   </div>
 
 </section>
-
-
-
-<!-- =======================================================
-     RANKING PAGE
-======================================================= -->
-
-<section
-  class="pageSection"
-  id="rankingPage">
-
-  <h1 class="pageTitle">
-    Ranking
-  </h1>
-
-  <p class="pageSubtitle">
-    See how you compare with other players.
-  </p>
-
-  <div class="rankList">
-
-    <div class="rankItem">
-
-      <div class="rankNumber">
-        1
-      </div>
-
-      <div class="rankAvatar">
-        ♟
-      </div>
-
-      <div class="rankInfo">
-        <strong>
-          Master Player
-        </strong>
-
-        <small>
-          Champion
-        </small>
-      </div>
-
-      <div class="rankScore">
-        9,840
-      </div>
-
-    </div>
-
-
-    <div class="rankItem">
-
-      <div class="rankNumber">
-        2
-      </div>
-
-      <div class="rankAvatar">
-        ◉
-      </div>
-
-      <div class="rankInfo">
-        <strong>
-          Board King
-        </strong>
-
-        <small>
-          Elite
-        </small>
-      </div>
-
-      <div class="rankScore">
-        8,920
-      </div>
-
-    </div>
-
-
-    <div class="rankItem">
-
-      <div class="rankNumber">
-        3
-      </div>
-
-      <div class="rankAvatar">
-        ◆
-      </div>
-
-      <div class="rankInfo">
-        <strong>
-          Game Pro
-        </strong>
-
-        <small>
-          Expert
-        </small>
-      </div>
-
-      <div class="rankScore">
-        8,510
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- =======================================================
-     PROFILE PAGE
-======================================================= -->
-
-<section
-  class="pageSection"
-  id="profilePage">
-
-  <h1 class="pageTitle">
-    Profile
-  </h1>
-
-  <p class="pageSubtitle">
-    Your GameVault player profile.
-  </p>
-
-
-  <div class="profileCard">
-
-    <div class="profileAvatar">
-      ◉
-    </div>
-
-    <h2>
-      Guest Player
-    </h2>
-
-    <p>
-      Create an account later to save your progress.
-    </p>
-
-
-    <div class="profileStats">
-
-      <div class="stat">
-        <strong>0</strong>
-        <span>GAMES</span>
-      </div>
-
-      <div class="stat">
-        <strong>0</strong>
-        <span>WINS</span>
-      </div>
-
-      <div class="stat">
-        <strong>0</strong>
-        <span>POINTS</span>
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
 
 
 <!-- =======================================================
@@ -2296,203 +2319,97 @@ button:active{
 
   <button
     class="navItem active"
-    data-page="home"
-    onclick="openPage('home')">
+    id="navHome"
+    onclick="setNav(this);goHome()"
+  >
 
     <span class="navIcon">
       ⌂
     </span>
 
-    <span class="navLabel">
-      Home
-    </span>
+    Home
 
   </button>
 
 
   <button
     class="navItem"
-    data-page="games"
-    onclick="openPage('games')">
+    onclick="setNav(this);openPage('rewards')"
+  >
 
     <span class="navIcon">
-      ◈
+      ◆
     </span>
 
-    <span class="navLabel">
-      Games
-    </span>
+    Rewards
 
   </button>
 
 
   <button
     class="navItem"
-    data-page="rewards"
-    onclick="openPage('rewards')">
-
-    <span class="navIcon">
-      ✦
-    </span>
-
-    <span class="navLabel">
-      Rewards
-    </span>
-
-  </button>
-
-
-  <button
-    class="navItem"
-    data-page="ranking"
-    onclick="openPage('ranking')">
+    onclick="setNav(this);openPage('ranking')"
+  >
 
     <span class="navIcon">
       ♛
     </span>
 
-    <span class="navLabel">
-      Ranking
-    </span>
+    Ranking
 
   </button>
 
 
   <button
     class="navItem"
-    data-page="profile"
-    onclick="openPage('profile')">
+    onclick="setNav(this);openPage('profile')"
+  >
 
     <span class="navIcon">
       ◉
     </span>
 
-    <span class="navLabel">
-      Profile
-    </span>
+    Profile
 
   </button>
 
 </nav>
 
 
-
 <!-- =======================================================
-     GAME MODAL
+     OVERLAY PAGE
 ======================================================= -->
 
-<div
-  class="modal"
-  id="gameModal">
+<section
+  class="pageOverlay"
+  id="pageOverlay"
+>
 
-  <div class="modalBox">
+  <header class="overlayHeader">
 
-    <div class="modalTop">
+    <button
+      class="backButton"
+      onclick="closePage()"
+    >
+      ←
+    </button>
 
-      <div>
+    <h2
+      class="overlayTitle"
+      id="overlayTitle"
+    >
+      Page
+    </h2>
 
-        <h2 id="modalTitle">
-          Game
-        </h2>
-
-        <p class="modalDescription">
-          Choose how you want to play.
-        </p>
-
-      </div>
-
-      <button
-        class="closeButton"
-        onclick="closeGameModal()">
-        ×
-      </button>
-
-    </div>
+  </header>
 
 
-    <div class="modeGrid">
+  <div
+    class="overlayBody"
+    id="overlayBody"
+  ></div>
 
-      <button
-        class="modeButton"
-        onclick="selectMode('Local Multiplayer')">
-
-        <div class="modeIcon">
-          👥
-        </div>
-
-        <strong>
-          Local Multiplayer
-        </strong>
-
-        <small>
-          Play with friends on one device
-        </small>
-
-      </button>
-
-
-      <button
-        class="modeButton"
-        onclick="selectMode('AI Mode')">
-
-        <div class="modeIcon">
-          🤖
-        </div>
-
-        <strong>
-          AI Mode
-        </strong>
-
-        <small>
-          Challenge the computer
-        </small>
-
-      </button>
-
-
-      <button
-        class="modeButton"
-        onclick="selectMode('Online Multiplayer')">
-
-        <div class="modeIcon">
-          🌐
-        </div>
-
-        <strong>
-          Online Multiplayer
-        </strong>
-
-        <small>
-          Online system coming later
-        </small>
-
-      </button>
-
-
-      <button
-        class="modeButton"
-        onclick="selectMode('Private Room')">
-
-        <div class="modeIcon">
-          🔒
-        </div>
-
-        <strong>
-          Private Room
-        </strong>
-
-        <small>
-          Invite your friends
-        </small>
-
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
+</section>
 
 
 <!-- =======================================================
@@ -2501,180 +2418,114 @@ button:active{
 
 <div
   class="toast"
-  id="toast">
-</div>
-
+  id="toast"
+></div>
 
 
 <script>
 
 /* =========================================================
-   STATE
+   GAMEVAULT APP LOGIC
 ========================================================= */
 
-let currentPage = "home";
-
 let soundEnabled = true;
-
-let selectedGame = "";
 
 
 /* =========================================================
    SOUND
 ========================================================= */
 
-const soundButton =
-  document.getElementById("soundButton");
+let audioContext = null;
 
-soundButton.addEventListener("click",()=>{
+function playSound(){
 
-  soundEnabled = !soundEnabled;
+  if(!soundEnabled){
+    return;
+  }
 
-  soundButton.textContent =
-    soundEnabled ? "♪" : "×";
+  try{
 
-  showToast(
+    if(!audioContext){
+
+      audioContext =
+        new (
+          window.AudioContext ||
+          window.webkitAudioContext
+        )();
+
+    }
+
+    const oscillator =
+      audioContext.createOscillator();
+
+    const gain =
+      audioContext.createGain();
+
+    oscillator.connect(gain);
+
+    gain.connect(
+      audioContext.destination
+    );
+
+    oscillator.frequency.value = 420;
+
+    oscillator.type = "sine";
+
+    const now =
+      audioContext.currentTime;
+
+    gain.gain.setValueAtTime(
+      .0001,
+      now
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      .08,
+      now + .01
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      .0001,
+      now + .11
+    );
+
+    oscillator.start(now);
+
+    oscillator.stop(
+      now + .12
+    );
+
+  }catch(error){
+
+    /* Audio is optional. */
+
+  }
+
+}
+
+
+/* =========================================================
+   SOUND BUTTON
+========================================================= */
+
+function toggleSound(){
+
+  soundEnabled =
+    !soundEnabled;
+
+  const button =
+    document.getElementById(
+      "soundButton"
+    );
+
+  button.textContent =
     soundEnabled
-      ? "Sound enabled"
-      : "Sound muted"
-  );
+      ? "♪"
+      : "×";
 
-});
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-function openPage(page){
-
-  currentPage = page;
-
-  const home =
-    document.getElementById("homePage");
-
-  const rewards =
-    document.getElementById("rewardsPage");
-
-  const ranking =
-    document.getElementById("rankingPage");
-
-  const profile =
-    document.getElementById("profilePage");
-
-
-  home.style.display =
-    page === "home" ||
-    page === "games"
-      ? "block"
-      : "none";
-
-
-  rewards.classList.toggle(
-    "active",
-    page === "rewards"
-  );
-
-  ranking.classList.toggle(
-    "active",
-    page === "ranking"
-  );
-
-  profile.classList.toggle(
-    "active",
-    page === "profile"
-  );
-
-
-  document
-    .querySelectorAll(".navItem")
-    .forEach(item=>{
-
-      item.classList.toggle(
-        "active",
-        item.dataset.page === page
-      );
-
-    });
-
-
-  if(page === "games"){
-
-    home.style.display = "block";
-
-    setTimeout(()=>{
-
-      document
-        .getElementById("games")
-        .scrollIntoView({
-          behavior:"smooth"
-        });
-
-    },50);
-
+  if(soundEnabled){
+    playSound();
   }
-
-
-  if(page !== "games"){
-
-    window.scrollTo({
-      top:0,
-      behavior:"smooth"
-    });
-
-  }
-
-}
-
-
-/* =========================================================
-   GAME OPEN
-========================================================= */
-
-function openGame(name,icon){
-
-  selectedGame = name;
-
-  document
-    .getElementById("modalTitle")
-    .textContent =
-      icon + "  " + name;
-
-
-  document
-    .getElementById("gameModal")
-    .classList.add("show");
-
-}
-
-
-/* =========================================================
-   CLOSE MODAL
-========================================================= */
-
-function closeGameModal(){
-
-  document
-    .getElementById("gameModal")
-    .classList.remove("show");
-
-}
-
-
-/* =========================================================
-   MODE SELECT
-========================================================= */
-
-function selectMode(mode){
-
-  closeGameModal();
-
-  showToast(
-    selectedGame +
-    " — " +
-    mode +
-    " selected"
-  );
 
 }
 
@@ -2683,59 +2534,435 @@ function selectMode(mode){
    TOAST
 ========================================================= */
 
+let toastTimer = null;
+
 function showToast(message){
 
   const toast =
-    document.getElementById("toast");
+    document.getElementById(
+      "toast"
+    );
 
-  toast.textContent = message;
+  toast.textContent =
+    message;
 
-  toast.classList.add("show");
-
-  clearTimeout(
-    showToast.timer
+  toast.classList.add(
+    "show"
   );
 
-  showToast.timer =
-    setTimeout(()=>{
+  clearTimeout(
+    toastTimer
+  );
 
-      toast.classList.remove("show");
+  toastTimer =
+    setTimeout(
+      function(){
 
-    },2200);
+        toast.classList.remove(
+          "show"
+        );
+
+      },
+      2200
+    );
 
 }
 
 
 /* =========================================================
-   CLOSE MODAL ON BACKDROP
+   SCROLL TO GAMES
 ========================================================= */
 
-document
-  .getElementById("gameModal")
-  .addEventListener("click",(event)=>{
+function scrollToGames(){
 
-    if(
-      event.target.id === "gameModal"
-    ){
+  const section =
+    document.getElementById(
+      "gamesSection"
+    );
 
-      closeGameModal();
-
-    }
-
+  section.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
   });
+
+  playSound();
+
+}
 
 
 /* =========================================================
-   ESCAPE KEY
+   HOME
+========================================================= */
+
+function goHome(){
+
+  closePage();
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function setNav(button){
+
+  document
+    .querySelectorAll(
+      ".navItem"
+    )
+    .forEach(
+      function(item){
+
+        item.classList.remove(
+          "active"
+        );
+
+      }
+    );
+
+  button.classList.add(
+    "active"
+  );
+
+  playSound();
+
+}
+
+
+/* =========================================================
+   OPEN GAME
+========================================================= */
+
+function openGame(gameName){
+
+  playSound();
+
+  showToast(
+    gameName +
+    " selected"
+  );
+
+  /*
+    Future phase:
+
+    Carrom:
+      - 2 players
+      - 3 players
+      - 4 players
+      - AI
+      - Offline
+
+    Ludo:
+      - Local
+      - AI
+      - Multiplayer
+
+    Chess:
+      - Local
+      - AI
+      - Multiplayer
+
+    Pool:
+      - Local
+      - AI
+      - Multiplayer
+  */
+
+}
+
+
+/* =========================================================
+   OPEN PAGE
+========================================================= */
+
+function openPage(type){
+
+  const overlay =
+    document.getElementById(
+      "pageOverlay"
+    );
+
+  const title =
+    document.getElementById(
+      "overlayTitle"
+    );
+
+  const body =
+    document.getElementById(
+      "overlayBody"
+    );
+
+
+  if(type === "rewards"){
+
+    title.textContent =
+      "Rewards";
+
+    body.innerHTML = `
+
+      <div class="infoCard">
+
+        <h2>
+          Daily Rewards
+        </h2>
+
+        <p>
+          Play games and complete
+          daily activities to unlock
+          rewards.
+        </p>
+
+        <div class="rewardRow">
+
+          <div class="rewardIcon">
+            ◆
+          </div>
+
+          <div class="rewardText">
+
+            <strong>
+              Daily Login
+            </strong>
+
+            <span>
+              Login every day
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="rewardRow">
+
+          <div class="rewardIcon">
+            ★
+          </div>
+
+          <div class="rewardText">
+
+            <strong>
+              First Win
+            </strong>
+
+            <span>
+              Win your first game
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="rewardRow">
+
+          <div class="rewardIcon">
+            ♛
+          </div>
+
+          <div class="rewardText">
+
+            <strong>
+              Champion
+            </strong>
+
+            <span>
+              Reach the required score
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  if(type === "ranking"){
+
+    title.textContent =
+      "Ranking";
+
+    body.innerHTML = `
+
+      <div class="infoCard">
+
+        <h2>
+          Leaderboard
+        </h2>
+
+        <p>
+          Your global ranking system
+          will appear here once player
+          accounts and scores are connected.
+        </p>
+
+        <div class="rewardRow">
+
+          <div class="rewardIcon">
+            1
+          </div>
+
+          <div class="rewardText">
+
+            <strong>
+              Top Player
+            </strong>
+
+            <span>
+              Leaderboard coming soon
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="rewardRow">
+
+          <div class="rewardIcon">
+            2
+          </div>
+
+          <div class="rewardText">
+
+            <strong>
+              Challenger
+            </strong>
+
+            <span>
+              Compete to climb the ranking
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  if(type === "profile"){
+
+    title.textContent =
+      "Profile";
+
+    body.innerHTML = `
+
+      <div class="infoCard">
+
+        <h2>
+          Player Profile
+        </h2>
+
+        <p>
+          Your profile, statistics,
+          achievements and game history
+          will be connected here.
+        </p>
+
+        <div class="rewardRow">
+
+          <div class="rewardIcon">
+            ◉
+          </div>
+
+          <div class="rewardText">
+
+            <strong>
+              Guest Player
+            </strong>
+
+            <span>
+              Account system will be added later
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="rewardRow">
+
+          <div class="rewardIcon">
+            ♟
+          </div>
+
+          <div class="rewardText">
+
+            <strong>
+              Games Played
+            </strong>
+
+            <span>
+              0
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  overlay.classList.add(
+    "show"
+  );
+
+  document.body.style.overflow =
+    "hidden";
+
+}
+
+
+/* =========================================================
+   CLOSE PAGE
+========================================================= */
+
+function closePage(){
+
+  const overlay =
+    document.getElementById(
+      "pageOverlay"
+    );
+
+  overlay.classList.remove(
+    "show"
+  );
+
+  document.body.style.overflow =
+    "";
+
+}
+
+
+/* =========================================================
+   KEYBOARD
 ========================================================= */
 
 document.addEventListener(
   "keydown",
-  event=>{
+  function(event){
 
-    if(event.key === "Escape"){
+    if(
+      event.key === "Escape"
+    ){
 
-      closeGameModal();
+      closePage();
 
     }
 
@@ -2744,14 +2971,25 @@ document.addEventListener(
 
 
 /* =========================================================
-   INITIAL STATE
+   INITIALIZATION
 ========================================================= */
 
-openPage("home");
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    /*
+      Home screen is ready.
+      Game engines will be integrated
+      in the next development phase.
+    */
+
+  }
+);
 
 </script>
 
 </div>
 
 </body>
-  </html>
+</html>
