@@ -1,162 +1,1087 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GameVault - Classic Board Games Hub</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#07110e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>GameVault — Premium Board Games</title>
+
+<style>
+:root{
+  --bg:#06100d;
+  --panel:rgba(15,29,24,.78);
+  --panel2:#10251e;
+  --line:rgba(255,255,255,.10);
+  --text:#f4f8f5;
+  --muted:#91a49c;
+  --green:#baff4b;
+  --green2:#76d52f;
+  --gold:#ffd45a;
+  --danger:#ff5f61;
+  --shadow:0 25px 70px rgba(0,0,0,.38);
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  min-height:100vh;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 50% -15%,rgba(61,143,91,.22),transparent 38%),
+    radial-gradient(circle at 0 70%,rgba(47,94,65,.12),transparent 30%),
+    var(--bg);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  overflow-x:hidden;
+}
+
+button{
+  font:inherit;
+  cursor:pointer;
+}
+
+button:active{
+  transform:scale(.97);
+}
+
+img{
+  max-width:100%;
+}
+
+.hidden{
+  display:none!important;
+}
+
+/* ---------- HEADER ---------- */
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  height:74px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  background:rgba(5,15,12,.78);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(22px);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+.brandMark{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  color:#142515;
+  font-size:22px;
+  background:linear-gradient(145deg,#d5ff65,#75d832);
+  box-shadow:0 8px 28px rgba(146,235,60,.18);
+}
+
+.brandText{
+  font-size:21px;
+  font-weight:900;
+  letter-spacing:-.7px;
+}
+
+.brandText span{
+  color:var(--green);
+}
+
+.headerActions{
+  display:flex;
+  gap:9px;
+}
+
+.iconButton{
+  width:42px;
+  height:42px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  color:white;
+  background:rgba(255,255,255,.055);
+}
+
+/* ---------- HOME ---------- */
+
+.home{
+  max-width:1180px;
+  margin:auto;
+  padding:35px 20px 110px;
+}
+
+.hero{
+  position:relative;
+  min-height:300px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:32px;
+  padding:48px;
+  display:flex;
+  align-items:flex-end;
+  background:
+    linear-gradient(90deg,rgba(3,15,10,.96),rgba(3,15,10,.67),rgba(3,15,10,.22)),
+    url("https://images.unsplash.com/photo-1606167668584-78701c57f13d?auto=format&fit=crop&w=1800&q=85")
+    center/cover;
+  box-shadow:var(--shadow);
+}
+
+.hero:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(0deg,rgba(0,0,0,.45),transparent 60%);
+}
+
+.heroContent{
+  position:relative;
+  z-index:2;
+  max-width:650px;
+}
+
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 11px;
+  border-radius:999px;
+  background:rgba(186,255,75,.12);
+  color:var(--green);
+  border:1px solid rgba(186,255,75,.22);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.8px;
+  margin-bottom:14px;
+}
+
+.hero h1{
+  font-size:clamp(42px,7vw,78px);
+  line-height:.88;
+  letter-spacing:-4px;
+}
+
+.hero p{
+  max-width:560px;
+  color:#bdcbc5;
+  line-height:1.6;
+  margin-top:18px;
+}
+
+.sectionHead{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  margin:42px 0 17px;
+}
+
+.sectionHead h2{
+  font-size:25px;
+  letter-spacing:-1px;
+}
+
+.sectionHead span{
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* ---------- GAME GRID ---------- */
+
+.gameGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+}
+
+.gameCard{
+  position:relative;
+  min-height:350px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:27px;
+  background:#0c1d17;
+  box-shadow:0 15px 45px rgba(0,0,0,.25);
+  transition:.35s ease;
+}
+
+.gameCard:hover{
+  transform:translateY(-6px);
+  border-color:rgba(186,255,75,.3);
+  box-shadow:0 25px 60px rgba(0,0,0,.38);
+}
+
+.gameCardImage{
+  position:absolute;
+  inset:0;
+  background-position:center;
+  background-size:cover;
+  transition:.5s ease;
+}
+
+.gameCard:hover .gameCardImage{
+  transform:scale(1.05);
+}
+
+.gameCard:nth-child(1) .gameCardImage{
+  background-image:url("https://images.unsplash.com/photo-1606503153255-59d8b8b8f0d5?auto=format&fit=crop&w=1200&q=85");
+}
+
+.gameCard:nth-child(2) .gameCardImage{
+  background-image:url("https://images.unsplash.com/photo-1585504198199-20277593b94f?auto=format&fit=crop&w=1200&q=85");
+}
+
+.gameCard:nth-child(3) .gameCardImage{
+  background-image:url("https://images.unsplash.com/photo-1586165368502-1bad197a6461?auto=format&fit=crop&w=1200&q=85");
+}
+
+.gameCard:nth-child(4) .gameCardImage{
+  background-image:url("https://images.unsplash.com/photo-1611171711912-0b9e4f9e3f3b?auto=format&fit=crop&w=1200&q=85");
+}
+
+.gameCardOverlay{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.88) 88%),
+    linear-gradient(90deg,rgba(0,0,0,.18),transparent);
+}
+
+.gameCardContent{
+  position:absolute;
+  z-index:2;
+  left:21px;
+  right:21px;
+  bottom:20px;
+}
+
+.gameIcon{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  background:rgba(0,0,0,.38);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(12px);
+  font-size:24px;
+  margin-bottom:13px;
+}
+
+.gameCard h3{
+  font-size:29px;
+  letter-spacing:-1.3px;
+}
+
+.gameCard p{
+  margin-top:5px;
+  color:#c3d0ca;
+  font-size:13px;
+}
+
+.cardBottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:17px;
+}
+
+.players{
+  color:#c0ccc7;
+  font-size:11px;
+}
+
+.playButton{
+  border:0;
+  border-radius:12px;
+  padding:11px 17px;
+  color:#142510;
+  background:linear-gradient(135deg,#d2ff64,#83d83b);
+  font-size:12px;
+  font-weight:950;
+}
+
+/* ---------- BOTTOM NAV ---------- */
+
+.bottomNav{
+  position:fixed;
+  left:50%;
+  bottom:0;
+  z-index:90;
+  width:min(700px,100%);
+  height:72px;
+  transform:translateX(-50%);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  padding:6px 12px;
+  background:rgba(5,16,12,.9);
+  border:1px solid var(--line);
+  border-bottom:0;
+  backdrop-filter:blur(24px);
+}
+
+.navItem{
+  width:25%;
+  border:0;
+  color:#71837b;
+  background:transparent;
+  font-size:10px;
+  font-weight:800;
+}
+
+.navItem .navIcon{
+  display:block;
+  font-size:20px;
+  margin-bottom:3px;
+}
+
+.navItem.active{
+  color:var(--green);
+}
+
+/* ---------- GAME MODAL ---------- */
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(14px);
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modalBox{
+  width:min(520px,100%);
+  max-height:92vh;
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:27px;
+  padding:25px;
+  background:#0b2119;
+  box-shadow:0 30px 100px rgba(0,0,0,.55);
+}
+
+.modalTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:22px;
+}
+
+.modalTop h2{
+  font-size:26px;
+}
+
+.closeButton{
+  width:38px;
+  height:38px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:white;
+  background:rgba(255,255,255,.06);
+}
+
+.playerGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+
+.playerButton{
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:15px 5px;
+  color:white;
+  background:rgba(255,255,255,.05);
+  font-weight:850;
+}
+
+.playerButton.selected{
+  color:#122510;
+  background:var(--green);
+  border-color:var(--green);
+}
+
+.primary{
+  width:100%;
+  border:0;
+  border-radius:15px;
+  padding:15px;
+  margin-top:18px;
+  color:#132410;
+  background:linear-gradient(135deg,#d1ff65,#7bd532);
+  font-weight:950;
+}
+
+/* ---------- GAME AREA ---------- */
+
+.gameView{
+  position:fixed;
+  inset:0;
+  z-index:180;
+  display:none;
+  flex-direction:column;
+  background:#06100d;
+}
+
+.gameView.show{
+  display:flex;
+}
+
+.gameHeader{
+  flex:0 0 68px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  background:rgba(6,18,13,.94);
+  border-bottom:1px solid var(--line);
+}
+
+.gameHeaderTitle{
+  text-align:center;
+}
+
+.gameHeaderTitle strong{
+  display:block;
+  font-size:15px;
+}
+
+.gameHeaderTitle small{
+  color:var(--green);
+  font-size:10px;
+}
+
+.gameBack,
+.gameRules{
+  width:42px;
+  height:42px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  color:white;
+  background:rgba(255,255,255,.06);
+}
+
+.gameBody{
+  flex:1;
+  overflow:auto;
+  padding:15px 15px 30px;
+}
+
+.gameBoard{
+  width:min(760px,100%);
+  margin:auto;
+}
+
+.gameScorebar{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.scoreChip{
+  padding:8px 12px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:rgba(255,255,255,.05);
+  color:#bdcbc5;
+  font-size:11px;
+}
+
+.scoreChip.active{
+  color:var(--green);
+  border-color:rgba(186,255,75,.3);
+}
+
+.canvasWrap{
+  width:min(700px,100%);
+  aspect-ratio:1;
+  margin:auto;
+  border-radius:25px;
+  padding:10px;
+  background:linear-gradient(145deg,#75451e,#c28b48,#583218);
+  box-shadow:0 25px 65px rgba(0,0,0,.45);
+}
+
+.gameCanvas{
+  width:100%;
+  height:100%;
+  display:block;
+  border-radius:17px;
+  touch-action:none;
+}
+
+.gameHint{
+  text-align:center;
+  color:#788d84;
+  font-size:12px;
+  margin:12px auto;
+}
+
+.gameActions{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+}
+
+.actionButton{
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:11px 16px;
+  color:white;
+  background:rgba(255,255,255,.055);
+}
+
+/* ---------- DICE ---------- */
+
+.diceArea{
+  min-height:400px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  border:1px solid var(--line);
+  border-radius:25px;
+  padding:30px;
+  background:
+    radial-gradient(circle at 50% 35%,rgba(186,255,75,.08),transparent 35%),
+    #0a1d16;
+}
+
+.dice{
+  width:120px;
+  height:120px;
+  display:grid;
+  place-items:center;
+  border-radius:25px;
+  color:#172713;
+  background:linear-gradient(145deg,#fff,#d9e3da);
+  box-shadow:0 20px 45px rgba(0,0,0,.4);
+  font-size:65px;
+  font-weight:900;
+  transition:.25s;
+}
+
+.dice.roll{
+  animation:diceRoll .5s ease;
+}
+
+@keyframes diceRoll{
+  0%{transform:rotate(0) scale(1)}
+  30%{transform:rotate(15deg) scale(1.08)}
+  60%{transform:rotate(-15deg) scale(.92)}
+  100%{transform:rotate(0) scale(1)}
+}
+
+.diceArea h2{
+  margin-top:25px;
+}
+
+.diceArea p{
+  margin-top:7px;
+  color:var(--muted);
+}
+
+/* ---------- CHESS ---------- */
+
+.chessBoard{
+  width:min(700px,100%);
+  aspect-ratio:1;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  overflow:hidden;
+  border:7px solid #6e4827;
+  border-radius:13px;
+  box-shadow:0 25px 65px rgba(0,0,0,.45);
+}
+
+.square{
+  position:relative;
+  display:grid;
+  place-items:center;
+  font-size:clamp(25px,7vw,58px);
+  user-select:none;
+  cursor:pointer;
+}
+
+.square.light{
+  background:#e8c78d;
+}
+
+.square.dark{
+  background:#7a4b29;
+}
+
+.square.selected{
+  box-shadow:inset 0 0 0 5px var(--green);
+}
+
+.square.move{
+  box-shadow:inset 0 0 0 4px rgba(186,255,75,.45);
+}
+
+.chessPiece{
+  filter:drop-shadow(0 3px 2px rgba(0,0,0,.35));
+}
+
+.chessInfo{
+  text-align:center;
+  color:var(--muted);
+  margin:12px;
+  font-size:12px;
+}
+
+/* ---------- POOL ---------- */
+
+.poolArea{
+  width:min(760px,100%);
+  margin:auto;
+  padding:25px 10px;
+  border-radius:25px;
+  background:#0a1e16;
+  border:1px solid var(--line);
+}
+
+.poolCanvasWrap{
+  width:100%;
+  aspect-ratio:1.75;
+  padding:28px;
+  border-radius:20px;
+  background:#61371c;
+}
+
+.poolCanvas{
+  width:100%;
+  height:100%;
+  display:block;
+  border-radius:10px;
+  touch-action:none;
+}
+
+.powerBar{
+  width:min(600px,100%);
+  height:10px;
+  margin:15px auto;
+  border-radius:99px;
+  overflow:hidden;
+  background:#1c3329;
+}
+
+.powerFill{
+  width:50%;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#77d633,#d9ff68);
+}
+
+/* ---------- TOAST ---------- */
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:88px;
+  z-index:400;
+  transform:translate(-50%,20px);
+  opacity:0;
+  pointer-events:none;
+  padding:12px 16px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#10271f;
+  color:white;
+  font-size:12px;
+  transition:.25s;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@media(max-width:700px){
+  .header{
+    height:65px;
+    padding:0 15px;
+  }
+
+  .home{
+    padding:20px 13px 100px;
+  }
+
+  .hero{
+    min-height:280px;
+    padding:28px 22px;
+    border-radius:25px;
+  }
+
+  .hero h1{
+    letter-spacing:-2.5px;
+  }
+
+  .gameGrid{
+    grid-template-columns:1fr;
+  }
+
+  .gameCard{
+    min-height:300px;
+  }
+
+  .modalBox{
+    padding:20px;
+  }
+
+  .canvasWrap{
+    padding:6px;
+    border-radius:18px;
+  }
+
+  .poolCanvasWrap{
+    padding:17px;
+  }
+}
+</style>
 </head>
+
 <body>
 
-  <div class="app-container">
-
-    <!-- 1. HOME TAB -->
-    <section id="tab-home" class="tab-screen active">
-      <header class="app-header">
-        <div class="brand">
-          <i class="fa-solid fa-vault gold-icon"></i>
-          <span class="brand-title">GameVault</span>
-        </div>
-        <div class="user-pill">
-          <i class="fa-solid fa-coins gold-icon"></i>
-          <span id="user-coins">1,200</span>
-        </div>
-      </header>
-
-      <main class="home-content">
-        <!-- Hero Banner -->
-        <div class="hero-card">
-          <img src="https://images.unsplash.com/photo-1611996575749-79a3a250f948?q=80&w=600&auto=format&fit=crop" alt="Board Games Banner" class="hero-bg">
-          <div class="hero-overlay"></div>
-          <div class="hero-info">
-            <h2>PLAY WITHOUT LIMITS</h2>
-            <p>Classic board games redesigned for modern mobile experience.</p>
-          </div>
-        </div>
-
-        <div class="section-title">Select Your Game</div>
-
-        <!-- Professional Game Cards Grid -->
-        <div class="games-grid">
-          
-          <!-- Carrom Card -->
-          <div class="game-card" onclick="switchTab('carrom')">
-            <div class="card-image-wrap">
-              <img src="https://images.unsplash.com/photo-1606168094336-48f205276929?q=80&w=500&auto=format&fit=crop" alt="Carrom">
-            </div>
-            <div class="card-details">
-              <h3>Carrom Vault</h3>
-              <p>2-4 Players • Local & AI</p>
-            </div>
-            <div class="play-btn-gold"><i class="fa-solid fa-play"></i></div>
-          </div>
-
-          <!-- Ludo Card -->
-          <div class="game-card" onclick="switchTab('ludo')">
-            <div class="card-image-wrap">
-              <img src="https://images.unsplash.com/photo-1580541832626-2a7131ee809f?q=80&w=500&auto=format&fit=crop" alt="Ludo">
-            </div>
-            <div class="card-details">
-              <h3>Ludo Vault</h3>
-              <p>2-4 Players • Classic Fun</p>
-            </div>
-            <div class="play-btn-gold"><i class="fa-solid fa-play"></i></div>
-          </div>
-
-          <!-- Chess Card -->
-          <div class="game-card" onclick="switchTab('chess')">
-            <div class="card-image-wrap">
-              <img src="https://images.unsplash.com/photo-1529699211952-734e80c4d42b?q=80&w=500&auto=format&fit=crop" alt="Chess">
-            </div>
-            <div class="card-details">
-              <h3>Chess Vault</h3>
-              <p>2 Players • Pure Strategy</p>
-            </div>
-            <div class="play-btn-gold"><i class="fa-solid fa-play"></i></div>
-          </div>
-
-          <!-- Pool Card -->
-          <div class="game-card" onclick="switchTab('pool')">
-            <div class="card-image-wrap">
-              <img src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=500&auto=format&fit=crop" alt="Pool">
-            </div>
-            <div class="card-details">
-              <h3>8-Ball Pool</h3>
-              <p>2 Players • Table Control</p>
-            </div>
-            <div class="play-btn-gold"><i class="fa-solid fa-play"></i></div>
-          </div>
-
-        </div>
-      </main>
-    </section>
-
-    <!-- 2. CARROM TAB -->
-    <section id="tab-carrom" class="tab-screen">
-      <div class="game-header">
-        <h2><i class="fa-solid fa-circle-dot gold-icon"></i> Carrom Vault</h2>
-        <div class="game-rewards-badge"><i class="fa-solid fa-trophy"></i> Rewards</div>
-      </div>
-      <div class="game-placeholder">
-        <p>Carrom Board setup coming in the next step!</p>
-      </div>
-    </section>
-
-    <!-- 3. CHESS TAB -->
-    <section id="tab-chess" class="tab-screen">
-      <div class="game-header">
-        <h2><i class="fa-solid fa-chess-knight gold-icon"></i> Chess Vault</h2>
-        <div class="game-rewards-badge"><i class="fa-solid fa-trophy"></i> Rewards</div>
-      </div>
-      <div class="game-placeholder"><p>Chess interface coming soon...</p></div>
-    </section>
-
-    <!-- 4. POOL TAB -->
-    <section id="tab-pool" class="tab-screen">
-      <div class="game-header">
-        <h2><i class="fa-solid fa-bowling-ball gold-icon"></i> Pool Vault</h2>
-        <div class="game-rewards-badge"><i class="fa-solid fa-trophy"></i> Rewards</div>
-      </div>
-      <div class="game-placeholder"><p>Pool interface coming soon...</p></div>
-    </section>
-
-    <!-- 5. LUDO TAB -->
-    <section id="tab-ludo" class="tab-screen">
-      <div class="game-header">
-        <h2><i class="fa-solid fa-dice gold-icon"></i> Ludo Vault</h2>
-        <div class="game-rewards-badge"><i class="fa-solid fa-trophy"></i> Rewards</div>
-      </div>
-      <div class="game-placeholder"><p>Ludo interface coming soon...</p></div>
-    </section>
-
-    <!-- NEW WHATSAPP/GAMING APP BOTTOM NAVIGATION -->
-    <nav class="bottom-nav">
-      <button class="nav-btn active" onclick="switchTab('home')">
-        <i class="fa-solid fa-house"></i>
-        <span>Home</span>
-      </button>
-      <button class="nav-btn" onclick="switchTab('carrom')">
-        <i class="fa-solid fa-circle-dot"></i>
-        <span>Carrom</span>
-      </button>
-      <button class="nav-btn" onclick="switchTab('chess')">
-        <i class="fa-solid fa-chess-knight"></i>
-        <span>Chess</span>
-      </button>
-      <button class="nav-btn" onclick="switchTab('pool')">
-        <i class="fa-solid fa-bowling-ball"></i>
-        <span>Pool</span>
-      </button>
-      <button class="nav-btn" onclick="switchTab('ludo')">
-        <i class="fa-solid fa-dice"></i>
-        <span>Ludo</span>
-      </button>
-    </nav>
-
+<header class="header">
+  <div class="brand">
+    <div class="brandMark">♟</div>
+    <div class="brandText">Game<span>Vault</span></div>
   </div>
 
-  <script src="script.js"></script>
-</body>
-</html>
+  <div class="headerActions">
+    <button class="iconButton" id="soundToggle" aria-label="Toggle sound">🔊</button>
+    <button class="iconButton" onclick="showToast('Profile system ready for the backend phase.')">◉</button>
+  </div>
+</header>
 
+
+<main class="home" id="home">
+
+  <section class="hero">
+    <div class="heroContent">
+      <span class="eyebrow">● PREMIUM BOARD GAMING</span>
+      <h1>PLAY<br>WITHOUT<br>LIMITS.</h1>
+      <p>
+        Four timeless games. One modern arena.
+        Challenge yourself, master the board and play your way.
+      </p>
+    </div>
+  </section>
+
+
+  <div class="sectionHead">
+    <h2>Choose your game</h2>
+    <span>4 GAMES</span>
+  </div>
+
+
+  <section class="gameGrid">
+
+    <article class="gameCard">
+      <div class="gameCardImage"></div>
+      <div class="gameCardOverlay"></div>
+
+      <div class="gameCardContent">
+        <div class="gameIcon">🪙</div>
+        <h3>Carrom</h3>
+        <p>Precision, angles and perfect strikes.</p>
+
+        <div class="cardBottom">
+          <span class="players">2–4 PLAYERS</span>
+          <button class="playButton" onclick="openGameSetup('carrom')">
+            PLAY NOW
+          </button>
+        </div>
+      </div>
+    </article>
+
+
+    <article class="gameCard">
+      <div class="gameCardImage"></div>
+      <div class="gameCardOverlay"></div>
+
+      <div class="gameCardContent">
+        <div class="gameIcon">🎲</div>
+        <h3>Ludo</h3>
+        <p>Roll the dice and race your pieces home.</p>
+
+        <div class="cardBottom">
+          <span class="players">2–4 PLAYERS</span>
+          <button class="playButton" onclick="openGameSetup('ludo')">
+            PLAY NOW
+          </button>
+        </div>
+      </div>
+    </article>
+
+
+    <article class="gameCard">
+      <div class="gameCardImage"></div>
+      <div class="gameCardOverlay"></div>
+
+      <div class="gameCardContent">
+        <div class="gameIcon">♟</div>
+        <h3>Chess</h3>
+        <p>Think ahead. Control the board.</p>
+
+        <div class="cardBottom">
+          <span class="players">2 PLAYERS</span>
+          <button class="playButton" onclick="openGameSetup('chess')">
+            PLAY NOW
+          </button>
+        </div>
+      </div>
+    </article>
+
+
+    <article class="gameCard">
+      <div class="gameCardImage"></div>
+      <div class="gameCardOverlay"></div>
+
+      <div class="gameCardContent">
+        <div class="gameIcon">🎱</div>
+        <h3>8-Ball Pool</h3>
+        <p>Line up your shot. Control the table.</p>
+
+        <div class="cardBottom">
+          <span class="players">2 PLAYERS</span>
+          <button class="playButton" onclick="openGameSetup('pool')">
+            PLAY NOW
+          </button>
+        </div>
+      </div>
+    </article>
+
+  </section>
+</main>
+
+
+<nav class="bottomNav">
+  <button class="navItem active" onclick="goHome()">
+    <span class="navIcon">⌂</span>
+    Home
+  </button>
+
+  <button class="navItem" onclick="showToast('Games tab')">
+    <span class="navIcon">♟</span>
+    Games
+  </button>
+
+  <button class="navItem" onclick="showToast('Rankings will connect to the backend later.')">
+    <span class="navIcon">🏆</span>
+    Rank
+  </button>
+
+  <button class="navItem" onclick="showToast('Profile system ready.')">
+    <span class="navIcon">◉</span>
+    Profile
+  </button>
+</nav>
+
+
+<!-- GAME SETUP -->
+
+<div class="modal" id="setupModal">
+  <div class="modalBox">
+
+    <div class="modalTop">
+      <h2 id="setupTitle">Game</h2>
+      <button class="closeButton" onclick="closeSetup()">×</button>
+    </div>
+
+    <p style="color:var(--muted);margin-bottom:18px">
+      Choose the local player count.
+    </p>
+
+    <div class="playerGrid">
+      <button class="playerButton selected" onclick="choosePlayers(2,this)">
+        2 PLAYERS
+      </button>
+
+      <button class="playerButton" onclick="choosePlayers(3,this)">
+        3 PLAYERS
+      </button>
+
+      <button class="playerButton" onclick="choosePlayers(4,this)">
+        4 PLAYERS
+      </button>
+    </div>
+
+    <button class="primary" onclick="launchSelectedGame()">
+      START GAME
+    </button>
+
+  </div>
+</div>
+
+
+<!-- GAME VIEW -->
+
+<section class="gameView" id="gameView">
+
+  <header class="gameHeader">
+
+    <button class="gameBack" onclick="closeGame()">←</button>
+
+    <div class="gameHeaderTitle">
+      <strong id="gameTitle">GAME</strong>
+      <small id="gameTurn">PLAYER 1</small>
+    </div>
+
+    <button class="gameRules" onclick="showRules()">?</button>
+
+  </header>
+
+  <div class="gameBody" id="gameBody"></div>
+
+</section>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+/* =========================================================
+   CORE APP
+========================================================= */
+
+let selectedGame = "carrom";
+let selectedPlayers = 2;
+let soundEnabled = true;
+
+const AudioContextClass =
+  window.AudioContext || window.webkitAudioContext;
+
+let audioCtx = null;
+
+function sound(type="click"){
+  if(!soundEnabled) return;
+
+  try{
+    if(!audioCtx) audioCtx = new AudioContextClass();
+
+    if(audioCtx.state === "suspended"){
+      audioCtx.resume();
+    }
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+
+    const frequencies = {
+      click:420,
+      hit:120,
+      pocket:680,
+      dice:260,
+      move:310,
+      win:780
+    };
+
+    osc.frequency.value = frequencies[type] || 400;
+    osc.type = type === "hit" ? "triangle" : "sine";
+
+    gain.gain.setValueAtTime(.0001,now);
+    gain.gain.exponentialRampToValueAtTime(.12,now+.01);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+.13);
+
+    osc.start(now);
+    osc.stop(now+.14);
+  }catch(e){}
+}
+
+document.getElementById("soundToggle").onclick=()=>{
+  soundEnabled=!soundEnabled;
+  document.getElementById("soundToggle").textContent =
+    soundEnabled ? "🔊" : "🔇";
+
+  sound("click");
+};
+
+function showToast(text){
+  const el=document.getElementById("toast");
+  el.textContent=text;
+  el.classList.add("show");
+
+  clearTimeout(showToast.timer);
+
+  showToast.timer=setTimeout(()=>{
+    el.classList.remove("show");
+  },2200);
+
+  sound("click");
+}
+
+function goHome(){
+  closeGame();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+
+/* =========================================================
+   SETUP
+========================================================= */
+
+function openGameSetup(game){
+  selectedGame=game;
+
+  const names={
+    carrom:"Carrom",
+    ludo:"Ludo",
+    chess:"Chess",
+    pool:"8-Ball Pool"
+  };
+
+  document.getElementById("setupTitle").textContent=names[game];
+
+  document.getElementById("setupModal").classList.add("show");
+
+  selectedPlayers=2;
+
+  document.querySelectorAll(".playerButton").forEach((b,i)=>{
+    b.classList.toggle("selected",i===0);
+  });
+
+  sound("click");
+}
+
+function closeSetup(){
+  document.getElementById("setupModal").classList.remove("show");
+}
+
+function choosePlayers(n,button){
+
+  if(selectedGame
