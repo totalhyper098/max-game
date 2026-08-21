@@ -2,1085 +2,1086 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#061b14">
-<title>GameVault</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#07110e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>GameVault — Premium Board Games</title>
 
 <style>
-*{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
+:root{
+  --bg:#06100d;
+  --panel:rgba(15,29,24,.78);
+  --panel2:#10251e;
+  --line:rgba(255,255,255,.10);
+  --text:#f4f8f5;
+  --muted:#91a49c;
+  --green:#baff4b;
+  --green2:#76d52f;
+  --gold:#ffd45a;
+  --danger:#ff5f61;
+  --shadow:0 25px 70px rgba(0,0,0,.38);
 }
 
-html,body{
-    margin:0;
-    width:100%;
-    min-height:100%;
-    background:#061b14;
-    color:#fff;
-    font-family:Arial,Helvetica,sans-serif;
-    overflow-x:hidden;
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html{
+  scroll-behavior:smooth;
 }
 
 body{
-    background:
-        radial-gradient(circle at 50% -10%,rgba(28,130,82,.35),transparent 40%),
-        linear-gradient(180deg,#06251a,#03130e);
+  min-height:100vh;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 50% -15%,rgba(61,143,91,.22),transparent 38%),
+    radial-gradient(circle at 0 70%,rgba(47,94,65,.12),transparent 30%),
+    var(--bg);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  overflow-x:hidden;
 }
 
 button{
-    font:inherit;
-    border:0;
-    cursor:pointer;
+  font:inherit;
+  cursor:pointer;
 }
 
-.app{
-    width:100%;
-    max-width:650px;
-    margin:auto;
-    min-height:100vh;
-    padding-bottom:100px;
+button:active{
+  transform:scale(.97);
 }
 
-/* HEADER */
+img{
+  max-width:100%;
+}
+
+.hidden{
+  display:none!important;
+}
+
+/* ---------- HEADER ---------- */
 
 .header{
-    position:sticky;
-    top:0;
-    z-index:20;
-    padding:18px 18px 14px;
-    background:rgba(4,25,18,.82);
-    backdrop-filter:blur(18px);
-    border-bottom:1px solid rgba(255,255,255,.08);
+  position:sticky;
+  top:0;
+  z-index:100;
+  height:74px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  background:rgba(5,15,12,.78);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(22px);
 }
 
-.logo{
-    display:flex;
-    align-items:center;
-    gap:10px;
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
 }
 
-.logoIcon{
-    width:42px;
-    height:42px;
-    border-radius:13px;
-    display:grid;
-    place-items:center;
-    background:linear-gradient(145deg,#ffd84a,#ff9e20);
-    color:#183b20;
-    font-size:24px;
-    box-shadow:0 5px 20px rgba(255,170,40,.25);
+.brandMark{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  color:#142515;
+  font-size:22px;
+  background:linear-gradient(145deg,#d5ff65,#75d832);
+  box-shadow:0 8px 28px rgba(146,235,60,.18);
 }
 
-.logoText{
-    font-size:22px;
-    font-weight:900;
-    letter-spacing:.5px;
+.brandText{
+  font-size:21px;
+  font-weight:900;
+  letter-spacing:-.7px;
 }
 
-.logoText span{
-    color:#b9ff49;
+.brandText span{
+  color:var(--green);
 }
 
-/* HERO */
+.headerActions{
+  display:flex;
+  gap:9px;
+}
+
+.iconButton{
+  width:42px;
+  height:42px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  color:white;
+  background:rgba(255,255,255,.055);
+}
+
+/* ---------- HOME ---------- */
+
+.home{
+  max-width:1180px;
+  margin:auto;
+  padding:35px 20px 110px;
+}
 
 .hero{
-    padding:25px 18px 10px;
+  position:relative;
+  min-height:300px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:32px;
+  padding:48px;
+  display:flex;
+  align-items:flex-end;
+  background:
+    linear-gradient(90deg,rgba(3,15,10,.96),rgba(3,15,10,.67),rgba(3,15,10,.22)),
+    url("https://images.unsplash.com/photo-1606167668584-78701c57f13d?auto=format&fit=crop&w=1800&q=85")
+    center/cover;
+  box-shadow:var(--shadow);
+}
+
+.hero:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(0deg,rgba(0,0,0,.45),transparent 60%);
+}
+
+.heroContent{
+  position:relative;
+  z-index:2;
+  max-width:650px;
+}
+
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 11px;
+  border-radius:999px;
+  background:rgba(186,255,75,.12);
+  color:var(--green);
+  border:1px solid rgba(186,255,75,.22);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.8px;
+  margin-bottom:14px;
 }
 
 .hero h1{
-    margin:0;
-    font-size:32px;
-    line-height:1.05;
+  font-size:clamp(42px,7vw,78px);
+  line-height:.88;
+  letter-spacing:-4px;
 }
 
 .hero p{
-    margin:8px 0 0;
-    color:#9fb3aa;
-    font-size:15px;
+  max-width:560px;
+  color:#bdcbc5;
+  line-height:1.6;
+  margin-top:18px;
 }
 
-/* GAME CARDS */
+.sectionHead{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  margin:42px 0 17px;
+}
 
-.games{
-    padding:14px 18px;
-    display:flex;
-    flex-direction:column;
-    gap:15px;
+.sectionHead h2{
+  font-size:25px;
+  letter-spacing:-1px;
+}
+
+.sectionHead span{
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* ---------- GAME GRID ---------- */
+
+.gameGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
 }
 
 .gameCard{
-    position:relative;
-    min-height:190px;
-    border-radius:24px;
-    overflow:hidden;
-    border:1px solid rgba(255,255,255,.12);
-    background:#0b3325;
-    box-shadow:0 12px 35px rgba(0,0,0,.25);
-    transition:.2s;
+  position:relative;
+  min-height:350px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:27px;
+  background:#0c1d17;
+  box-shadow:0 15px 45px rgba(0,0,0,.25);
+  transition:.35s ease;
 }
 
-.gameCard:active{
-    transform:scale(.98);
+.gameCard:hover{
+  transform:translateY(-6px);
+  border-color:rgba(186,255,75,.3);
+  box-shadow:0 25px 60px rgba(0,0,0,.38);
 }
 
-.gameImage{
-    position:absolute;
-    inset:0;
-    background-size:cover;
-    background-position:center;
+.gameCardImage{
+  position:absolute;
+  inset:0;
+  background-position:center;
+  background-size:cover;
+  transition:.5s ease;
 }
 
-.carromImage{
-    background:
-        radial-gradient(circle at 50% 45%,#d8b477 0 9%,transparent 10%),
-        linear-gradient(135deg,#765025,#c8995d 45%,#5a351c);
+.gameCard:hover .gameCardImage{
+  transform:scale(1.05);
 }
 
-.ludoImage{
-    background:
-        linear-gradient(135deg,rgba(20,150,70,.25),rgba(0,0,0,.2)),
-        linear-gradient(45deg,#d94c35 25%,#f0d84b 25% 50%,#42a85f 50% 75%,#4382ca 75%);
+.gameCard:nth-child(1) .gameCardImage{
+  background-image:url("https://images.unsplash.com/photo-1606503153255-59d8b8b8f0d5?auto=format&fit=crop&w=1200&q=85");
 }
 
-.chessImage{
-    background:
-        radial-gradient(circle at 50% 40%,rgba(255,190,80,.3),transparent 25%),
-        linear-gradient(135deg,#171b20,#604322);
+.gameCard:nth-child(2) .gameCardImage{
+  background-image:url("https://images.unsplash.com/photo-1585504198199-20277593b94f?auto=format&fit=crop&w=1200&q=85");
 }
 
-.poolImage{
-    background:
-        radial-gradient(circle at 50% 45%,#16865d,transparent 35%),
-        linear-gradient(135deg,#06251c,#064b34);
+.gameCard:nth-child(3) .gameCardImage{
+  background-image:url("https://images.unsplash.com/photo-1586165368502-1bad197a6461?auto=format&fit=crop&w=1200&q=85");
 }
 
-.gameOverlay{
-    position:absolute;
-    inset:0;
-    background:linear-gradient(90deg,rgba(0,0,0,.88),rgba(0,0,0,.3),rgba(0,0,0,.55));
+.gameCard:nth-child(4) .gameCardImage{
+  background-image:url("https://images.unsplash.com/photo-1611171711912-0b9e4f9e3f3b?auto=format&fit=crop&w=1200&q=85");
 }
 
-.gameContent{
-    position:absolute;
-    left:20px;
-    right:20px;
-    bottom:18px;
+.gameCardOverlay{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.88) 88%),
+    linear-gradient(90deg,rgba(0,0,0,.18),transparent);
 }
 
-.badge{
-    display:inline-block;
-    padding:5px 9px;
-    border-radius:8px;
-    background:#b9ff49;
-    color:#17321e;
-    font-size:10px;
-    font-weight:900;
-    margin-bottom:8px;
+.gameCardContent{
+  position:absolute;
+  z-index:2;
+  left:21px;
+  right:21px;
+  bottom:20px;
 }
 
-.gameContent h2{
-    margin:0;
-    font-size:27px;
+.gameIcon{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  background:rgba(0,0,0,.38);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(12px);
+  font-size:24px;
+  margin-bottom:13px;
 }
 
-.gameContent p{
-    margin:5px 0 12px;
-    color:#d3ded9;
-    font-size:13px;
+.gameCard h3{
+  font-size:29px;
+  letter-spacing:-1.3px;
 }
 
-.playBtn{
-    padding:10px 18px;
-    border-radius:12px;
-    background:linear-gradient(135deg,#baff4b,#72c72c);
-    color:#123318;
-    font-weight:900;
+.gameCard p{
+  margin-top:5px;
+  color:#c3d0ca;
+  font-size:13px;
 }
 
-/* BOTTOM NAV */
+.cardBottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:17px;
+}
+
+.players{
+  color:#c0ccc7;
+  font-size:11px;
+}
+
+.playButton{
+  border:0;
+  border-radius:12px;
+  padding:11px 17px;
+  color:#142510;
+  background:linear-gradient(135deg,#d2ff64,#83d83b);
+  font-size:12px;
+  font-weight:950;
+}
+
+/* ---------- BOTTOM NAV ---------- */
 
 .bottomNav{
-    position:fixed;
-    bottom:0;
-    left:50%;
-    transform:translateX(-50%);
-    width:min(650px,100%);
-    height:78px;
-    z-index:50;
-    display:flex;
-    justify-content:space-around;
-    align-items:center;
-    background:rgba(3,20,14,.92);
-    backdrop-filter:blur(20px);
-    border-top:1px solid rgba(255,255,255,.1);
+  position:fixed;
+  left:50%;
+  bottom:0;
+  z-index:90;
+  width:min(700px,100%);
+  height:72px;
+  transform:translateX(-50%);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  padding:6px 12px;
+  background:rgba(5,16,12,.9);
+  border:1px solid var(--line);
+  border-bottom:0;
+  backdrop-filter:blur(24px);
 }
 
-.navBtn{
-    background:none;
-    color:#71847c;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:5px;
-    font-size:11px;
-    font-weight:700;
+.navItem{
+  width:25%;
+  border:0;
+  color:#71837b;
+  background:transparent;
+  font-size:10px;
+  font-weight:800;
 }
 
-.navBtn.active{
-    color:#baff4b;
+.navItem .navIcon{
+  display:block;
+  font-size:20px;
+  margin-bottom:3px;
 }
 
-.navIcon{
-    font-size:23px;
+.navItem.active{
+  color:var(--green);
 }
 
-/* MODAL */
+/* ---------- GAME MODAL ---------- */
 
 .modal{
-    position:fixed;
-    inset:0;
-    z-index:100;
-    display:none;
-    align-items:flex-end;
-    justify-content:center;
-    background:rgba(0,0,0,.65);
-    backdrop-filter:blur(8px);
+  position:fixed;
+  inset:0;
+  z-index:200;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(14px);
 }
 
 .modal.show{
-    display:flex;
+  display:flex;
 }
 
 .modalBox{
-    width:min(650px,100%);
-    background:#0b2b20;
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:28px 28px 0 0;
-    padding:25px 20px 30px;
+  width:min(520px,100%);
+  max-height:92vh;
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:27px;
+  padding:25px;
+  background:#0b2119;
+  box-shadow:0 30px 100px rgba(0,0,0,.55);
 }
 
-.modalBox h2{
-    margin:0 0 7px;
+.modalTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:22px;
 }
 
-.modalBox p{
-    color:#91a59c;
-    margin:0 0 20px;
+.modalTop h2{
+  font-size:26px;
 }
 
-.playerOptions{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:10px;
+.closeButton{
+  width:38px;
+  height:38px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:white;
+  background:rgba(255,255,255,.06);
 }
 
-.playerBtn{
-    padding:18px 8px;
-    border-radius:15px;
-    background:#123c2c;
-    color:white;
-    border:1px solid rgba(255,255,255,.08);
-    font-weight:800;
+.playerGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
 }
 
-.playerBtn.selected{
-    background:#baff4b;
-    color:#15351d;
+.playerButton{
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:15px 5px;
+  color:white;
+  background:rgba(255,255,255,.05);
+  font-weight:850;
 }
 
-.startGame{
-    width:100%;
-    margin-top:18px;
-    padding:16px;
-    border-radius:16px;
-    background:linear-gradient(135deg,#c2ff51,#6fc62d);
-    color:#16351b;
-    font-weight:900;
-    font-size:17px;
+.playerButton.selected{
+  color:#122510;
+  background:var(--green);
+  border-color:var(--green);
 }
 
-/* GAME SCREEN */
+.primary{
+  width:100%;
+  border:0;
+  border-radius:15px;
+  padding:15px;
+  margin-top:18px;
+  color:#132410;
+  background:linear-gradient(135deg,#d1ff65,#7bd532);
+  font-weight:950;
+}
 
-#gameScreen{
-    display:none;
-    min-height:100vh;
-    background:#061b14;
+/* ---------- GAME AREA ---------- */
+
+.gameView{
+  position:fixed;
+  inset:0;
+  z-index:180;
+  display:none;
+  flex-direction:column;
+  background:#06100d;
+}
+
+.gameView.show{
+  display:flex;
 }
 
 .gameHeader{
+  flex:0 0 68px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  background:rgba(6,18,13,.94);
+  border-bottom:1px solid var(--line);
+}
+
+.gameHeaderTitle{
+  text-align:center;
+}
+
+.gameHeaderTitle strong{
+  display:block;
+  font-size:15px;
+}
+
+.gameHeaderTitle small{
+  color:var(--green);
+  font-size:10px;
+}
+
+.gameBack,
+.gameRules{
+  width:42px;
+  height:42px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  color:white;
+  background:rgba(255,255,255,.06);
+}
+
+.gameBody{
+  flex:1;
+  overflow:auto;
+  padding:15px 15px 30px;
+}
+
+.gameBoard{
+  width:min(760px,100%);
+  margin:auto;
+}
+
+.gameScorebar{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.scoreChip{
+  padding:8px 12px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:rgba(255,255,255,.05);
+  color:#bdcbc5;
+  font-size:11px;
+}
+
+.scoreChip.active{
+  color:var(--green);
+  border-color:rgba(186,255,75,.3);
+}
+
+.canvasWrap{
+  width:min(700px,100%);
+  aspect-ratio:1;
+  margin:auto;
+  border-radius:25px;
+  padding:10px;
+  background:linear-gradient(145deg,#75451e,#c28b48,#583218);
+  box-shadow:0 25px 65px rgba(0,0,0,.45);
+}
+
+.gameCanvas{
+  width:100%;
+  height:100%;
+  display:block;
+  border-radius:17px;
+  touch-action:none;
+}
+
+.gameHint{
+  text-align:center;
+  color:#788d84;
+  font-size:12px;
+  margin:12px auto;
+}
+
+.gameActions{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+}
+
+.actionButton{
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:11px 16px;
+  color:white;
+  background:rgba(255,255,255,.055);
+}
+
+/* ---------- DICE ---------- */
+
+.diceArea{
+  min-height:400px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  border:1px solid var(--line);
+  border-radius:25px;
+  padding:30px;
+  background:
+    radial-gradient(circle at 50% 35%,rgba(186,255,75,.08),transparent 35%),
+    #0a1d16;
+}
+
+.dice{
+  width:120px;
+  height:120px;
+  display:grid;
+  place-items:center;
+  border-radius:25px;
+  color:#172713;
+  background:linear-gradient(145deg,#fff,#d9e3da);
+  box-shadow:0 20px 45px rgba(0,0,0,.4);
+  font-size:65px;
+  font-weight:900;
+  transition:.25s;
+}
+
+.dice.roll{
+  animation:diceRoll .5s ease;
+}
+
+@keyframes diceRoll{
+  0%{transform:rotate(0) scale(1)}
+  30%{transform:rotate(15deg) scale(1.08)}
+  60%{transform:rotate(-15deg) scale(.92)}
+  100%{transform:rotate(0) scale(1)}
+}
+
+.diceArea h2{
+  margin-top:25px;
+}
+
+.diceArea p{
+  margin-top:7px;
+  color:var(--muted);
+}
+
+/* ---------- CHESS ---------- */
+
+.chessBoard{
+  width:min(700px,100%);
+  aspect-ratio:1;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  overflow:hidden;
+  border:7px solid #6e4827;
+  border-radius:13px;
+  box-shadow:0 25px 65px rgba(0,0,0,.45);
+}
+
+.square{
+  position:relative;
+  display:grid;
+  place-items:center;
+  font-size:clamp(25px,7vw,58px);
+  user-select:none;
+  cursor:pointer;
+}
+
+.square.light{
+  background:#e8c78d;
+}
+
+.square.dark{
+  background:#7a4b29;
+}
+
+.square.selected{
+  box-shadow:inset 0 0 0 5px var(--green);
+}
+
+.square.move{
+  box-shadow:inset 0 0 0 4px rgba(186,255,75,.45);
+}
+
+.chessPiece{
+  filter:drop-shadow(0 3px 2px rgba(0,0,0,.35));
+}
+
+.chessInfo{
+  text-align:center;
+  color:var(--muted);
+  margin:12px;
+  font-size:12px;
+}
+
+/* ---------- POOL ---------- */
+
+.poolArea{
+  width:min(760px,100%);
+  margin:auto;
+  padding:25px 10px;
+  border-radius:25px;
+  background:#0a1e16;
+  border:1px solid var(--line);
+}
+
+.poolCanvasWrap{
+  width:100%;
+  aspect-ratio:1.75;
+  padding:28px;
+  border-radius:20px;
+  background:#61371c;
+}
+
+.poolCanvas{
+  width:100%;
+  height:100%;
+  display:block;
+  border-radius:10px;
+  touch-action:none;
+}
+
+.powerBar{
+  width:min(600px,100%);
+  height:10px;
+  margin:15px auto;
+  border-radius:99px;
+  overflow:hidden;
+  background:#1c3329;
+}
+
+.powerFill{
+  width:50%;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#77d633,#d9ff68);
+}
+
+/* ---------- TOAST ---------- */
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:88px;
+  z-index:400;
+  transform:translate(-50%,20px);
+  opacity:0;
+  pointer-events:none;
+  padding:12px 16px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#10271f;
+  color:white;
+  font-size:12px;
+  transition:.25s;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@media(max-width:700px){
+  .header{
     height:65px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 16px;
-    background:rgba(3,25,17,.9);
-    border-bottom:1px solid rgba(255,255,255,.08);
-}
+    padding:0 15px;
+  }
 
-.backBtn{
-    background:#123c2c;
-    color:white;
-    width:42px;
-    height:42px;
-    border-radius:13px;
-}
+  .home{
+    padding:20px 13px 100px;
+  }
 
-.turn{
-    padding:9px 14px;
-    border-radius:12px;
-    background:#123c2c;
-    color:#caff68;
-    font-size:13px;
-    font-weight:800;
-}
+  .hero{
+    min-height:280px;
+    padding:28px 22px;
+    border-radius:25px;
+  }
 
-#boardWrap{
-    width:min(94vw,620px);
-    margin:20px auto;
-    position:relative;
-    aspect-ratio:1;
-    border-radius:24px;
-    padding:18px;
-    background:
-        linear-gradient(145deg,#7c4a23,#c08a4c,#70401e);
-    box-shadow:
-        0 20px 50px rgba(0,0,0,.5),
-        inset 0 0 0 3px #4a2915;
-}
+  .hero h1{
+    letter-spacing:-2.5px;
+  }
 
-#board{
-    width:100%;
-    height:100%;
-    display:block;
-    border-radius:13px;
-    background:#e2c18a;
-    touch-action:none;
-}
+  .gameGrid{
+    grid-template-columns:1fr;
+  }
 
-.instructions{
-    text-align:center;
-    color:#9fb5aa;
-    font-size:13px;
-    padding:0 20px 20px;
-}
+  .gameCard{
+    min-height:300px;
+  }
 
-.gameControls{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    padding:0 20px 30px;
-}
+  .modalBox{
+    padding:20px;
+  }
 
-.controlBtn{
-    padding:13px 20px;
-    border-radius:14px;
-    background:#123c2c;
-    color:white;
-    font-weight:800;
-}
+  .canvasWrap{
+    padding:6px;
+    border-radius:18px;
+  }
 
-.scorePanel{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    flex-wrap:wrap;
-    padding:0 15px 15px;
-}
-
-.score{
-    padding:9px 14px;
-    border-radius:12px;
-    background:#0d3023;
-    border:1px solid rgba(255,255,255,.07);
-    font-size:12px;
-}
-
-/* HIDDEN */
-
-.hidden{
-    display:none!important;
-}
-
-@media(min-width:700px){
-    .games{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-    }
+  .poolCanvasWrap{
+    padding:17px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div id="lobby" class="app">
+<header class="header">
+  <div class="brand">
+    <div class="brandMark">♟</div>
+    <div class="brandText">Game<span>Vault</span></div>
+  </div>
 
-    <header class="header">
-        <div class="logo">
-            <div class="logoIcon">♟</div>
-            <div class="logoText">Game<span>Vault</span></div>
+  <div class="headerActions">
+    <button class="iconButton" id="soundToggle" aria-label="Toggle sound">🔊</button>
+    <button class="iconButton" onclick="showToast('Profile system ready for the backend phase.')">◉</button>
+  </div>
+</header>
+
+
+<main class="home" id="home">
+
+  <section class="hero">
+    <div class="heroContent">
+      <span class="eyebrow">● PREMIUM BOARD GAMING</span>
+      <h1>PLAY<br>WITHOUT<br>LIMITS.</h1>
+      <p>
+        Four timeless games. One modern arena.
+        Challenge yourself, master the board and play your way.
+      </p>
+    </div>
+  </section>
+
+
+  <div class="sectionHead">
+    <h2>Choose your game</h2>
+    <span>4 GAMES</span>
+  </div>
+
+
+  <section class="gameGrid">
+
+    <article class="gameCard">
+      <div class="gameCardImage"></div>
+      <div class="gameCardOverlay"></div>
+
+      <div class="gameCardContent">
+        <div class="gameIcon">🪙</div>
+        <h3>Carrom</h3>
+        <p>Precision, angles and perfect strikes.</p>
+
+        <div class="cardBottom">
+          <span class="players">2–4 PLAYERS</span>
+          <button class="playButton" onclick="openGameSetup('carrom')">
+            PLAY NOW
+          </button>
         </div>
-    </header>
+      </div>
+    </article>
 
-    <section class="hero">
-        <h1>Choose your game</h1>
-        <p>Classic games. Modern battles.</p>
-    </section>
 
-    <main class="games">
+    <article class="gameCard">
+      <div class="gameCardImage"></div>
+      <div class="gameCardOverlay"></div>
 
-        <article class="gameCard" onclick="openPlayers('Carrom')">
-            <div class="gameImage carromImage"></div>
-            <div class="gameOverlay"></div>
-            <div class="gameContent">
-                <span class="badge">PLAYABLE NOW</span>
-                <h2>Carrom</h2>
-                <p>Strike, aim and pocket the queen.</p>
-                <button class="playBtn">PLAY</button>
-            </div>
-        </article>
+      <div class="gameCardContent">
+        <div class="gameIcon">🎲</div>
+        <h3>Ludo</h3>
+        <p>Roll the dice and race your pieces home.</p>
 
-        <article class="gameCard" onclick="openPlayers('Ludo')">
-            <div class="gameImage ludoImage"></div>
-            <div class="gameOverlay"></div>
-            <div class="gameContent">
-                <span class="badge">2–4 PLAYERS</span>
-                <h2>Ludo</h2>
-                <p>Roll the dice. Race your rivals.</p>
-                <button class="playBtn">PLAY</button>
-            </div>
-        </article>
+        <div class="cardBottom">
+          <span class="players">2–4 PLAYERS</span>
+          <button class="playButton" onclick="openGameSetup('ludo')">
+            PLAY NOW
+          </button>
+        </div>
+      </div>
+    </article>
 
-        <article class="gameCard" onclick="openPlayers('Chess')">
-            <div class="gameImage chessImage"></div>
-            <div class="gameOverlay"></div>
-            <div class="gameContent">
-                <span class="badge">2 PLAYERS</span>
-                <h2>Chess</h2>
-                <p>Classic strategy. One board.</p>
-                <button class="playBtn">PLAY</button>
-            </div>
-        </article>
 
-        <article class="gameCard" onclick="openPlayers('Pool')">
-            <div class="gameImage poolImage"></div>
-            <div class="gameOverlay"></div>
-            <div class="gameContent">
-                <span class="badge">2 PLAYERS</span>
-                <h2>Pool</h2>
-                <p>Line up the shot. Sink the balls.</p>
-                <button class="playBtn">PLAY</button>
-            </div>
-        </article>
+    <article class="gameCard">
+      <div class="gameCardImage"></div>
+      <div class="gameCardOverlay"></div>
 
-    </main>
+      <div class="gameCardContent">
+        <div class="gameIcon">♟</div>
+        <h3>Chess</h3>
+        <p>Think ahead. Control the board.</p>
 
-    <nav class="bottomNav">
-        <button class="navBtn active" onclick="showHome()">
-            <span class="navIcon">⌂</span>Home
-        </button>
-        <button class="navBtn">
-            <span class="navIcon">♟</span>Games
-        </button>
-        <button class="navBtn">
-            <span class="navIcon">🏆</span>Rank
-        </button>
-        <button class="navBtn">
-            <span class="navIcon">👤</span>Profile
-        </button>
-    </nav>
+        <div class="cardBottom">
+          <span class="players">2 PLAYERS</span>
+          <button class="playButton" onclick="openGameSetup('chess')">
+            PLAY NOW
+          </button>
+        </div>
+      </div>
+    </article>
+
+
+    <article class="gameCard">
+      <div class="gameCardImage"></div>
+      <div class="gameCardOverlay"></div>
+
+      <div class="gameCardContent">
+        <div class="gameIcon">🎱</div>
+        <h3>8-Ball Pool</h3>
+        <p>Line up your shot. Control the table.</p>
+
+        <div class="cardBottom">
+          <span class="players">2 PLAYERS</span>
+          <button class="playButton" onclick="openGameSetup('pool')">
+            PLAY NOW
+          </button>
+        </div>
+      </div>
+    </article>
+
+  </section>
+</main>
+
+
+<nav class="bottomNav">
+  <button class="navItem active" onclick="goHome()">
+    <span class="navIcon">⌂</span>
+    Home
+  </button>
+
+  <button class="navItem" onclick="showToast('Games tab')">
+    <span class="navIcon">♟</span>
+    Games
+  </button>
+
+  <button class="navItem" onclick="showToast('Rankings will connect to the backend later.')">
+    <span class="navIcon">🏆</span>
+    Rank
+  </button>
+
+  <button class="navItem" onclick="showToast('Profile system ready.')">
+    <span class="navIcon">◉</span>
+    Profile
+  </button>
+</nav>
+
+
+<!-- GAME SETUP -->
+
+<div class="modal" id="setupModal">
+  <div class="modalBox">
+
+    <div class="modalTop">
+      <h2 id="setupTitle">Game</h2>
+      <button class="closeButton" onclick="closeSetup()">×</button>
+    </div>
+
+    <p style="color:var(--muted);margin-bottom:18px">
+      Choose the local player count.
+    </p>
+
+    <div class="playerGrid">
+      <button class="playerButton selected" onclick="choosePlayers(2,this)">
+        2 PLAYERS
+      </button>
+
+      <button class="playerButton" onclick="choosePlayers(3,this)">
+        3 PLAYERS
+      </button>
+
+      <button class="playerButton" onclick="choosePlayers(4,this)">
+        4 PLAYERS
+      </button>
+    </div>
+
+    <button class="primary" onclick="launchSelectedGame()">
+      START GAME
+    </button>
+
+  </div>
 </div>
 
 
-<!-- PLAYER SELECTION -->
+<!-- GAME VIEW -->
 
-<div id="playerModal" class="modal" onclick="closeModal(event)">
-    <div class="modalBox" onclick="event.stopPropagation()">
-        <h2 id="modalTitle">Select Players</h2>
-        <p>Choose how many players will battle.</p>
+<section class="gameView" id="gameView">
 
-        <div class="playerOptions">
-            <button class="playerBtn" onclick="selectPlayers(2)">2 Players</button>
-            <button class="playerBtn" onclick="selectPlayers(3)">3 Players</button>
-            <button class="playerBtn" onclick="selectPlayers(4)">4 Players</button>
-        </div>
+  <header class="gameHeader">
 
-        <button class="startGame" onclick="startSelectedGame()">
-            START GAME
-        </button>
-    </div>
-</div>
+    <button class="gameBack" onclick="closeGame()">←</button>
 
-
-<!-- CARROM GAME -->
-
-<section id="gameScreen">
-
-    <header class="gameHeader">
-        <button class="backBtn" onclick="exitGame()">←</button>
-
-        <strong>CARROM</strong>
-
-        <div id="turnText" class="turn">PLAYER 1</div>
-    </header>
-
-    <div id="scorePanel" class="scorePanel"></div>
-
-    <div id="boardWrap">
-        <canvas id="board"></canvas>
+    <div class="gameHeaderTitle">
+      <strong id="gameTitle">GAME</strong>
+      <small id="gameTurn">PLAYER 1</small>
     </div>
 
-    <div class="instructions">
-        Drag the striker backwards and release to shoot.
-    </div>
+    <button class="gameRules" onclick="showRules()">?</button>
 
-    <div class="gameControls">
-        <button class="controlBtn" onclick="resetCarrom()">RESET</button>
-        <button class="controlBtn" onclick="exitGame()">EXIT</button>
-    </div>
+  </header>
+
+  <div class="gameBody" id="gameBody"></div>
 
 </section>
 
 
+<div class="toast" id="toast"></div>
+
+
 <script>
-/* =========================
-   GAME STATE
-========================= */
+/* =========================================================
+   CORE APP
+========================================================= */
 
-let selectedGame = "";
+let selectedGame = "carrom";
 let selectedPlayers = 2;
-let currentPlayer = 0;
+let soundEnabled = true;
 
-let canvas;
-let ctx;
+const AudioContextClass =
+  window.AudioContext || window.webkitAudioContext;
 
-let striker = {
-    x:0,
-    y:0,
-    vx:0,
-    vy:0,
-    r:15,
-    moving:false
+let audioCtx = null;
+
+function sound(type="click"){
+  if(!soundEnabled) return;
+
+  try{
+    if(!audioCtx) audioCtx = new AudioContextClass();
+
+    if(audioCtx.state === "suspended"){
+      audioCtx.resume();
+    }
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+
+    const frequencies = {
+      click:420,
+      hit:120,
+      pocket:680,
+      dice:260,
+      move:310,
+      win:780
+    };
+
+    osc.frequency.value = frequencies[type] || 400;
+    osc.type = type === "hit" ? "triangle" : "sine";
+
+    gain.gain.setValueAtTime(.0001,now);
+    gain.gain.exponentialRampToValueAtTime(.12,now+.01);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+.13);
+
+    osc.start(now);
+    osc.stop(now+.14);
+  }catch(e){}
+}
+
+document.getElementById("soundToggle").onclick=()=>{
+  soundEnabled=!soundEnabled;
+  document.getElementById("soundToggle").textContent =
+    soundEnabled ? "🔊" : "🔇";
+
+  sound("click");
 };
 
-let coins = [];
-let dragging = false;
-let dragX = 0;
-let dragY = 0;
+function showToast(text){
+  const el=document.getElementById("toast");
+  el.textContent=text;
+  el.classList.add("show");
 
-const playerColors = [
-    "#ef5350",
-    "#42a5f5",
-    "#66bb6a",
-    "#ab47bc"
-];
+  clearTimeout(showToast.timer);
 
-let scores = [0,0,0,0];
+  showToast.timer=setTimeout(()=>{
+    el.classList.remove("show");
+  },2200);
 
-
-/* =========================
-   LOBBY
-========================= */
-
-function openPlayers(game){
-
-    selectedGame = game;
-
-    document.getElementById("modalTitle").textContent =
-        game + " — Select Players";
-
-    document.getElementById("playerModal").classList.add("show");
-
-    selectPlayers(2);
+  sound("click");
 }
 
-function selectPlayers(number){
-
-    selectedPlayers = number;
-
-    document.querySelectorAll(".playerBtn").forEach((button,index)=>{
-        button.classList.toggle(
-            "selected",
-            index === number - 2
-        );
-    });
-}
-
-function closeModal(event){
-
-    if(event.target.id === "playerModal"){
-        document.getElementById("playerModal")
-            .classList.remove("show");
-    }
-}
-
-function startSelectedGame(){
-
-    document.getElementById("playerModal")
-        .classList.remove("show");
-
-    if(selectedGame === "Carrom"){
-        startCarrom();
-        return;
-    }
-
-    alert(
-        selectedGame +
-        " engine is the next module.\n\n" +
-        "The lobby and player-selection system are already functional."
-    );
-}
-
-function showHome(){
-
-    document.getElementById("lobby").style.display = "block";
-    document.getElementById("gameScreen").style.display = "none";
+function goHome(){
+  closeGame();
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 
-/* =========================
-   CARROM
-========================= */
+/* =========================================================
+   SETUP
+========================================================= */
 
-function startCarrom(){
+function openGameSetup(game){
+  selectedGame=game;
 
-    document.getElementById("lobby").style.display = "none";
-    document.getElementById("gameScreen").style.display = "block";
+  const names={
+    carrom:"Carrom",
+    ludo:"Ludo",
+    chess:"Chess",
+    pool:"8-Ball Pool"
+  };
 
-    currentPlayer = 0;
-    scores = [0,0,0,0];
+  document.getElementById("setupTitle").textContent=names[game];
 
-    canvas = document.getElementById("board");
+  document.getElementById("setupModal").classList.add("show");
 
-    setupCanvas();
-    createCoins();
-    updateScores();
+  selectedPlayers=2;
 
-    requestAnimationFrame(gameLoop);
+  document.querySelectorAll(".playerButton").forEach((b,i)=>{
+    b.classList.toggle("selected",i===0);
+  });
+
+  sound("click");
 }
 
-function setupCanvas(){
-
-    const rect = canvas.getBoundingClientRect();
-
-    const size = Math.min(rect.width,rect.height);
-
-    const dpr = window.devicePixelRatio || 1;
-
-    canvas.width = size * dpr;
-    canvas.height = size * dpr;
-
-    ctx = canvas.getContext("2d");
-
-    ctx.scale(dpr,dpr);
-
-    canvas.style.width = size + "px";
-    canvas.style.height = size + "px";
-
-    striker.r = size * .035;
-
-    resetStriker();
+function closeSetup(){
+  document.getElementById("setupModal").classList.remove("show");
 }
 
-function createCoins(){
+function choosePlayers(n,button){
 
-    const size = canvas.getBoundingClientRect().width;
-
-    const center = size / 2;
-
-    const radius = size * .035;
-
-    coins = [];
-
-    /* queen */
-
-    coins.push({
-        x:center,
-        y:center,
-        r:radius,
-        color:"#d91f32",
-        pocketed:false
-    });
-
-    /* surrounding coins */
-
-    const coinColors = [
-        "#181818","#f3e8d1",
-        "#181818","#f3e8d1",
-        "#181818","#f3e8d1",
-        "#181818","#f3e8d1",
-        "#181818","#f3e8d1",
-        "#181818","#f3e8d1"
-    ];
-
-    const ringRadius = radius * 2.3;
-
-    for(let i=0;i<12;i++){
-
-        const angle =
-            (Math.PI * 2 / 12) * i;
-
-        coins.push({
-            x:center + Math.cos(angle) * ringRadius,
-            y:center + Math.sin(angle) * ringRadius,
-            r:radius,
-            color:coinColors[i],
-            pocketed:false
-        });
-    }
-
-    /* second small ring */
-
-    for(let i=0;i<8;i++){
-
-        const angle =
-            (Math.PI * 2 / 8) * i + .3;
-
-        coins.push({
-            x:center + Math.cos(angle) * radius * 4.1,
-            y:center + Math.sin(angle) * radius * 4.1,
-            r:radius,
-            color:i%2 ? "#181818" : "#f3e8d1",
-            pocketed:false
-        });
-    }
-}
-
-function resetStriker(){
-
-    const size = canvas.getBoundingClientRect().width;
-
-    striker.x = size / 2;
-    striker.y = size * .86;
-
-    striker.vx = 0;
-    striker.vy = 0;
-
-    striker.moving = false;
-}
-
-
-/* =========================
-   DRAW BOARD
-========================= */
-
-function drawBoard(){
-
-    const size = canvas.getBoundingClientRect().width;
-
-    ctx.clearRect(0,0,size,size);
-
-    /* board */
-
-    ctx.fillStyle = "#e2c18a";
-    ctx.fillRect(0,0,size,size);
-
-    /* wood inner border */
-
-    ctx.strokeStyle = "#6e421f";
-    ctx.lineWidth = size * .018;
-
-    ctx.strokeRect(
-        size*.045,
-        size*.045,
-        size*.91,
-        size*.91
-    );
-
-    /* playing area */
-
-    ctx.strokeStyle = "#8a6038";
-    ctx.lineWidth = 1.5;
-
-    const margin = size*.14;
-
-    ctx.strokeRect(
-        margin,
-        margin,
-        size-margin*2,
-        size-margin*2
-    );
-
-    /* diagonals */
-
-    ctx.beginPath();
-
-    ctx.moveTo(margin,margin);
-    ctx.lineTo(size-margin,size-margin);
-
-    ctx.moveTo(size-margin,margin);
-    ctx.lineTo(margin,size-margin);
-
-    ctx.stroke();
-
-    /* center */
-
-    ctx.beginPath();
-
-    ctx.arc(
-        size/2,
-        size/2,
-        size*.105,
-        0,
-        Math.PI*2
-    );
-
-    ctx.stroke();
-
-    /* pockets */
-
-    const pocketR = size*.042;
-
-    const pockets = [
-        [margin,margin],
-        [size-margin,margin],
-        [margin,size-margin],
-        [size-margin,size-margin]
-    ];
-
-    pockets.forEach(p=>{
-
-        ctx.beginPath();
-
-        ctx.fillStyle="#111";
-
-        ctx.arc(
-            p[0],
-            p[1],
-            pocketR,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fill();
-    });
-
-    drawCoins();
-    drawStriker();
-
-    if(dragging){
-        drawAim();
-    }
-}
-
-function drawCoins(){
-
-    coins.forEach(c=>{
-
-        if(c.pocketed) return;
-
-        ctx.beginPath();
-
-        ctx.arc(
-            c.x,
-            c.y,
-            c.r,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fillStyle = c.color;
-        ctx.fill();
-
-        ctx.strokeStyle =
-            c.color === "#181818"
-            ? "#444"
-            : "#b9a57d";
-
-        ctx.lineWidth = 2;
-
-        ctx.stroke();
-
-        if(c.color !== "#181818"){
-
-            ctx.beginPath();
-
-            ctx.arc(
-                c.x-c.r*.25,
-                c.y-c.r*.25,
-                c.r*.22,
-                0,
-                Math.PI*2
-            );
-
-            ctx.fillStyle="rgba(255,255,255,.5)";
-            ctx.fill();
-        }
-    });
-}
-
-function drawStriker(){
-
-    ctx.beginPath();
-
-    ctx.arc(
-        striker.x,
-        striker.y,
-        striker.r,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fillStyle="#f5f1e7";
-    ctx.fill();
-
-    ctx.strokeStyle="#b59a67";
-    ctx.lineWidth=3;
-    ctx.stroke();
-}
-
-function drawAim(){
-
-    const dx = striker.x - dragX;
-    const dy = striker.y - dragY;
-
-    const length = Math.sqrt(dx*dx+dy*dy);
-
-    if(length < 2) return;
-
-    const max = 130;
-
-    const power = Math.min(length,max);
-
-    const nx = dx / length;
-    const ny = dy / length;
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        striker.x,
-        striker.y
-    );
-
-    ctx.lineTo(
-        striker.x + nx * power * 2,
-        striker.y + ny * power * 2
-    );
-
-    ctx.strokeStyle="rgba(255,255,255,.7)";
-    ctx.lineWidth=3;
-
-    ctx.setLineDash([8,8]);
-
-    ctx.stroke();
-
-    ctx.setLineDash([]);
-
-    /* power indicator */
-
-    ctx.beginPath();
-
-    ctx.arc(
-        striker.x,
-        striker.y,
-        striker.r + 7 + power*.08,
-        0,
-        Math.PI*2
-    );
-
-    ctx.strokeStyle="#baff4b";
-    ctx.lineWidth=3;
-
-    ctx.stroke();
-}
-
-
-/* =========================
-   INPUT
-========================= */
-
-function pointerPosition(event){
-
-    const rect = canvas.getBoundingClientRect();
-
-    let x;
-    let y;
-
-    if(event.touches){
-
-        x = event.touches[0].clientX - rect.left;
-        y = event.touches[0].clientY - rect.top;
-
-    }else{
-
-        x = event.clientX - rect.left;
-        y = event.clientY - rect.top;
-    }
-
-    return {x,y};
-}
-
-function startDrag(event){
-
-    if(striker.moving) return;
-
-    const p = pointerPosition(event);
-
-    const distance =
-        Math.hypot(
-            p.x-striker.x,
-            p.y-striker.y
-        );
-
-    if(distance <= striker.r*2){
-
-        dragging = true;
-
-        dragX = p.x;
-        dragY = p.y;
-
-        event.preventDefault();
-    }
-}
-
-function moveDrag(event){
-
-    if(!dragging) return;
-
-    const p = pointerPosition(event);
-
-    dragX = p.x;
-    dragY = p.y;
-
-    event.preventDefault();
-}
-
-function endDrag(event){
-
-    if(!dragging) return;
-
-    dragging=false;
-
-    const p = pointerPosition(event);
-
-    const dx = striker.x - p.x;
-    const dy = striker.y - p.y;
-
-    const distance =
-        Math.hypot(dx,dy);
-
-    if(distance < 8) return;
-
-    const power =
-        Math.min(distance,130);
-
-    const strength = .075;
-
-    striker.vx =
-        (dx/distance) * power * strength;
-
-    striker.vy =
-        (dy/distance) * power * strength;
-
-    striker.moving=true;
-
-    event.preventDefault();
-}
-
-canvas.addEventListener("pointerdown",startDrag);
-canvas.addEventListener("pointermove",moveDrag);
-canvas.addEventListener("pointerup",endDrag);
-canvas.addEventListener("pointercancel",endDrag);
-
-
-/* =========
+  if(selectedGame
