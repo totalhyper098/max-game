@@ -1,1015 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>GameVault</title>
-
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#07100d;
-  --card:#0d1c17;
-  --line:rgba(255,255,255,.1);
-  --text:#f5f8f6;
-  --muted:#91a29b;
-  --green:#baff4b;
-}
-body{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 50% 0,#173b2b 0,transparent 38%),
-    var(--bg);
-  color:var(--text);
-  font-family:Arial,Helvetica,sans-serif;
-}
-button{font:inherit;cursor:pointer}
-.header{
-  height:70px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 22px;
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:rgba(5,15,11,.88);
-  backdrop-filter:blur(18px);
-  border-bottom:1px solid var(--line);
-}
-.logo{
-  font-size:22px;
-  font-weight:900;
-}
-.logo span{color:var(--green)}
-.header-right{display:flex;gap:8px}
-.icon-btn{
-  width:42px;height:42px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  background:#ffffff0d;
-  color:white;
-}
-.home{
-  max-width:1150px;
-  margin:auto;
-  padding:25px 18px 100px;
-}
-.hero{
-  min-height:310px;
-  padding:45px;
-  border-radius:28px;
-  overflow:hidden;
-  display:flex;
-  align-items:end;
-  background:
-    linear-gradient(90deg,rgba(0,0,0,.9),rgba(0,0,0,.35)),
-    url("https://images.unsplash.com/photo-1606167668584-78701c57f13d?auto=format&fit=crop&w=1800&q=85")
-    center/cover;
-  border:1px solid var(--line);
-}
-.hero h1{
-  font-size:clamp(42px,7vw,75px);
-  line-height:.88;
-  letter-spacing:-4px;
-}
-.hero p{
-  max-width:560px;
-  color:#bdc9c4;
-  margin-top:18px;
-  line-height:1.5;
-}
-.section{
-  display:flex;
-  justify-content:space-between;
-  align-items:end;
-  margin:38px 0 18px;
-}
-.section h2{font-size:26px}
-.section span{color:var(--muted);font-size:12px}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:18px;
-}
-.card{
-  min-height:330px;
-  position:relative;
-  overflow:hidden;
-  border-radius:25px;
-  border:1px solid var(--line);
-  transition:.25s;
-}
-.card:hover{transform:translateY(-5px)}
-.card-bg{
-  position:absolute;
-  inset:0;
-  background:center/cover;
-}
-.card:nth-child(1) .card-bg{
-  background-image:url("https://images.unsplash.com/photo-1606503153255-59d8b8b8f0d5?auto=format&fit=crop&w=1200&q=85");
-}
-.card:nth-child(2) .card-bg{
-  background-image:url("https://images.unsplash.com/photo-1585504198199-20277593b94f?auto=format&fit=crop&w=1200&q=85");
-}
-.card:nth-child(3) .card-bg{
-  background-image:url("https://images.unsplash.com/photo-1586165368502-1bad197a6461?auto=format&fit=crop&w=1200&q=85");
-}
-.card:nth-child(4) .card-bg{
-  background-image:url("https://images.unsplash.com/photo-1611171711912-0b9e4f9e3f3b?auto=format&fit=crop&w=1200&q=85");
-}
-.card-overlay{
-  position:absolute;
-  inset:0;
-  background:linear-gradient(transparent 20%,rgba(0,0,0,.9));
-}
-.card-content{
-  position:absolute;
-  left:20px;right:20px;bottom:20px;
-}
-.icon{
-  font-size:30px;
-  margin-bottom:8px;
-}
-.card h3{font-size:29px}
-.card p{
-  color:#b8c6c0;
-  margin-top:5px;
-  font-size:13px;
-}
-.card-bottom{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:18px;
-}
-.players{
-  color:#9baaa4;
-  font-size:11px;
-}
-.play{
-  border:0;
-  padding:11px 17px;
-  border-radius:12px;
-  background:var(--green);
-  color:#14230e;
-  font-weight:900;
-}
-.nav{
-  position:fixed;
-  z-index:30;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:min(650px,100%);
-  height:70px;
-  display:flex;
-  background:rgba(5,15,11,.94);
-  backdrop-filter:blur(20px);
-  border:1px solid var(--line);
-  border-bottom:0;
-}
-.nav button{
-  flex:1;
-  border:0;
-  background:transparent;
-  color:#74847d;
-}
-.nav button.active{color:var(--green)}
-.nav b{display:block;font-size:20px;margin-bottom:3px}
-
-/* GAME SCREEN */
-
-.game-screen{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:100;
-  background:#06100c;
-}
-.game-screen.active{
-  display:flex;
-  flex-direction:column;
-}
-.game-header{
-  height:68px;
-  flex:none;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 15px;
-  border-bottom:1px solid var(--line);
-}
-.game-header button{
-  width:42px;height:42px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  background:#ffffff0b;
-  color:white;
-}
-.game-title{text-align:center}
-.game-title strong{display:block}
-.game-title small{color:var(--green)}
-.game-body{
-  flex:1;
-  overflow:auto;
-  padding:18px;
-}
-.game-area{
-  width:min(700px,100%);
-  margin:auto;
-}
-.scorebar{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-bottom:12px;
-}
-.score{
-  padding:8px 12px;
-  border-radius:10px;
-  border:1px solid var(--line);
-  background:#ffffff08;
-  color:#aebdb6;
-  font-size:12px;
-}
-.score.active{color:var(--green)}
-.canvas-wrap{
-  width:100%;
-  aspect-ratio:1;
-  padding:8px;
-  border-radius:22px;
-  background:#70431f;
-}
-canvas{
-  display:block;
-  width:100%;
-  height:100%;
-  border-radius:15px;
-  touch-action:none;
-}
-.hint{
-  text-align:center;
-  color:#788982;
-  font-size:12px;
-  padding:12px;
-}
-.action{
-  display:block;
-  margin:auto;
-  padding:11px 18px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  background:#ffffff09;
-  color:white;
-}
-
-/* LUDO */
-
-.ludo-box{
-  min-height:450px;
-  border:1px solid var(--line);
-  border-radius:25px;
-  display:grid;
-  place-items:center;
-  text-align:center;
-  background:
-    radial-gradient(circle,rgba(186,255,75,.1),transparent 40%),
-    #0c2119;
-}
-.dice{
-  width:120px;height:120px;
-  display:grid;
-  place-items:center;
-  margin:auto;
-  border-radius:25px;
-  background:#f5f5f5;
-  color:#111;
-  font-size:65px;
-  box-shadow:0 20px 50px #0007;
-}
-.roll{
-  animation:roll .45s;
-}
-@keyframes roll{
-  50%{transform:rotate(180deg) scale(1.1)}
-}
-.ludo-box h2{margin-top:25px}
-.ludo-box p{color:var(--muted);margin:8px}
-.primary{
-  border:0;
-  border-radius:13px;
-  padding:14px 28px;
-  background:var(--green);
-  color:#15220f;
-  font-weight:900;
-}
-
-/* CHESS */
-
-.chess{
-  width:min(700px,100%);
-  aspect-ratio:1;
-  margin:auto;
-  display:grid;
-  grid-template-columns:repeat(8,1fr);
-  border:7px solid #704721;
-  border-radius:12px;
-  overflow:hidden;
-}
-.square{
-  border:0;
-  display:grid;
-  place-items:center;
-  font-size:clamp(24px,7vw,58px);
-}
-.light{background:#e8c88e}
-.dark{background:#7a4b29}
-.selected{box-shadow:inset 0 0 0 5px var(--green)}
-
-/* MODAL */
-
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:200;
-  background:#000b;
-  backdrop-filter:blur(12px);
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-}
-.modal.show{display:flex}
-.modal-box{
-  width:min(450px,100%);
-  padding:25px;
-  border:1px solid var(--line);
-  border-radius:25px;
-  background:#0b2119;
-}
-.modal-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.close{
-  width:38px;height:38px;
-  border:1px solid var(--line);
-  border-radius:11px;
-  background:#ffffff0b;
-  color:white;
-}
-.modal p{
-  color:var(--muted);
-  margin:18px 0;
-  line-height:1.5;
-}
-.player-buttons{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-}
-.player{
-  padding:14px 5px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  color:white;
-  background:#ffffff08;
-}
-.player.selected{
-  background:var(--green);
-  color:#13210d;
-}
-.start{
-  width:100%;
-  margin-top:15px;
-  padding:14px;
-  border:0;
-  border-radius:13px;
-  background:var(--green);
-  color:#14220d;
-  font-weight:900;
-}
-.toast{
-  position:fixed;
-  z-index:500;
-  left:50%;
-  bottom:90px;
-  transform:translate(-50%,20px);
-  opacity:0;
-  padding:12px 16px;
-  border-radius:12px;
-  background:#142820;
-  border:1px solid var(--line);
-  transition:.2s;
-  pointer-events:none;
-  white-space:nowrap;
-}
-.toast.show{
-  opacity:1;
-  transform:translate(-50%,0);
-}
-
-@media(max-width:700px){
-  .home{padding:18px 12px 90px}
-  .hero{padding:28px 22px}
-  .grid{grid-template-columns:1fr}
-  .card{min-height:300px}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GameVault - Classic Board Games Hub</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
 
-<header class="header">
-  <div class="logo">Game<span>Vault</span></div>
+  <div class="app-container">
 
-  <div class="header-right">
-    <button class="icon-btn" id="soundBtn">🔊</button>
-    <button class="icon-btn" id="profileBtn">●</button>
-  </div>
-</header>
-
-
-<main class="home" id="home">
-
-  <section class="hero">
-    <div>
-      <h1>PLAY<br>WITHOUT<br>LIMITS.</h1>
-      <p>
-        Four timeless board games redesigned for a modern gaming experience.
-      </p>
-    </div>
-  </section>
-
-  <div class="section">
-    <h2>Choose your game</h2>
-    <span>4 GAMES</span>
-  </div>
-
-  <section class="grid">
-
-    <article class="card">
-      <div class="card-bg"></div>
-      <div class="card-overlay"></div>
-
-      <div class="card-content">
-        <div class="icon">🪙</div>
-        <h3>Carrom</h3>
-        <p>Precision, angles and perfect strikes.</p>
-
-        <div class="card-bottom">
-          <span class="players">2–4 PLAYERS</span>
-          <button class="play" data-game="carrom">PLAY NOW</button>
+    <!-- 1. HOME TAB -->
+    <section id="tab-home" class="tab-screen active">
+      <header class="app-header">
+        <div class="brand">
+          <i class="fa-solid fa-vault gold-icon"></i>
+          <span class="brand-title">GameVault</span>
         </div>
-      </div>
-    </article>
-
-
-    <article class="card">
-      <div class="card-bg"></div>
-      <div class="card-overlay"></div>
-
-      <div class="card-content">
-        <div class="icon">🎲</div>
-        <h3>Ludo</h3>
-        <p>Roll the dice and race your pieces home.</p>
-
-        <div class="card-bottom">
-          <span class="players">2–4 PLAYERS</span>
-          <button class="play" data-game="ludo">PLAY NOW</button>
+        <div class="user-pill">
+          <i class="fa-solid fa-coins gold-icon"></i>
+          <span id="user-coins">1,200</span>
         </div>
-      </div>
-    </article>
+      </header>
 
-
-    <article class="card">
-      <div class="card-bg"></div>
-      <div class="card-overlay"></div>
-
-      <div class="card-content">
-        <div class="icon">♟</div>
-        <h3>Chess</h3>
-        <p>Think ahead. Control the board.</p>
-
-        <div class="card-bottom">
-          <span class="players">2 PLAYERS</span>
-          <button class="play" data-game="chess">PLAY NOW</button>
+      <main class="home-content">
+        <!-- Hero Banner -->
+        <div class="hero-card">
+          <img src="https://images.unsplash.com/photo-1611996575749-79a3a250f948?q=80&w=600&auto=format&fit=crop" alt="Board Games Banner" class="hero-bg">
+          <div class="hero-overlay"></div>
+          <div class="hero-info">
+            <h2>PLAY WITHOUT LIMITS</h2>
+            <p>Classic board games redesigned for modern mobile experience.</p>
+          </div>
         </div>
-      </div>
-    </article>
 
+        <div class="section-title">Select Your Game</div>
 
-    <article class="card">
-      <div class="card-bg"></div>
-      <div class="card-overlay"></div>
+        <!-- Professional Game Cards Grid -->
+        <div class="games-grid">
+          
+          <!-- Carrom Card -->
+          <div class="game-card" onclick="switchTab('carrom')">
+            <div class="card-image-wrap">
+              <img src="https://images.unsplash.com/photo-1606168094336-48f205276929?q=80&w=500&auto=format&fit=crop" alt="Carrom">
+            </div>
+            <div class="card-details">
+              <h3>Carrom Vault</h3>
+              <p>2-4 Players • Local & AI</p>
+            </div>
+            <div class="play-btn-gold"><i class="fa-solid fa-play"></i></div>
+          </div>
 
-      <div class="card-content">
-        <div class="icon">🎱</div>
-        <h3>8-Ball Pool</h3>
-        <p>Line up your shot. Control the table.</p>
+          <!-- Ludo Card -->
+          <div class="game-card" onclick="switchTab('ludo')">
+            <div class="card-image-wrap">
+              <img src="https://images.unsplash.com/photo-1580541832626-2a7131ee809f?q=80&w=500&auto=format&fit=crop" alt="Ludo">
+            </div>
+            <div class="card-details">
+              <h3>Ludo Vault</h3>
+              <p>2-4 Players • Classic Fun</p>
+            </div>
+            <div class="play-btn-gold"><i class="fa-solid fa-play"></i></div>
+          </div>
 
-        <div class="card-bottom">
-          <span class="players">2 PLAYERS</span>
-          <button class="play" data-game="pool">PLAY NOW</button>
+          <!-- Chess Card -->
+          <div class="game-card" onclick="switchTab('chess')">
+            <div class="card-image-wrap">
+              <img src="https://images.unsplash.com/photo-1529699211952-734e80c4d42b?q=80&w=500&auto=format&fit=crop" alt="Chess">
+            </div>
+            <div class="card-details">
+              <h3>Chess Vault</h3>
+              <p>2 Players • Pure Strategy</p>
+            </div>
+            <div class="play-btn-gold"><i class="fa-solid fa-play"></i></div>
+          </div>
+
+          <!-- Pool Card -->
+          <div class="game-card" onclick="switchTab('pool')">
+            <div class="card-image-wrap">
+              <img src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=500&auto=format&fit=crop" alt="Pool">
+            </div>
+            <div class="card-details">
+              <h3>8-Ball Pool</h3>
+              <p>2 Players • Table Control</p>
+            </div>
+            <div class="play-btn-gold"><i class="fa-solid fa-play"></i></div>
+          </div>
+
         </div>
+      </main>
+    </section>
+
+    <!-- 2. CARROM TAB -->
+    <section id="tab-carrom" class="tab-screen">
+      <div class="game-header">
+        <h2><i class="fa-solid fa-circle-dot gold-icon"></i> Carrom Vault</h2>
+        <div class="game-rewards-badge"><i class="fa-solid fa-trophy"></i> Rewards</div>
       </div>
-    </article>
-
-  </section>
-</main>
-
-
-<nav class="nav">
-  <button class="active" data-tab="home">
-    <b>⌂</b>Home
-  </button>
-  <button data-tab="games">
-    <b>♟</b>Games
-  </button>
-  <button data-tab="rank">
-    <b>🏆</b>Rank
-  </button>
-  <button data-tab="profile">
-    <b>●</b>Profile
-  </button>
-</nav>
-
-
-<!-- SETUP MODAL -->
-
-<div class="modal" id="setupModal">
-
-  <div class="modal-box">
-
-    <div class="modal-head">
-      <h2 id="setupTitle">Game</h2>
-      <button class="close" id="setupClose">×</button>
-    </div>
-
-    <p>Choose the number of local players.</p>
-
-    <div class="player-buttons">
-      <button class="player selected" data-players="2">2 PLAYERS</button>
-      <button class="player" data-players="3">3 PLAYERS</button>
-      <button class="player" data-players="4">4 PLAYERS</button>
-    </div>
-
-    <button class="start" id="startGame">START GAME</button>
-
-  </div>
-</div>
-
-
-<!-- FULL SCREEN GAME -->
-
-<section class="game-screen" id="gameScreen">
-
-  <header class="game-header">
-
-    <button id="gameBack">←</button>
-
-    <div class="game-title">
-      <strong id="gameName">GAME</strong>
-      <small id="gameTurn">PLAYER 1</small>
-    </div>
-
-    <button id="rulesBtn">?</button>
-
-  </header>
-
-  <div class="game-body" id="gameBody"></div>
-
-</section>
-
-
-<div class="toast" id="toast"></div>
-
-
-<script>
-"use strict";
-
-/* =========================================================
-   APP STATE
-========================================================= */
-
-let currentGame="";
-let playerCount=2;
-let soundOn=true;
-
-const setupModal=document.getElementById("setupModal");
-const gameScreen=document.getElementById("gameScreen");
-const gameBody=document.getElementById("gameBody");
-
-let audioContext=null;
-
-
-/* =========================================================
-   SOUND
-========================================================= */
-
-function playSound(freq=400,duration=.12){
-
-  if(!soundOn)return;
-
-  try{
-
-    if(!audioContext){
-      audioContext=
-        new(window.AudioContext||window.webkitAudioContext)();
-    }
-
-    if(audioContext.state==="suspended"){
-      audioContext.resume();
-    }
-
-    const osc=audioContext.createOscillator();
-    const gain=audioContext.createGain();
-
-    osc.connect(gain);
-    gain.connect(audioContext.destination);
-
-    const now=audioContext.currentTime;
-
-    osc.frequency.value=freq;
-
-    gain.gain.setValueAtTime(.0001,now);
-    gain.gain.exponentialRampToValueAtTime(.08,now+.01);
-    gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
-
-    osc.start(now);
-    osc.stop(now+duration);
-
-  }catch(error){}
-}
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-function toast(message){
-
-  const el=document.getElementById("toast");
-
-  el.textContent=message;
-  el.classList.add("show");
-
-  clearTimeout(window.toastTimer);
-
-  window.toastTimer=setTimeout(()=>{
-    el.classList.remove("show");
-  },2200);
-}
-
-
-/* =========================================================
-   PLAY NOW BUTTONS
-========================================================= */
-
-document.querySelectorAll(".play").forEach(button=>{
-
-  button.addEventListener("click",function(){
-
-    currentGame=this.dataset.game;
-
-    const names={
-      carrom:"Carrom",
-      ludo:"Ludo",
-      chess:"Chess",
-      pool:"8-Ball Pool"
-    };
-
-    document.getElementById("setupTitle").textContent=
-      names[currentGame];
-
-    /* Chess and Pool are 2 player games */
-    document.querySelectorAll(".player").forEach(btn=>{
-
-      const number=Number(btn.dataset.players);
-
-      btn.style.display=
-        (currentGame==="chess"||currentGame==="pool") &&
-        number!==2
-        ?"none"
-        :"block";
-    });
-
-    playerCount=2;
-
-    document.querySelectorAll(".player").forEach(btn=>{
-      btn.classList.toggle(
-        "selected",
-        btn.dataset.players==="2"
-      );
-    });
-
-    setupModal.classList.add("show");
-
-    playSound(450);
-  });
-
-});
-
-
-/* =========================================================
-   PLAYER SELECT
-========================================================= */
-
-document.querySelectorAll(".player").forEach(button=>{
-
-  button.addEventListener("click",function(){
-
-    playerCount=Number(this.dataset.players);
-
-    document.querySelectorAll(".player").forEach(btn=>{
-      btn.classList.remove("selected");
-    });
-
-    this.classList.add("selected");
-
-    playSound(500);
-  });
-
-});
-
-
-/* =========================================================
-   MODAL CONTROLS
-========================================================= */
-
-document.getElementById("setupClose")
-.addEventListener("click",()=>{
-  setupModal.classList.remove("show");
-  playSound(300);
-});
-
-setupModal.addEventListener("click",e=>{
-
-  if(e.target===setupModal){
-    setupModal.classList.remove("show");
-  }
-
-});
-
-
-/* =========================================================
-   START GAME
-========================================================= */
-
-document.getElementById("startGame")
-.addEventListener("click",()=>{
-
-  setupModal.classList.remove("show");
-  gameScreen.classList.add("active");
-
-  const names={
-    carrom:"CARROM",
-    ludo:"LUDO",
-    chess:"CHESS",
-    pool:"8-BALL POOL"
-  };
-
-  document.getElementById("gameName").textContent=
-    names[currentGame];
-
-  if(currentGame==="carrom")startCarrom();
-  if(currentGame==="ludo")startLudo();
-  if(currentGame==="chess")startChess();
-  if(currentGame==="pool")startPool();
-
-  playSound(650);
-});
-
-
-/* =========================================================
-   CLOSE GAME
-========================================================= */
-
-document.getElementById("gameBack")
-.addEventListener("click",()=>{
-
-  gameScreen.classList.remove("active");
-
-  if(carromAnimation){
-    cancelAnimationFrame(carromAnimation);
-  }
-
-  toast("Returned to GameVault");
-
-});
-
-
-/* =========================================================
-   RULES
-========================================================= */
-
-document.getElementById("rulesBtn")
-.addEventListener("click",()=>{
-
-  const rules={
-    carrom:
-      "Drag the striker backwards and release to shoot. Pocket coins to score.",
-    ludo:
-      "Roll the dice and advance your token. A 6 gives you another turn.",
-    chess:
-      "Select a piece and tap a valid destination square.",
-    pool:
-      "Drag backwards from the cue ball and release to shoot."
-  };
-
-  toast(rules[currentGame]);
-});
-
-
-/* =========================================================
-   SOUND BUTTON
-========================================================= */
-
-document.getElementById("soundBtn")
-.addEventListener("click",function(){
-
-  soundOn=!soundOn;
-
-  this.textContent=soundOn?"🔊":"🔇";
-
-  if(soundOn)playSound(500);
-});
-
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-document.getElementById("profileBtn")
-.addEventListener("click",()=>{
-  toast("Profile system ready for the next development phase.");
-});
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-document.querySelectorAll(".nav button")
-.forEach(button=>{
-
-  button.addEventListener("click",function(){
-
-    document.querySelectorAll(".nav button")
-    .forEach(b=>b.classList.remove("active"));
-
-    this.classList.add("active");
-
-    const tab=this.dataset.tab;
-
-    if(tab==="home"){
-      window.scrollTo({top:0,behavior:"smooth"});
-      return;
-    }
-
-    if(tab==="games"){
-      document.querySelector(".section")
-      .scrollIntoView({behavior:"smooth"});
-      return;
-    }
-
-    toast(
-      tab==="rank"
-      ?"Rankings will be connected later."
-      :"Profile will be connected later."
-    );
-  });
-
-});
-
-
-/* =========================================================
-   CARROM
-========================================================= */
-
-let carromCanvas;
-let carromCtx;
-let carromAnimation=null;
-
-let carromState={
-  turn:0,
-  scores:[],
-  striker:null,
-  coins:[],
-  dragging:false,
-  dragX:0,
-  dragY:0,
-  moving:false
-};
-
-function startCarrom(){
-
-  gameBody.innerHTML=`
-    <div class="game-area">
-
-      <div class="scorebar" id="carromScores"></div>
-
-      <div class="canvas-wrap">
-        <canvas id="carromCanvas"></canvas>
+      <div class="game-placeholder">
+        <p>Carrom Board setup coming in the next step!</p>
       </div>
+    </section>
 
-      <div class="hint">
-        Drag the striker backwards and release.
+    <!-- 3. CHESS TAB -->
+    <section id="tab-chess" class="tab-screen">
+      <div class="game-header">
+        <h2><i class="fa-solid fa-chess-knight gold-icon"></i> Chess Vault</h2>
+        <div class="game-rewards-badge"><i class="fa-solid fa-trophy"></i> Rewards</div>
       </div>
+      <div class="game-placeholder"><p>Chess interface coming soon...</p></div>
+    </section>
 
-      <button class="action" id="resetCarrom">
-        ↻ RESET
+    <!-- 4. POOL TAB -->
+    <section id="tab-pool" class="tab-screen">
+      <div class="game-header">
+        <h2><i class="fa-solid fa-bowling-ball gold-icon"></i> Pool Vault</h2>
+        <div class="game-rewards-badge"><i class="fa-solid fa-trophy"></i> Rewards</div>
+      </div>
+      <div class="game-placeholder"><p>Pool interface coming soon...</p></div>
+    </section>
+
+    <!-- 5. LUDO TAB -->
+    <section id="tab-ludo" class="tab-screen">
+      <div class="game-header">
+        <h2><i class="fa-solid fa-dice gold-icon"></i> Ludo Vault</h2>
+        <div class="game-rewards-badge"><i class="fa-solid fa-trophy"></i> Rewards</div>
+      </div>
+      <div class="game-placeholder"><p>Ludo interface coming soon...</p></div>
+    </section>
+
+    <!-- NEW WHATSAPP/GAMING APP BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" onclick="switchTab('home')">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
       </button>
+      <button class="nav-btn" onclick="switchTab('carrom')">
+        <i class="fa-solid fa-circle-dot"></i>
+        <span>Carrom</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('chess')">
+        <i class="fa-solid fa-chess-knight"></i>
+        <span>Chess</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('pool')">
+        <i class="fa-solid fa-bowling-ball"></i>
+        <span>Pool</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('ludo')">
+        <i class="fa-solid fa-dice"></i>
+        <span>Ludo</span>
+      </button>
+    </nav>
 
-    </div>
-  `;
+  </div>
 
-  carromCanvas=document.getElementById("carromCanvas");
-  carromCtx=carromCanvas.getContext("2d");
+  <script src="script.js"></script>
+</body>
+</html>
 
-  resizeCarrom();
-
-  carromState={
-    turn:0,
-    scores:new Array(playerCount).fill(0),
-    striker:null,
-    coins:[],
-    dragging:false,
-    dragX:0,
-    dragY:0,
-    moving:false
-  };
-
-  createCarrom();
-
-  carromCanvas.addEventListener(
-    "pointerdown",
-    carromDown
-  );
-
-  carromCanvas.addEventListener(
-    "pointermove",
-    carromMove
-  );
-
-  carromCanvas.addEventListener(
-    "pointerup",
-    carromUp
-  );
-
-  document.getElementById("resetCarrom")
-  .addEventListener("click",startCarrom);
-
-  drawCarrom();
-  updateCarromScore();
-}
-
-function resizeCarrom(){
-
-  const rect=carromCanvas.getBoundingClientRect();
-  const size=rect.width;
-  const dpr=devicePixelRatio||1;
-
-  carromCanvas.width=size*dpr;
-  carromCanvas.height=size*dpr;
-
-  carromCtx.setTransform(dpr,0,0,dpr,0,0);
-
-  carromState.size=size;
-}
-
-function createCarrom(){
-
-  const s=carromState.size;
-  const center=s/2;
-  const r=s*.027;
-
-  carromState.striker={
-    x:center,
-    y:s*.84,
-    r:r*1.3,
-    vx:0,
-    vy:0
-  };
-
-  carromState.coins=[
-    {
-      x:center,
-      <script>
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("GameVault JavaScript is alive");
-
-    const buttons = document.querySelectorAll(".play");
-
-    console.log("Play buttons found:", buttons.length);
-
-    buttons.forEach(function (button) {
-        button.addEventListener("click", function () {
-            alert("PLAY NOW IS WORKING");
-        });
-    });
-});
-</script>
