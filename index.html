@@ -1,6 +1,1069 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07120d"><title>MAXGAME — Board Game Arena</title><link rel="stylesheet" href="css/styles.css"></head><body>
-<header class="topbar"><a class="brand" href="#"><span class="logo">M</span><span><strong>MAX<span>GAME</span></strong><small>BOARD GAME ARENA</small></span></a><button id="sound">♫</button></header>
-<main><section class="hero"><div><span class="eyebrow">✦ PREMIUM BOARD GAMING</span><h1>PLAY<br><em>YOUR</em><br>GAME.</h1><p>One arena for classic board games. Play with friends, challenge AI, or jump into online multiplayer.</p><div class="stats"><b>04 <small>Games</small></b><b>2–4 <small>Players</small></b><b>∞ <small>Fun</small></b></div></div><div class="hero-art"><i class="carrom">●　◎　●</i><i class="ludo">◇</i><i class="chess">♞</i><i class="pool">● ● ●</i></div></section>
-<section class="games"><div class="head"><div><span class="eyebrow">THE ARENA</span><h2>Choose your game</h2></div><span>SWIPE →</span></div><div class="carousel" id="games"></div><div id="dots" class="dots"></div></section>
-<section class="reward"><div><span class="eyebrow">YOUR REWARDS</span><h2>Earn. Unlock. Play.</h2><p>Complete tasks and matches to collect <b>XI</b>.</p></div><div class="coin">XI</div></section></main>
-<nav><button class="active">⌂<small>Home</small></button><button>◇<small>Rewards</small><b>3</b></button><button>♛<small>Ranking</small></button><button>◎<small>Profile</small></button></nav><script type="module" src="js/app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#07120d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <title>MAXGAME — Board Game Arena</title>
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+  <!-- =====================================================
+       TOP BAR
+  ====================================================== -->
+
+  <header class="topbar">
+
+    <a class="brand" href="#" aria-label="MAXGAME Home">
+
+      <span class="logo">M</span>
+
+      <span class="brand-copy">
+        <strong>MAX<span>GAME</span></strong>
+        <small>BOARD GAME ARENA</small>
+      </span>
+
+    </a>
+
+
+    <div class="top-actions">
+
+      <!-- XI COINS -->
+
+      <button
+        class="coin-pill"
+        id="coinButton"
+        type="button"
+        aria-label="XI Coins">
+
+        <span class="coin-icon">XI</span>
+
+        <span class="coin-value" id="xiBalance">
+          0
+        </span>
+
+      </button>
+
+
+      <!-- SOUND -->
+
+      <button
+        class="icon-control"
+        id="sound"
+        type="button"
+        aria-label="Toggle sound"
+        aria-pressed="true">
+
+        <span class="sound-on">⌁</span>
+
+      </button>
+
+
+      <!-- PROFILE -->
+
+      <button
+        class="profile-control"
+        id="profileButton"
+        type="button"
+        aria-label="Open profile">
+
+        <span class="profile-avatar">
+          M
+        </span>
+
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
+
+  <main>
+
+
+    <!-- ===================================================
+         HERO
+    ==================================================== -->
+
+    <section class="hero" aria-label="MAXGAME showcase">
+
+      <div class="hero-content">
+
+        <span class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          PREMIUM BOARD GAMING
+        </span>
+
+
+        <h1>
+          PLAY
+          <br>
+          <em>YOUR</em>
+          <br>
+          GAME.
+        </h1>
+
+
+        <p class="hero-description">
+          One arena for classic games.
+          Challenge AI, play locally with friends,
+          or compete online.
+        </p>
+
+
+        <div class="hero-actions">
+
+          <button
+            class="primary-button"
+            id="heroPlay"
+            type="button">
+
+            <span>EXPLORE GAMES</span>
+            <b>→</b>
+
+          </button>
+
+
+          <button
+            class="secondary-button"
+            id="heroRewards"
+            type="button">
+
+            <span>XI</span>
+            REWARDS
+
+          </button>
+
+        </div>
+
+
+        <div class="stats">
+
+          <div class="stat">
+            <strong>04</strong>
+            <span>GAMES</span>
+          </div>
+
+          <div class="stat">
+            <strong>2–4</strong>
+            <span>PLAYERS</span>
+          </div>
+
+          <div class="stat">
+            <strong>∞</strong>
+            <span>FUN</span>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ===============================================
+           HERO ART
+      ================================================ -->
+
+      <div class="hero-art" aria-hidden="true">
+
+        <div class="hero-glow"></div>
+
+        <div class="hero-ring ring-one"></div>
+        <div class="hero-ring ring-two"></div>
+
+
+        <!-- Carrom -->
+
+        <div class="hero-object hero-carrom">
+
+          <div class="carrom-board">
+
+            <div class="carrom-pocket pocket-one"></div>
+            <div class="carrom-pocket pocket-two"></div>
+            <div class="carrom-pocket pocket-three"></div>
+            <div class="carrom-pocket pocket-four"></div>
+
+            <div class="carrom-center">
+
+              <span class="piece black"></span>
+              <span class="piece white"></span>
+              <span class="piece red"></span>
+              <span class="piece black small"></span>
+              <span class="piece white small"></span>
+
+            </div>
+
+          </div>
+
+          <span class="floating-label">
+            CARROM
+          </span>
+
+        </div>
+
+
+        <!-- Ludo -->
+
+        <div class="hero-object hero-ludo">
+
+          <div class="ludo-board">
+
+            <div class="ludo-home red-home">
+              <i></i><i></i><i></i><i></i>
+            </div>
+
+            <div class="ludo-home blue-home">
+              <i></i><i></i><i></i><i></i>
+            </div>
+
+            <div class="ludo-home green-home">
+              <i></i><i></i><i></i><i></i>
+            </div>
+
+            <div class="ludo-home yellow-home">
+              <i></i><i></i><i></i><i></i>
+            </div>
+
+            <div class="ludo-center">
+              <span>◆</span>
+            </div>
+
+          </div>
+
+          <span class="floating-label">
+            LUDO
+          </span>
+
+        </div>
+
+
+        <!-- Chess -->
+
+        <div class="hero-object hero-chess">
+
+          <div class="mini-chess-board">
+
+            <span>♜</span>
+            <span>♞</span>
+            <span>♝</span>
+            <span>♛</span>
+
+            <span>♟</span>
+            <span>♟</span>
+            <span>♟</span>
+            <span>♟</span>
+
+            <span></span>
+            <span>♙</span>
+            <span></span>
+            <span></span>
+
+            <span>♙</span>
+            <span></span>
+            <span>♘</span>
+            <span></span>
+
+          </div>
+
+          <span class="floating-label">
+            CHESS
+          </span>
+
+        </div>
+
+
+        <!-- Pool -->
+
+        <div class="hero-object hero-pool">
+
+          <div class="mini-pool-table">
+
+            <div class="pool-pocket p1"></div>
+            <div class="pool-pocket p2"></div>
+            <div class="pool-pocket p3"></div>
+            <div class="pool-pocket p4"></div>
+            <div class="pool-pocket p5"></div>
+            <div class="pool-pocket p6"></div>
+
+            <span class="pool-ball ball-eight">8</span>
+            <span class="pool-ball ball-one">1</span>
+            <span class="pool-ball ball-three">3</span>
+
+            <span class="cue-ball"></span>
+
+          </div>
+
+          <span class="floating-label">
+            POOL
+          </span>
+
+        </div>
+
+
+        <!-- Decorative particles -->
+
+        <span class="particle particle-one"></span>
+        <span class="particle particle-two"></span>
+        <span class="particle particle-three"></span>
+        <span class="particle particle-four"></span>
+        <span class="particle particle-five"></span>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         GAME CAROUSEL
+    ==================================================== -->
+
+    <section
+      class="games"
+      id="games-section"
+      aria-label="Choose your game">
+
+      <div class="section-head">
+
+        <div>
+
+          <span class="eyebrow">
+            THE ARENA
+          </span>
+
+          <h2>
+            Choose your game
+          </h2>
+
+        </div>
+
+
+        <div class="carousel-hint">
+          <span>SWIPE</span>
+          <b>→</b>
+        </div>
+
+      </div>
+
+
+      <!-- CAROUSEL -->
+
+      <div
+        class="carousel"
+        id="games"
+        aria-live="polite">
+
+        <!--
+          app.js can populate this container.
+          Fallback cards are included so the page
+          remains visually useful even before JS runs.
+        -->
+
+
+        <!-- CARROM -->
+
+        <article
+          class="game-card active"
+          data-game="carrom">
+
+          <div class="game-image carrom-image">
+
+            <div class="real-carrom">
+
+              <span class="corner-pocket cp1"></span>
+              <span class="corner-pocket cp2"></span>
+              <span class="corner-pocket cp3"></span>
+              <span class="corner-pocket cp4"></span>
+
+              <div class="carrom-lines"></div>
+
+              <div class="carrom-pieces">
+
+                <span class="gp black"></span>
+                <span class="gp white"></span>
+                <span class="gp black"></span>
+                <span class="gp red"></span>
+                <span class="gp white"></span>
+                <span class="gp black"></span>
+
+              </div>
+
+            </div>
+
+            <div class="image-shade"></div>
+
+          </div>
+
+
+          <div class="game-card-content">
+
+            <div class="game-number">
+              01
+            </div>
+
+            <div>
+
+              <span class="game-type">
+                PRECISION GAME
+              </span>
+
+              <h3>
+                Carrom
+              </h3>
+
+              <p>
+                Aim your strike. Control the board.
+              </p>
+
+            </div>
+
+
+            <div class="game-card-bottom">
+
+              <span>
+                2–4 PLAYERS
+              </span>
+
+              <button
+                type="button"
+                class="play-button"
+                data-game="carrom">
+
+                PLAY
+
+                <b>→</b>
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+
+        <!-- LUDO -->
+
+        <article
+          class="game-card"
+          data-game="ludo">
+
+          <div class="game-image ludo-image">
+
+            <div class="real-ludo">
+
+              <div class="ludo-quadrant red">
+                <span></span><span></span>
+                <span></span><span></span>
+              </div>
+
+              <div class="ludo-quadrant blue">
+                <span></span><span></span>
+                <span></span><span></span>
+              </div>
+
+              <div class="ludo-quadrant green">
+                <span></span><span></span>
+                <span></span><span></span>
+              </div>
+
+              <div class="ludo-quadrant yellow">
+                <span></span><span></span>
+                <span></span><span></span>
+              </div>
+
+              <div class="ludo-diamond">
+                <span>◆</span>
+              </div>
+
+            </div>
+
+            <div class="image-shade"></div>
+
+          </div>
+
+
+          <div class="game-card-content">
+
+            <div class="game-number">
+              02
+            </div>
+
+            <div>
+
+              <span class="game-type">
+                CLASSIC RACE
+              </span>
+
+              <h3>
+                Ludo
+              </h3>
+
+              <p>
+                Roll, race and reach home first.
+              </p>
+
+            </div>
+
+
+            <div class="game-card-bottom">
+
+              <span>
+                2–4 PLAYERS
+              </span>
+
+              <button
+                type="button"
+                class="play-button"
+                data-game="ludo">
+
+                PLAY
+
+                <b>→</b>
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+
+        <!-- CHESS -->
+
+        <article
+          class="game-card"
+          data-game="chess">
+
+          <div class="game-image chess-image">
+
+            <div class="real-chess">
+
+              <span>♜</span>
+              <span>♞</span>
+              <span>♝</span>
+              <span>♛</span>
+              <span>♚</span>
+              <span>♝</span>
+              <span>♞</span>
+              <span>♜</span>
+
+              <span>♟</span>
+              <span>♟</span>
+              <span>♟</span>
+              <span>♟</span>
+              <span>♟</span>
+              <span>♟</span>
+              <span>♟</span>
+              <span>♟</span>
+
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span>♙</span>
+              <span></span>
+              <span></span>
+              <span></span>
+
+              <span></span>
+              <span></span>
+              <span>♘</span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+
+            </div>
+
+            <div class="image-shade"></div>
+
+          </div>
+
+
+          <div class="game-card-content">
+
+            <div class="game-number">
+              03
+            </div>
+
+            <div>
+
+              <span class="game-type">
+                STRATEGY
+              </span>
+
+              <h3>
+                Chess
+              </h3>
+
+              <p>
+                Think ahead. Control the board.
+              </p>
+
+            </div>
+
+
+            <div class="game-card-bottom">
+
+              <span>
+                2 PLAYERS
+              </span>
+
+              <button
+                type="button"
+                class="play-button"
+                data-game="chess">
+
+                PLAY
+
+                <b>→</b>
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+
+        <!-- POOL -->
+
+        <article
+          class="game-card"
+          data-game="pool">
+
+          <div class="game-image pool-image">
+
+            <div class="real-pool">
+
+              <span class="table-pocket t1"></span>
+              <span class="table-pocket t2"></span>
+              <span class="table-pocket t3"></span>
+              <span class="table-pocket t4"></span>
+              <span class="table-pocket t5"></span>
+              <span class="table-pocket t6"></span>
+
+              <span class="pool-rack-ball pb1">1</span>
+              <span class="pool-rack-ball pb2">8</span>
+              <span class="pool-rack-ball pb3">3</span>
+              <span class="pool-rack-ball pb4">5</span>
+
+              <span class="cue"></span>
+
+            </div>
+
+            <div class="image-shade"></div>
+
+          </div>
+
+
+          <div class="game-card-content">
+
+            <div class="game-number">
+              04
+            </div>
+
+            <div>
+
+              <span class="game-type">
+                TABLE SPORT
+              </span>
+
+              <h3>
+                8-Ball Pool
+              </h3>
+
+              <p>
+                Line up the shot. Own the table.
+              </p>
+
+            </div>
+
+
+            <div class="game-card-bottom">
+
+              <span>
+                2–4 PLAYERS
+              </span>
+
+              <button
+                type="button"
+                class="play-button"
+                data-game="pool">
+
+                PLAY
+
+                <b>→</b>
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <!-- CAROUSEL DOTS -->
+
+      <div
+        class="dots"
+        id="dots"
+        aria-label="Game carousel navigation">
+
+        <button
+          class="dot active"
+          data-slide="0"
+          aria-label="Show Carrom">
+        </button>
+
+        <button
+          class="dot"
+          data-slide="1"
+          aria-label="Show Ludo">
+        </button>
+
+        <button
+          class="dot"
+          data-slide="2"
+          aria-label="Show Chess">
+        </button>
+
+        <button
+          class="dot"
+          data-slide="3"
+          aria-label="Show Pool">
+        </button>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         FEATURED GAME / QUICK PLAY
+    ==================================================== -->
+
+    <section class="quick-play">
+
+      <div class="quick-content">
+
+        <span class="eyebrow">
+          READY TO PLAY?
+        </span>
+
+        <h2 id="selectedGameTitle">
+          Carrom
+        </h2>
+
+        <p id="selectedGameDescription">
+          Precision, angles and perfect strikes.
+        </p>
+
+
+        <div class="quick-tags">
+
+          <span>
+            🧑 LOCAL
+          </span>
+
+          <span>
+            🤖 AI
+          </span>
+
+          <span>
+            🌐 ONLINE
+          </span>
+
+        </div>
+
+
+        <button
+          class="primary-button quick-play-button"
+          id="quickPlay"
+          type="button">
+
+          PLAY CARROM
+
+          <b>→</b>
+
+        </button>
+
+      </div>
+
+
+      <div class="quick-art">
+
+        <div class="quick-orbit"></div>
+
+        <span class="quick-piece q1"></span>
+        <span class="quick-piece q2"></span>
+        <span class="quick-piece q3"></span>
+
+        <strong>
+          XI
+        </strong>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         REWARDS
+    ==================================================== -->
+
+    <section
+      class="reward"
+      id="rewards">
+
+      <div class="reward-copy">
+
+        <span class="eyebrow">
+          YOUR REWARDS
+        </span>
+
+        <h2>
+          Earn. Unlock. Play.
+        </h2>
+
+        <p>
+          Complete daily tasks, play matches and
+          collect <strong>XI</strong> to unlock
+          exclusive rewards.
+        </p>
+
+
+        <div class="reward-stats">
+
+          <div>
+            <strong id="rewardBalance">
+              0
+            </strong>
+            <span>
+              XI BALANCE
+            </span>
+          </div>
+
+          <div>
+            <strong>
+              03
+            </strong>
+            <span>
+              DAILY TASKS
+            </span>
+          </div>
+
+        </div>
+
+
+        <button
+          class="secondary-button"
+          id="openRewards"
+          type="button">
+
+          VIEW REWARDS
+
+          <b>→</b>
+
+        </button>
+
+      </div>
+
+
+      <div class="reward-visual">
+
+        <div class="reward-coin">
+
+          <span>
+            XI
+          </span>
+
+        </div>
+
+        <span class="reward-spark spark-one">✦</span>
+        <span class="reward-spark spark-two">✦</span>
+        <span class="reward-spark spark-three">•</span>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         DAILY CHALLENGE
+    ==================================================== -->
+
+    <section class="challenge">
+
+      <div class="challenge-icon">
+        ✦
+      </div>
+
+
+      <div class="challenge-copy">
+
+        <span>
+          DAILY CHALLENGE
+        </span>
+
+        <h3>
+          Play 2 matches today
+        </h3>
+
+        <div class="progress-track">
+
+          <div
+            class="progress"
+            style="width:35%">
+          </div>
+
+        </div>
+
+        <small>
+          1 / 2 completed
+        </small>
+
+      </div>
+
+
+      <div class="challenge-reward">
+
+        <strong>
+          +50
+        </strong>
+
+        <span>
+          XI
+        </span>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+
+  <!-- =====================================================
+       BOTTOM NAVIGATION
+  ====================================================== -->
+
+  <nav
+    class="bottom-nav"
+    aria-label="Main navigation">
+
+
+    <button
+      class="nav-item active"
+      data-nav="home"
+      type="button">
+
+      <span class="nav-icon">
+        ⌂
+      </span>
+
+      <span class="nav-label">
+        Home
+      </span>
+
+    </button>
+
+
+    <button
+      class="nav-item"
+      data-nav="rewards"
+      type="button">
+
+      <span class="nav-icon">
+        ◈
+      </span>
+
+      <span class="nav-label">
+        Rewards
+      </span>
+
+      <span class="nav-badge">
+        3
+      </span>
+
+    </button>
+
+
+    <button
+      class="nav-item"
+      data-nav="ranking"
+      type="button">
+
+      <span class="nav-icon">
+        ♛
+      </span>
+
+      <span class="nav-label">
+        Ranking
+      </span>
+
+    </button>
+
+
+    <button
+      class="nav-item"
+      data-nav="profile"
+      type="button">
+
+      <span class="nav-icon">
+        ◉
+      </span>
+
+      <span class="nav-label">
+        Profile
+      </span>
+
+    </button>
+
+  </nav>
+
+
+
+  <!-- =====================================================
+       TOAST
+  ====================================================== -->
+
+  <div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite">
+  </div>
+
+
+
+  <!-- =====================================================
+       APP
+  ====================================================== -->
+
+  <script type="module" src="js/app.js"></script>
+
+</body>
+  </html>
