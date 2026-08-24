@@ -3,12 +3,13 @@ import { games } from "../data/games.js";
 const box = document.querySelector("#games");
 const dots = document.querySelector("#dots");
 
+// Games display
 games.forEach((g, i) => {
-  const c = document.createElement("article");
+  const card = document.createElement("article");
 
-  c.className = "card";
+  card.className = "card";
 
-  c.innerHTML = `
+  card.innerHTML = `
     <div class="art ${g.art}">${g.icon}</div>
 
     <span class="tag">
@@ -27,117 +28,97 @@ games.forEach((g, i) => {
     </div>
   `;
 
-  box.append(c);
+  box.appendChild(card);
 
-  const d = document.createElement("span");
-
-  d.className = `dot${i === 0 ? " active" : ""}`;
-
-  dots.append(d);
+  const dot = document.createElement("span");
+  dot.className = `dot${i === 0 ? " active" : ""}`;
+  dots.appendChild(dot);
 });
 
 
-/* ---------------- CAROUSEL ---------------- */
-
+// Carousel dots
 const cards = [...document.querySelectorAll(".card")];
-const ds = [...document.querySelectorAll(".dot")];
+const dotElements = [...document.querySelectorAll(".dot")];
 
 box.addEventListener(
   "scroll",
   () => {
-    let mid = box.scrollLeft + box.clientWidth / 2;
-    let best = 0;
+    const center = box.scrollLeft + box.clientWidth / 2;
+
+    let closest = 0;
     let distance = Infinity;
 
-    cards.forEach((c, i) => {
-      const q = Math.abs(
-        c.offsetLeft + c.offsetWidth / 2 - mid
-      );
+    cards.forEach((card, index) => {
+      const cardCenter =
+        card.offsetLeft + card.offsetWidth / 2;
 
-      if (q < distance) {
-        distance = q;
-        best = i;
+      const difference = Math.abs(cardCenter - center);
+
+      if (difference < distance) {
+        distance = difference;
+        closest = index;
       }
     });
 
-    ds.forEach((d, i) => {
-      d.classList.toggle("active", i === best);
+    dotElements.forEach((dot, index) => {
+      dot.classList.toggle("active", index === closest);
     });
   },
   { passive: true }
 );
 
 
-/* ---------------- GAME NAVIGATION ---------------- */
-
+// PLAY NOW
 document.querySelectorAll(".play").forEach(button => {
 
   button.addEventListener("click", () => {
 
     const game = games.find(
-      g => g.id === button.dataset.game
+      item => item.id === button.dataset.game
     );
 
     if (!game) return;
 
-
-    /*
-      CARROM
-    */
-
+    // Carrom
     if (game.id === "carrom") {
       window.location.href = "carrom.html";
       return;
     }
 
-
-    /*
-      Future game pages
-    */
-
-    if (game.id === "ludo") {
-      window.location.href = "ludo.html";
-      return;
-    }
-
-    if (game.id === "chess") {
-      window.location.href = "chess.html";
-      return;
-    }
-
-    if (game.id === "pool") {
-      window.location.href = "pool.html";
-      return;
-    }
+    // Other games — temporary
+    alert(
+      `${game.name}\n\n` +
+      `Game mode selection coming next.`
+    );
 
   });
 
 });
 
 
-/* ---------------- SOUND ---------------- */
-
+// Sound button
 const soundButton = document.querySelector("#sound");
 
 if (soundButton) {
-  soundButton.addEventListener("click", e => {
-    e.currentTarget.textContent =
-      e.currentTarget.textContent === "♫"
+  soundButton.addEventListener("click", () => {
+    soundButton.textContent =
+      soundButton.textContent === "♫"
         ? "🔇"
         : "♫";
   });
 }
 
 
-/* ---------------- BOTTOM NAV ---------------- */
-
+// Bottom navigation
 document.querySelectorAll("nav button").forEach(button => {
 
   button.addEventListener("click", () => {
 
     document
       .querySelectorAll("nav button")
-      .forEach(x => x.classList.remove("active"));
+      .forEach(item => {
+        item.classList.remove("active");
+      });
 
     button.classList.add("active");
 
