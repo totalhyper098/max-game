@@ -8,6 +8,11 @@ const dots = document.querySelector("#dots");
 // ==============================
 
 if (box && dots) {
+  // Clear any hardcoded fallback cards/dots from index.html
+  // before rendering the real ones from games.js
+  box.innerHTML = "";
+  dots.innerHTML = "";
+
   games.forEach((g, i) => {
     const card = document.createElement("article");
     card.className = "game-card";
@@ -210,3 +215,4 @@ navButtons.forEach(button => {
 // ==============================
 
 updateActiveDot();
+
