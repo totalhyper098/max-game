@@ -4,6 +4,91 @@ const box = document.querySelector("#games");
 const dots = document.querySelector("#dots");
 
 // ==============================
+// GAME ART TEMPLATES
+// (matches the .carrom-image / .real-carrom etc.
+//  classes defined in styles.css exactly)
+// ==============================
+
+function getGameArt(id) {
+  switch (id) {
+
+    case "carrom":
+      return `
+        <div class="real-carrom">
+          <span class="corner-pocket cp1"></span>
+          <span class="corner-pocket cp2"></span>
+          <span class="corner-pocket cp3"></span>
+          <span class="corner-pocket cp4"></span>
+          <div class="carrom-lines"></div>
+          <div class="carrom-pieces">
+            <span class="gp black"></span>
+            <span class="gp white"></span>
+            <span class="gp black"></span>
+            <span class="gp red"></span>
+            <span class="gp white"></span>
+            <span class="gp black"></span>
+          </div>
+        </div>
+      `;
+
+    case "ludo":
+      return `
+        <div class="real-ludo">
+          <div class="ludo-quadrant red">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="ludo-quadrant blue">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="ludo-quadrant green">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="ludo-quadrant yellow">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="ludo-diamond">
+            <span>◆</span>
+          </div>
+        </div>
+      `;
+
+    case "chess":
+      return `
+        <div class="real-chess">
+          <span>♜</span><span>♞</span><span>♝</span><span>♛</span>
+          <span>♚</span><span>♝</span><span>♞</span><span>♜</span>
+          <span>♟</span><span>♟</span><span>♟</span><span>♟</span>
+          <span>♟</span><span>♟</span><span>♟</span><span>♟</span>
+          <span></span><span></span><span></span><span></span>
+          <span>♙</span><span></span><span></span><span></span>
+          <span></span><span></span><span>♘</span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+      `;
+
+    case "pool":
+      return `
+        <div class="real-pool">
+          <span class="table-pocket t1"></span>
+          <span class="table-pocket t2"></span>
+          <span class="table-pocket t3"></span>
+          <span class="table-pocket t4"></span>
+          <span class="table-pocket t5"></span>
+          <span class="table-pocket t6"></span>
+          <span class="pool-rack-ball pb1">1</span>
+          <span class="pool-rack-ball pb2">8</span>
+          <span class="pool-rack-ball pb3">3</span>
+          <span class="pool-rack-ball pb4">5</span>
+          <span class="cue"></span>
+        </div>
+      `;
+
+    default:
+      return "";
+  }
+}
+
+// ==============================
 // GAMES DISPLAY
 // ==============================
 
@@ -27,12 +112,9 @@ if (box && dots) {
            </button>`;
 
     card.innerHTML = `
-      <div class="game-image ${g.art}">
+      <div class="game-image ${g.id}-image">
+        ${getGameArt(g.id)}
         <div class="image-shade"></div>
-
-        <div class="game-art">
-          ${g.icon}
-        </div>
       </div>
 
       <div class="game-card-content">
