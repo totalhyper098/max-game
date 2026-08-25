@@ -3,11 +3,19 @@ import { games } from "../data/games.js";
 const box = document.querySelector("#games");
 const dots = document.querySelector("#dots");
 
-// Games display
+// ==============================
+// GAMES DISPLAY
+// ==============================
+
 games.forEach((g, i) => {
   const card = document.createElement("article");
-
   card.className = "card";
+
+  // Carrom gets a real HTML link
+  const playControl =
+    g.id === "carrom"
+      ? `<a class="play" href="./carrom.html">PLAY NOW →</a>`
+      : `<button class="play" data-game="${g.id}">PLAY NOW →</button>`;
 
   card.innerHTML = `
     <div class="art ${g.art}">${g.icon}</div>
@@ -22,9 +30,7 @@ games.forEach((g, i) => {
 
     <div class="bottom">
       <span>${g.players}</span>
-      <button class="play" data-game="${g.id}">
-        PLAY NOW →
-      </button>
+      ${playControl}
     </div>
   `;
 
@@ -36,7 +42,10 @@ games.forEach((g, i) => {
 });
 
 
-// Carousel dots
+// ==============================
+// CAROUSEL DOTS
+// ==============================
+
 const cards = [...document.querySelectorAll(".card")];
 const dotElements = [...document.querySelectorAll(".dot")];
 
@@ -68,9 +77,11 @@ box.addEventListener(
 );
 
 
-// PLAY NOW
-document.querySelectorAll(".play").forEach(button => {
+// ==============================
+// OTHER GAME BUTTONS
+// ==============================
 
+document.querySelectorAll(".play[data-game]").forEach(button => {
   button.addEventListener("click", () => {
 
     const game = games.find(
@@ -79,24 +90,18 @@ document.querySelectorAll(".play").forEach(button => {
 
     if (!game) return;
 
-    // Carrom
-    if (game.id === "carrom") {
-      window.location.href = "carrom.html";
-      return;
-    }
-
-    // Other games — temporary
     alert(
       `${game.name}\n\n` +
       `Game mode selection coming next.`
     );
-
   });
-
 });
 
 
-// Sound button
+// ==============================
+// SOUND BUTTON
+// ==============================
+
 const soundButton = document.querySelector("#sound");
 
 if (soundButton) {
@@ -109,7 +114,10 @@ if (soundButton) {
 }
 
 
-// Bottom navigation
+// ==============================
+// BOTTOM NAVIGATION
+// ==============================
+
 document.querySelectorAll("nav button").forEach(button => {
 
   button.addEventListener("click", () => {
@@ -121,7 +129,6 @@ document.querySelectorAll("nav button").forEach(button => {
       });
 
     button.classList.add("active");
-
   });
 
 });
