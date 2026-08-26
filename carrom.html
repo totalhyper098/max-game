@@ -357,17 +357,451 @@
   </main>
 
   <script>
-    function toggleOptions(id) {
-      const box = document.getElementById(id);
+  // ==========================================
+  // MAXGAME CARROM MODE SYSTEM
+  // ==========================================
 
-      document.querySelectorAll('.options').forEach(option => {
-        if (option !== box) {
-          option.classList.remove('show');
-        }
+  let selectedMode = null;
+  let selectedPlayers = null;
+  let selectedDifficulty = null;
+
+
+  // ==========================================
+  // OPEN / CLOSE MODE OPTIONS
+  // ==========================================
+
+  function toggleOptions(id) {
+    const box = document.getElementById(id);
+
+    document.querySelectorAll(".options").forEach(option => {
+      if (option !== box) {
+        option.classList.remove("show");
+      }
+    });
+
+    box.classList.toggle("show");
+  }
+
+
+  // ==========================================
+  // CREATE DIFFICULTY PANEL
+  // ==========================================
+
+  function showDifficulty(aiCount) {
+
+    const oldPanel =
+      document.getElementById("difficultyOptions");
+
+    if (oldPanel) {
+      oldPanel.remove();
+    }
+
+    selectedMode = "ai";
+    selectedPlayers = aiCount;
+    selectedDifficulty = null;
+
+    const panel = document.createElement("div");
+
+    panel.id = "difficultyOptions";
+    panel.className = "options show";
+
+    panel.innerHTML = `
+      <div class="options-title">
+        CHOOSE AI DIFFICULTY
+      </div>
+
+      <div class="option-grid">
+
+        <button
+          class="option-btn difficulty-btn"
+          data-difficulty="easy">
+          Easy
+        </button>
+
+        <button
+          class="option-btn difficulty-btn"
+          data-difficulty="medium">
+          Medium
+        </button>
+
+        <button
+          class="option-btn difficulty-btn"
+          data-difficulty="hard">
+          Hard
+        </button>
+
+      </div>
+    `;
+
+    document
+      .getElementById("aiOptions")
+      .after(panel);
+
+
+    panel
+      .querySelectorAll(".difficulty-btn")
+      .forEach(button => {
+
+        button.addEventListener("click", () => {
+
+          panel
+            .querySelectorAll(".difficulty-btn")
+            .forEach(btn => {
+              btn.style.background = "";
+              btn.style.color = "";
+            });
+
+          button.style.background = "#b8ff3d";
+          button.style.color = "#07120d";
+
+          selectedDifficulty =
+            button.dataset.difficulty;
+
+          createStartButton();
+        });
+
+      });
+  }
+
+
+  // ==========================================
+  // AI PLAYER BUTTONS
+  // ==========================================
+
+  document
+    .querySelectorAll("#aiOptions .option-btn")
+    .forEach((button, index) => {
+
+      button.addEventListener("click", () => {
+
+        const aiCount = index + 1;
+
+        showDifficulty(aiCount);
+
       });
 
-      box.classList.toggle('show');
+    });
+
+
+  // ==========================================
+  // LOCAL PLAYER BUTTONS
+  // ==========================================
+
+  document
+    .querySelectorAll("#localOptions .option-btn")
+    .forEach((button, index) => {
+
+      button.addEventListener("click", () => {
+
+        selectedMode = "local";
+        selectedPlayers = index + 2;
+        selectedDifficulty = null;
+
+        document
+          .querySelectorAll("#localOptions .option-btn")
+          .forEach(btn => {
+            btn.style.background = "";
+            btn.style.color = "";
+          });
+
+        button.style.background = "#b8ff3d";
+        button.style.color = "#07120d";
+
+        createStartButton();
+
+      });
+
+    });
+
+
+  // ==========================================
+  // START BUTTON
+  // ==========================================
+
+  function createStartButton() {
+
+    const oldButton =
+      document.getElementById("startCarromButton");
+
+    if (oldButton) {
+      oldButton.remove();
     }
+
+
+    const button = document.createElement("button");
+
+    button.id = "startCarromButton";
+
+    button.className = "option-btn";
+
+    button.style.cssText = `
+      width:100%;
+      margin-top:14px;
+      padding:15px;
+      border:0;
+      border-radius:15px;
+      background:#b8ff3d;
+      color:#07120d;
+      font-size:14px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 10px 30px rgba(184,255,61,.15);
+    `;
+
+
+    let label = "START CARROM";
+
+
+    if (selectedMode === "ai") {
+
+      label =
+        `START — ${selectedPlayers} AI`;
+
+      if (selectedDifficulty) {
+        label +=
+          ` • ${selectedDifficulty.toUpperCase()}`;
+      }
+
+    }
+
+
+    if (selectedMode === "local") {
+
+      label =
+        `START — ${selectedPlayers} PLAYERS`;
+
+    }
+
+
+    button.textContent = label;
+
+
+    if (selectedMode === "ai" && !selectedDifficulty) {
+      button.disabled = true;
+      button.style.opacity = ".45";
+      button.style.cursor = "not-allowed";
+    }
+
+
+    document
+      .querySelector(".mode-section")
+      .appendChild(button);
+
+
+    button.addEventListener("click", startCarrom);
+  }
+
+
+  // ==========================================
+  // START CARROM
+  // ==========================================
+
+  function startCarrom() {
+
+    if (!selectedMode) {
+      return;
+    }
+
+    if (
+      selectedMode === "ai" &&
+      !selectedDifficulty
+    ) {
+      return;
+    }
+
+
+    // Save game configuration
+    localStorage.setItem(
+      "maxgame_carrom_mode",
+      selectedMode
+    );
+
+    localStorage.setItem(
+      "maxgame_carrom_players",
+      String(selectedPlayers)
+    );
+
+
+    if (selectedDifficulty) {
+
+      localStorage.setItem(
+        "maxgame_carrom_difficulty",
+        selectedDifficulty
+      );
+
+    } else {
+
+      localStorage.removeItem(
+        "maxgame_carrom_difficulty"
+      );
+
+    }
+
+
+    // Temporary confirmation
+    showGameReady();
+
+  }
+
+
+  // ==========================================
+  // GAME READY SCREEN
+  // ==========================================
+
+  function showGameReady() {
+
+    const page =
+      document.querySelector(".carrom-page");
+
+    const modeText =
+      selectedMode === "ai"
+        ? "AI GAME"
+        : "LOCAL MULTIPLAYER";
+
+
+    const difficultyText =
+      selectedDifficulty
+        ? `
+          <div>
+            Difficulty:
+            <strong>
+              ${selectedDifficulty.toUpperCase()}
+            </strong>
+          </div>
+        `
+        : "";
+
+
+    page.innerHTML = `
+
+      <header class="carrom-header">
+
+        <button
+          class="back-btn"
+          id="backToModes"
+          type="button">
+          ← Back
+        </button>
+
+        <div class="xi-balance">
+          <span class="xi-icon">XI</span>
+          <strong>0</strong>
+        </div>
+
+      </header>
+
+
+      <section
+        style="
+          min-height:70vh;
+          display:grid;
+          place-items:center;
+          text-align:center;
+        ">
+
+        <div>
+
+          <div
+            style="
+              width:90px;
+              height:90px;
+              margin:auto;
+              display:grid;
+              place-items:center;
+              border-radius:28px;
+              background:rgba(184,255,61,.10);
+              border:1px solid rgba(184,255,61,.20);
+              font-size:44px;
+            ">
+            🎯
+          </div>
+
+
+          <div
+            style="
+              margin-top:22px;
+              color:#b8ff3d;
+              font-size:10px;
+              font-weight:900;
+              letter-spacing:1.5px;
+            ">
+            ${modeText}
+          </div>
+
+
+          <h1
+            style="
+              margin-top:8px;
+              font-size:40px;
+              line-height:1;
+            ">
+            CARROM READY
+          </h1>
+
+
+          <div
+            style="
+              margin-top:18px;
+              color:#9aa89f;
+              line-height:2;
+              font-size:14px;
+            ">
+
+            <div>
+              Players:
+              <strong>
+                ${selectedPlayers}
+              </strong>
+            </div>
+
+            ${difficultyText}
+
+          </div>
+
+
+          <button
+            id="launchGame"
+            style="
+              margin-top:25px;
+              width:100%;
+              max-width:280px;
+              padding:16px 22px;
+              border:0;
+              border-radius:15px;
+              background:#b8ff3d;
+              color:#07120d;
+              font-size:14px;
+              font-weight:900;
+              cursor:pointer;
+            ">
+            START GAME →
+          </button>
+
+        </div>
+
+      </section>
+    `;
+
+
+    document
+      .getElementById("backToModes")
+      .addEventListener("click", () => {
+        location.reload();
+      });
+
+
+    document
+      .getElementById("launchGame")
+      .addEventListener("click", () => {
+
+        alert(
+          "Carrom Game Engine\n\n" +
+          "Next step: Board + Striker + Physics"
+        );
+
+      });
+
+  }
   </script>
 
 </body>
