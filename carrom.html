@@ -784,22 +784,746 @@
 
 
     document
-      .getElementById("backToModes")
-      .addEventListener("click", () => {
-        location.reload();
+.getElementById("launchGame")
+.addEventListener("click", launchRealCarrom);
+
+
+function launchRealCarrom() {
+
+  const page = document.querySelector(".carrom-page");
+
+  page.innerHTML = `
+    <style>
+      .game-screen {
+        min-height: 100vh;
+        padding: 16px 10px 30px;
+      }
+
+      .game-top {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:12px;
+      }
+
+      .game-info {
+        display:flex;
+        gap:8px;
+        align-items:center;
+      }
+
+      .score-box,
+      .timer-box {
+        padding:9px 12px;
+        border-radius:12px;
+        background:rgba(255,255,255,.06);
+        border:1px solid rgba(255,255,255,.1);
+        font-size:13px;
+      }
+
+      .timer-box strong {
+        color:#b8ff3d;
+        font-size:17px;
+      }
+
+      .game-board-wrap {
+        width:100%;
+        display:flex;
+        justify-content:center;
+        margin-top:12px;
+      }
+
+      #carromCanvas {
+        width:min(94vw,520px);
+        height:min(94vw,520px);
+        max-width:520px;
+        max-height:520px;
+        border-radius:22px;
+        box-shadow:
+          0 20px 60px rgba(0,0,0,.55),
+          0 0 0 5px #2b160b;
+        touch-action:none;
+      }
+
+      .turn-text {
+        text-align:center;
+        margin-top:15px;
+        color:#9aa89f;
+        font-size:13px;
+      }
+
+      .turn-text strong {
+        color:#b8ff3d;
+      }
+
+      .power-bar {
+        width:min(90vw,420px);
+        height:9px;
+        margin:12px auto;
+        background:rgba(255,255,255,.08);
+        border-radius:20px;
+        overflow:hidden;
+      }
+
+      .power-fill {
+        width:0%;
+        height:100%;
+        background:#b8ff3d;
+        transition:.05s;
+      }
+
+      .game-hint {
+        text-align:center;
+        color:#718078;
+        font-size:12px;
+        margin-top:10px;
+      }
+    </style>
+
+    <div class="game-screen">
+
+      <div class="game-top">
+
+        <button
+          id="exitGame"
+          class="back-btn"
+          type="button">
+          ← Exit
+        </button>
+
+        <div class="game-info">
+
+          <div class="score-box">
+            YOU: <strong id="playerScore">0</strong>
+          </div>
+
+          <div class="score-box">
+            AI: <strong id="aiScore">0</strong>
+          </div>
+
+          <div class="timer-box">
+            ⏱ <strong id="gameTimer">20</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="game-board-wrap">
+        <canvas id="carromCanvas"></canvas>
+      </div>
+
+      <div class="turn-text">
+        YOUR TURN — <strong>Drag striker backwards to shoot</strong>
+      </div>
+
+      <div class="power-bar">
+        <div id="powerFill" class="power-fill"></div>
+      </div>
+
+      <div class="game-hint">
+        Pull farther = more power
+      </div>
+
+    </div>
+  `;
+
+
+  document
+    .getElementById("exitGame")
+    .addEventListener("click", () => {
+      location.reload();
+    });
+
+
+  const canvas = document.getElementById("carromCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const size = 700;
+
+  canvas.width = size;
+  canvas.height = size;
+
+
+  const board = {
+    x: 35,
+    y: 35,
+    w: 630,
+    h: 630
+  };
+
+
+  const pockets = [
+    [board.x, board.y],
+    [board.x + board.w, board.y],
+    [board.x, board.y + board.h],
+    [board.x + board.w, board.y + board.h]
+  ];
+
+
+  let score = 0;
+  let aiScore = 0;
+  let timeLeft = 20;
+
+  let aiming = false;
+  let dragging = false;
+
+  let mouseX = size / 2;
+  let mouseY = board.y + board.h - 85;
+
+  let striker = {
+    x: size / 2,
+    y: board.y + board.h - 85,
+    r: 24,
+    vx: 0,
+    vy: 0,
+    moving: false
+  };
+
+
+  const pieces = [];
+
+
+  function addPiece(x, y, type) {
+
+    pieces.push({
+      x,
+      y,
+      r: 16,
+      type,
+      vx: 0,
+      vy: 0,
+      moving: false,
+      pocketed: false
+    });
+
+  }
+
+
+  // Center formation
+
+  addPiece(350,350,"queen");
+
+  const formation = [
+    [350,315,"white"],
+    [350,385,"white"],
+    [315,350,"black"],
+    [385,350,"black"],
+    [325,325,"black"],
+    [375,325,"white"],
+    [325,375,"white"],
+    [375,375,"black"]
+  ];
+
+  formation.forEach(p => addPiece(...p));
+
+
+  function drawBoard() {
+
+    ctx.clearRect(0,0,size,size);
+
+    // Outer wood
+
+    ctx.fillStyle = "#5a3015";
+    ctx.fillRect(0,0,size,size);
+
+    // Board
+
+    ctx.fillStyle = "#c58a45";
+    ctx.fillRect(
+      board.x,
+      board.y,
+      board.w,
+      board.h
+    );
+
+    // Playing surface
+
+    ctx.fillStyle = "#e4b76c";
+
+    ctx.fillRect(
+      board.x + 28,
+      board.y + 28,
+      board.w - 56,
+      board.h - 56
+    );
+
+
+    // Inner lines
+
+    ctx.strokeStyle = "#8b3e22";
+    ctx.lineWidth = 5;
+
+    ctx.strokeRect(
+      board.x + 70,
+      board.y + 70,
+      board.w - 140,
+      board.h - 140
+    );
+
+
+    // Center circle
+
+    ctx.beginPath();
+
+    ctx.arc(
+      size / 2,
+      size / 2,
+      58,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.stroke();
+
+
+    // Center dot
+
+    ctx.beginPath();
+
+    ctx.arc(
+      size / 2,
+      size / 2,
+      7,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fillStyle = "#d94b58";
+    ctx.fill();
+
+
+    // Pockets
+
+    pockets.forEach(([x,y]) => {
+
+      ctx.beginPath();
+
+      ctx.arc(
+        x,
+        y,
+        32,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fillStyle = "#17100c";
+      ctx.fill();
+
+    });
+
+
+    // Pieces
+
+    pieces.forEach(piece => {
+
+      if (piece.pocketed) return;
+
+      ctx.beginPath();
+
+      ctx.arc(
+        piece.x,
+        piece.y,
+        piece.r,
+        0,
+        Math.PI * 2
+      );
+
+      if (piece.type === "black") {
+        ctx.fillStyle = "#171717";
+      }
+
+      if (piece.type === "white") {
+        ctx.fillStyle = "#f4ead7";
+      }
+
+      if (piece.type === "queen") {
+        ctx.fillStyle = "#d94b58";
+      }
+
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(0,0,0,.35)";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+    });
+
+
+    // Striker
+
+    ctx.beginPath();
+
+    ctx.arc(
+      striker.x,
+      striker.y,
+      striker.r,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fillStyle = "#f5f5f5";
+    ctx.fill();
+
+    ctx.strokeStyle = "#8b3e22";
+    ctx.lineWidth = 5;
+    ctx.stroke();
+
+
+    // Aim line
+
+    if (aiming && !striker.moving) {
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        striker.x,
+        striker.y
+      );
+
+      ctx.lineTo(
+        mouseX,
+        mouseY
+      );
+
+      ctx.strokeStyle =
+        "rgba(184,255,61,.8)";
+
+      ctx.lineWidth = 4;
+      ctx.setLineDash([12,10]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+    }
+
+  }
+
+
+  function updatePhysics() {
+
+    let somethingMoving = false;
+
+
+    pieces.forEach(piece => {
+
+      if (piece.pocketed) return;
+
+      piece.x += piece.vx;
+      piece.y += piece.vy;
+
+      piece.vx *= .985;
+      piece.vy *= .985;
+
+
+      if (
+        Math.abs(piece.vx) > .05 ||
+        Math.abs(piece.vy) > .05
+      ) {
+        somethingMoving = true;
+      }
+
+
+      const left =
+        board.x + 28 + piece.r;
+
+      const right =
+        board.x + board.w - 28 - piece.r;
+
+      const top =
+        board.y + 28 + piece.r;
+
+      const bottom =
+        board.y + board.h - 28 - piece.r;
+
+
+      if (piece.x < left) {
+        piece.x = left;
+        piece.vx *= -0.85;
+      }
+
+      if (piece.x > right) {
+        piece.x = right;
+        piece.vx *= -0.85;
+      }
+
+      if (piece.y < top) {
+        piece.y = top;
+        piece.vy *= -0.85;
+      }
+
+      if (piece.y > bottom) {
+        piece.y = bottom;
+        piece.vy *= -0.85;
+      }
+
+
+      // Pocket detection
+
+      pockets.forEach(([px,py]) => {
+
+        const dx = piece.x - px;
+        const dy = piece.y - py;
+
+        const distance =
+          Math.sqrt(dx*dx + dy*dy);
+
+        if (distance < 30) {
+
+          piece.pocketed = true;
+
+          if (piece.type === "black") {
+            score += 10;
+          }
+
+          if (piece.type === "white") {
+            score += 20;
+          }
+
+          if (piece.type === "queen") {
+            score += 50;
+          }
+
+          document
+            .getElementById("playerScore")
+            .textContent = score;
+
+        }
+
       });
 
+    });
+
+
+    striker.x += striker.vx;
+    striker.y += striker.vy;
+
+    striker.vx *= .985;
+    striker.vy *= .985;
+
+
+    if (
+      Math.abs(striker.vx) > .05 ||
+      Math.abs(striker.vy) > .05
+    ) {
+      somethingMoving = true;
+    }
+
+
+    const left = board.x + 28 + striker.r;
+    const right = board.x + board.w - 28 - striker.r;
+    const top = board.y + 28 + striker.r;
+    const bottom = board.y + board.h - 28 - striker.r;
+
+
+    if (striker.x < left) {
+      striker.x = left;
+      striker.vx *= -0.85;
+    }
+
+    if (striker.x > right) {
+      striker.x = right;
+      striker.vx *= -0.85;
+    }
+
+    if (striker.y < top) {
+      striker.y = top;
+      striker.vy *= -0.85;
+    }
+
+    if (striker.y > bottom) {
+      striker.y = bottom;
+      striker.vy *= -0.85;
+    }
+
+
+    if (!somethingMoving && striker.moving) {
+
+      striker.moving = false;
+
+      resetStriker();
+
+    }
+
+  }
+
+
+  function resetStriker() {
+
+    striker.x = size / 2;
+    striker.y = board.y + board.h - 85;
+
+    striker.vx = 0;
+    striker.vy = 0;
+
+    aiming = false;
+
+    timeLeft = 20;
+
+  }
+
+
+  function shoot() {
+
+    const dx = striker.x - mouseX;
+    const dy = striker.y - mouseY;
+
+    const distance =
+      Math.sqrt(dx*dx + dy*dy);
+
+    if (distance < 15) return;
+
+
+    const power =
+      Math.min(distance / 8, 18);
+
+
+    striker.vx =
+      (dx / distance) * power;
+
+    striker.vy =
+      (dy / distance) * power;
+
+    striker.moving = true;
+
+    aiming = false;
 
     document
-      .getElementById("launchGame")
-      .addEventListener("click", () => {
+      .getElementById("powerFill")
+      .style.width = "0%";
 
-        alert(
-          "Carrom Game Engine\n\n" +
-          "Next step: Board + Striker + Physics"
-        );
+  }
 
-      });
+
+  function pointerPosition(e) {
+
+    const rect =
+      canvas.getBoundingClientRect();
+
+    return {
+
+      x:
+        (e.clientX - rect.left)
+        * size / rect.width,
+
+      y:
+        (e.clientY - rect.top)
+        * size / rect.height
+
+    };
+
+  }
+
+
+  canvas.addEventListener(
+    "pointerdown",
+    e => {
+
+      if (striker.moving) return;
+
+      const p = pointerPosition(e);
+
+      const dx = p.x - striker.x;
+      const dy = p.y - striker.y;
+
+      const distance =
+        Math.sqrt(dx*dx + dy*dy);
+
+      if (distance < 45) {
+
+        dragging = true;
+        aiming = true;
+
+        canvas.setPointerCapture(e.pointerId);
+
+      }
+
+    }
+  );
+
+
+  canvas.addEventListener(
+    "pointermove",
+    e => {
+
+      if (!dragging) return;
+
+      const p = pointerPosition(e);
+
+      mouseX = p.x;
+      mouseY = p.y;
+
+
+      const dx =
+        striker.x - mouseX;
+
+      const dy =
+        striker.y - mouseY;
+
+      const distance =
+        Math.sqrt(dx*dx + dy*dy);
+
+      const power =
+        Math.min(distance / 3, 100);
+
+      document
+        .getElementById("powerFill")
+        .style.width =
+        power + "%";
+
+    }
+  );
+
+
+  canvas.addEventListener(
+    "pointerup",
+    e => {
+
+      if (!dragging) return;
+
+      dragging = false;
+
+      shoot();
+
+    }
+  );
+
+
+  // 20 second timer
+
+  setInterval(() => {
+
+    if (striker.moving) return;
+
+    timeLeft--;
+
+    document
+      .getElementById("gameTimer")
+      .textContent = timeLeft;
+
+
+    if (timeLeft <= 0) {
+
+      resetStriker();
+
+    }
+
+  },1000);
+
+
+  function gameLoop() {
+
+    updatePhysics();
+
+    drawBoard();
+
+    requestAnimationFrame(gameLoop);
+
+  }
+
+
+  gameLoop();
+
+}
 
   }
   </script>
