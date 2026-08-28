@@ -792,142 +792,304 @@ function launchRealCarrom() {
 
   const page = document.querySelector(".carrom-page");
 
-  page.innerHTML = `
-    <style>
-      .game-screen {
-        min-height: 100vh;
-        padding: 16px 10px 30px;
-      }
+  
+page.innerHTML = `
+<style>
 
-      .game-top {
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        margin-bottom:12px;
-      }
+.game-screen{
+  min-height:100vh;
+  padding:14px 10px 30px;
+  max-width:700px;
+  margin:auto;
+}
 
-      .game-info {
-        display:flex;
-        gap:8px;
-        align-items:center;
-      }
+.game-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:12px;
+}
 
-      .score-box,
-      .timer-box {
-        padding:9px 12px;
-        border-radius:12px;
-        background:rgba(255,255,255,.06);
-        border:1px solid rgba(255,255,255,.1);
-        font-size:13px;
-      }
+.player-card{
+  flex:1;
+  min-width:0;
+  padding:10px 12px;
+  border-radius:18px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.10);
+  text-align:center;
+  transition:.2s ease;
+}
 
-      .timer-box strong {
-        color:#b8ff3d;
-        font-size:17px;
-      }
+.player-card.active{
+  border-color:#b8ff3d;
+  background:rgba(184,255,61,.09);
+  box-shadow:0 0 20px rgba(184,255,61,.08);
+}
 
-      .game-board-wrap {
-        width:100%;
-        display:flex;
-        justify-content:center;
-        margin-top:12px;
-      }
+.player-name{
+  font-size:12px;
+  font-weight:800;
+  color:#9aa89f;
+  letter-spacing:.5px;
+}
 
-      #carromCanvas {
-        width:min(94vw,520px);
-        height:min(94vw,520px);
-        max-width:520px;
-        max-height:520px;
-        border-radius:22px;
-        box-shadow:
-          0 20px 60px rgba(0,0,0,.55),
-          0 0 0 5px #2b160b;
-        touch-action:none;
-      }
+.player-score{
+  margin-top:3px;
+  font-size:22px;
+  font-weight:900;
+  color:#fff;
+}
 
-      .turn-text {
-        text-align:center;
-        margin-top:15px;
-        color:#9aa89f;
-        font-size:13px;
-      }
+.timer-box{
+  width:58px;
+  height:58px;
+  flex-shrink:0;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  border:2px solid rgba(184,255,61,.55);
+  color:#b8ff3d;
+  font-size:19px;
+  font-weight:900;
+}
 
-      .turn-text strong {
-        color:#b8ff3d;
-      }
+.timer-box small{
+  display:block;
+  font-size:7px;
+  color:#89978f;
+  text-align:center;
+  margin-top:-12px;
+}
 
-      .power-bar {
-        width:min(90vw,420px);
-        height:9px;
-        margin:12px auto;
-        background:rgba(255,255,255,.08);
-        border-radius:20px;
-        overflow:hidden;
-      }
+.game-controls{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-bottom:12px;
+}
 
-      .power-fill {
-        width:0%;
-        height:100%;
-        background:#b8ff3d;
-        transition:.05s;
-      }
+.game-control-btn{
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  padding:9px 13px;
+  border-radius:12px;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+}
 
-      .game-hint {
-        text-align:center;
-        color:#718078;
-        font-size:12px;
-        margin-top:10px;
-      }
-    </style>
+.game-control-btn:active{
+  transform:scale(.96);
+}
 
-    <div class="game-screen">
+.game-board-wrap{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  position:relative;
+}
 
-      <div class="game-top">
+#carromCanvas{
+  width:min(94vw,620px);
+  height:min(94vw,620px);
+  max-width:620px;
+  max-height:620px;
+  border-radius:22px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.55),
+    0 0 0 5px #2b160b;
+  touch-action:none;
+}
 
-        <button
-          id="exitGame"
-          class="back-btn"
-          type="button">
-          ← Exit
-        </button>
+.turn-panel{
+  text-align:center;
+  margin-top:14px;
+}
 
-        <div class="game-info">
+.turn-label{
+  color:#89978f;
+  font-size:11px;
+  letter-spacing:1px;
+  font-weight:800;
+}
 
-          <div class="score-box">
-            YOU: <strong id="playerScore">0</strong>
-          </div>
+.turn-player{
+  margin-top:4px;
+  color:#b8ff3d;
+  font-size:17px;
+  font-weight:900;
+}
 
-          <div class="score-box">
-            AI: <strong id="aiScore">0</strong>
-          </div>
+.power-bar{
+  width:min(90vw,430px);
+  height:9px;
+  margin:12px auto 0;
+  background:rgba(255,255,255,.08);
+  border-radius:20px;
+  overflow:hidden;
+}
 
-          <div class="timer-box">
-            ⏱ <strong id="gameTimer">20</strong>
-          </div>
+.power-fill{
+  width:0%;
+  height:100%;
+  background:#b8ff3d;
+  transition:.05s;
+}
 
-        </div>
+.game-hint{
+  text-align:center;
+  color:#718078;
+  font-size:11px;
+  margin-top:8px;
+}
 
+.rules-panel{
+  display:none;
+  margin:14px auto 0;
+  max-width:500px;
+  padding:18px;
+  border-radius:20px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.09);
+  color:#aab5ae;
+  line-height:1.6;
+  font-size:12px;
+}
+
+.rules-panel.show{
+  display:block;
+}
+
+.rules-panel h3{
+  margin:0 0 10px;
+  color:#b8ff3d;
+  font-size:15px;
+}
+
+.rules-panel strong{
+  color:#fff;
+}
+
+</style>
+
+<div class="game-screen">
+
+  <div class="game-header">
+
+    <div class="player-card active" id="playerOneCard">
+      <div class="player-name">PLAYER ONE</div>
+      <div class="player-score">
+        <span id="playerScore">0</span>
       </div>
-
-      <div class="game-board-wrap">
-        <canvas id="carromCanvas"></canvas>
-      </div>
-
-      <div class="turn-text">
-        YOUR TURN — <strong>Drag striker backwards to shoot</strong>
-      </div>
-
-      <div class="power-bar">
-        <div id="powerFill" class="power-fill"></div>
-      </div>
-
-      <div class="game-hint">
-        Pull farther = more power
-      </div>
-
     </div>
-  `;
 
+    <div class="timer-box">
+      <div>
+        <span id="gameTimer">20</span>
+        <small>SEC</small>
+      </div>
+    </div>
+
+    <div class="player-card" id="playerTwoCard">
+      <div class="player-name">PLAYER TWO</div>
+      <div class="player-score">
+        <span id="aiScore">0</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="game-controls">
+
+    <button
+      id="exitGame"
+      class="game-control-btn"
+      type="button">
+      ← EXIT
+    </button>
+
+    <button
+      id="pauseGame"
+      class="game-control-btn"
+      type="button">
+      ⏸ PAUSE
+    </button>
+
+    <button
+      id="rulesButton"
+      class="game-control-btn"
+      type="button">
+      📖 RULES
+    </button>
+
+  </div>
+
+  <div class="game-board-wrap">
+
+    <canvas id="carromCanvas"></canvas>
+
+  </div>
+
+  <div class="turn-panel">
+
+    <div class="turn-label">
+      CURRENT TURN
+    </div>
+
+    <div
+      class="turn-player"
+      id="turnPlayer">
+      PLAYER ONE
+    </div>
+
+  </div>
+
+  <div class="power-bar">
+    <div
+      id="powerFill"
+      class="power-fill">
+    </div>
+  </div>
+
+  <div class="game-hint">
+    Pull the striker backwards and release to shoot
+  </div>
+
+  <div
+    id="rulesPanel"
+    class="rules-panel">
+
+    <h3>📖 CARROM RULES</h3>
+
+    <div>
+      ⚫ Black coin = <strong>10 points</strong>
+    </div>
+
+    <div>
+      ⚪ White coin = <strong>20 points</strong>
+    </div>
+
+    <div>
+      🔴 Queen = <strong>50 points</strong>
+    </div>
+
+    <div>
+      🏆 First player to <strong>180 points</strong> wins.
+    </div>
+
+    <div>
+      ⏱ Each turn has <strong>20 seconds</strong>.
+    </div>
+
+  </div>
+
+</div>
+`;
+          
 
   document
     .getElementById("exitGame")
