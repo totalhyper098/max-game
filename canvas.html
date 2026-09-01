@@ -14,7 +14,6 @@
   --gold:#ffd86a; --white:#f6faf7; --text:#e8f0eb;
   --muted:#8b9c93; --muted2:#64756d;
   --line:rgba(255,255,255,.09); --line2:rgba(199,255,85,.18);
-  --wood-dark:#3e2412; --wood-mid:#8b5527; --wood-light:#d79a50;
   --radius:20px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;}
@@ -31,17 +30,15 @@ body{
 button{font:inherit;cursor:pointer;border:0;background:none;color:inherit;}
 button:active{transform:scale(.96);}
 .hidden{display:none!important;}
+svg{display:block;}
 
 /* ===== TOP BAR ===== */
-.topbar{
-  display:flex; align-items:center; gap:8px;
-  padding:10px 12px; flex:0 0 auto;
-}
+.topbar{ display:flex; align-items:center; gap:8px; padding:10px 12px; flex:0 0 auto; }
 .icon-btn{
   width:38px;height:38px;border-radius:12px;
   display:grid;place-items:center;
   background:rgba(255,255,255,.05);border:1px solid var(--line);
-  font-size:16px;
+  color:var(--text);
 }
 .mode-pill{
   flex:1; height:38px; display:flex; align-items:center; justify-content:center;
@@ -86,7 +83,6 @@ button:active{transform:scale(.96);}
 .dot.q{background:radial-gradient(circle at 30% 30%,#e9695c,#a52318);}
 .dot.b{background:radial-gradient(circle at 30% 30%,#3a3a3a,#0a0a0a);}
 .dot.w{background:radial-gradient(circle at 30% 30%,#fffdf6,#cfc2a3);}
-.pausebtn{margin-left:4px;}
 
 /* power bar */
 .powerwrap{
@@ -101,13 +97,12 @@ button:active{transform:scale(.96);}
 .powerbar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--green2),var(--gold));border-radius:4px;}
 
 /* ===== BOARD ===== */
-.boardarea{flex:1 1 auto; display:flex; align-items:center; justify-content:center; min-height:0; position:relative; padding:2px 10px;}
-.boardwrap{position:relative; width:min(94vw, 78vh, 640px); aspect-ratio:1/1;}
-canvas{width:100%;height:100%;display:block;touch-action:none;border-radius:24px;}
+.boardarea{flex:1 1 auto; display:flex; align-items:center; justify-content:center; min-height:0; position:relative; padding:2px 8px;}
+.boardwrap{position:relative; width:min(96vw, 82vh, 660px); aspect-ratio:1/1;}
+canvas{width:100%;height:100%;display:block;touch-action:none;}
 .hint{
-  position:absolute; left:50%; bottom:-30px; transform:translateX(-50%);
+  position:absolute; left:50%; bottom:-26px; transform:translateX(-50%);
   font-size:10px; color:var(--muted); text-align:center; white-space:nowrap;
-  display:flex; align-items:center; gap:6px;
 }
 
 /* ===== BOTTOM PLAYERS (3/4p) ===== */
@@ -171,7 +166,7 @@ canvas{width:100%;height:100%;display:block;touch-action:none;border-radius:24px
 .toggle-row:first-child{border-top:0;}
 .switch{width:42px;height:24px;border-radius:999px;background:rgba(255,255,255,.1);position:relative;border:1px solid var(--line);}
 .switch.on{background:var(--green2);}
-.switch i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;}
+.switch i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;display:block;}
 .switch.on i{left:20px;}
 .toast{
   position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);
@@ -187,8 +182,8 @@ canvas{width:100%;height:100%;display:block;touch-action:none;border-radius:24px
 <div class="topbar">
   <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
   <div class="mode-pill" id="modePill">2 PLAYER</div>
-  <button class="icon-btn" id="soundBtn" aria-label="Sound">🔊</button>
-  <button class="icon-btn" id="pauseBtn" aria-label="Pause">⏸</button>
+  <button class="icon-btn" id="soundBtn" aria-label="Sound"></button>
+  <button class="icon-btn" id="pauseBtn" aria-label="Pause"></button>
 </div>
 
 <!-- TOP PLAYERS -->
@@ -222,7 +217,7 @@ canvas{width:100%;height:100%;display:block;touch-action:none;border-radius:24px
   <div class="boardwrap" id="boardWrap">
     <div class="powerwrap" id="powerWrap">POWER<div class="powerbar"><i id="powerBar"></i></div></div>
     <canvas id="board"></canvas>
-    <div class="hint">👆 Drag rail to place · pull striker back to shoot</div>
+    <div class="hint">👆 Drag the outer rail to place · pull striker back to shoot</div>
   </div>
 </div>
 
@@ -293,13 +288,13 @@ canvas{width:100%;height:100%;display:block;touch-action:none;border-radius:24px
     <h2>Rules</h2>
     <div class="sub">How to play Carrom</div>
     <div class="rules">
-      <p><b>Scoring</b> — Black = 10 pts · White = 20 pts · Queen = 50 pts. First to <b>180 points</b> wins.</p>
-      <p><b>Placing the striker</b> — Drag anywhere along the rail bar on your baseline to position your striker.</p>
+      <p><b>Scoring</b> — Black = 10 pts · White = 20 pts · Queen = 50 pts. First to <b>180 points</b> wins — this applies the same way in 2, 3, or 4 player matches.</p>
+      <p><b>Placing the striker</b> — Drag the rail track around the edge of the board (outside the wood frame) to slide your striker along your baseline.</p>
       <p><b>Shooting</b> — Press and pull back on the striker itself, aim using the arrow, then release to shoot. Longer pull = more power.</p>
       <p><b>Turns</b> — Each player has 20 seconds per turn. Turns rotate in order after every shot.</p>
       <p><b>Pockets</b> — Get a coin into any corner pocket to score its points.</p>
       <p><b>Foul</b> — If your striker itself falls into a pocket, that turn earns no points and the striker returns to your baseline.</p>
-      <p><b>Local Multiplayer</b> — 2, 3 or 4 players on one device, with optional AI opponents (Easy / Medium / Hard).</p>
+      <p><b>AI</b> — Easy plays loose and mostly random. Medium aims for pocket-friendly coins with moderate accuracy. Hard calculates the actual angle needed to pot a coin and plays it with high precision.</p>
     </div>
     <button class="bigbtn" id="rulesClose">Got it</button>
   </div>
@@ -349,34 +344,60 @@ canvas{width:100%;height:100%;display:block;touch-action:none;border-radius:24px
    CONFIG
 ===================================================== */
 const BOARD = 800;
-const FIELD_MIN = 82, FIELD_MAX = 718;
-const R_COIN = 17, R_STRIKER = 21;
+
+// wooden frame occupies this inset area; the band OUTSIDE it
+// (0..FRAME_MIN and FRAME_MAX..BOARD) is reserved for the rail track
+const FRAME_MIN = 60, FRAME_MAX = 740;
+
+// playable physics surface, inset within the frame
+const FIELD_MIN = 130, FIELD_MAX = 670;
+
+const R_COIN = 15, R_STRIKER = 19;
 const CENTER = { x: 400, y: 400 };
 const POCKETS = [
-  { x: 128, y: 128 }, { x: 672, y: 128 },
-  { x: 128, y: 672 }, { x: 672, y: 672 }
+  { x: 168, y: 168 }, { x: 632, y: 168 },
+  { x: 168, y: 632 }, { x: 632, y: 632 }
 ];
-const POCKET_VIS_R = 30, POCKET_CAPTURE_R = 33;
+const POCKET_VIS_R = 27, POCKET_CAPTURE_R = 30;
+
 const MAX_PULL = 150, MIN_PULL = 10;
-const MAX_SPEED = 1000;
-const FRICTION_DECEL = 640;
-const REST_WALL = 0.70, REST_COIN = 0.86;
+const MAX_SPEED = 950;
+const FRICTION_DECEL = 700;
+const REST_WALL = 0.66, REST_COIN = 0.82;
 const EPS_STOP = 5;
+const PHYSICS_SUBSTEPS = 3;
 const TURN_SECONDS = 20;
 const CAPTURE_DURATION = 0.16;
 const WIN_SCORE = 180;
 
 const BASELINES = {
-  bottom: { axis: "x", fixed: 640, min: 280, max: 520, get:(v)=>({x:v,y:640}) },
-  top:    { axis: "x", fixed: 160, min: 280, max: 520, get:(v)=>({x:v,y:160}) },
-  left:   { axis: "y", fixed: 160, min: 280, max: 520, get:(v)=>({x:160,y:v}) },
-  right:  { axis: "y", fixed: 640, min: 280, max: 520, get:(v)=>({x:640,y:v}) }
+  bottom: { axis: "x", fixed: 630, min: 300, max: 500, get:(v)=>({x:v,y:630}) },
+  top:    { axis: "x", fixed: 170, min: 300, max: 500, get:(v)=>({x:v,y:170}) },
+  left:   { axis: "y", fixed: 170, min: 300, max: 500, get:(v)=>({x:170,y:v}) },
+  right:  { axis: "y", fixed: 630, min: 300, max: 500, get:(v)=>({x:630,y:v}) }
 };
+// where the OUTER rail track is drawn, outside the wooden frame
+const RAIL_FIXED = { bottom: 770, top: 30, left: 30, right: 770 };
+const RAIL_HALF_THICK = 15;
+
 const SIDES_BY_COUNT = {
   2: ["bottom", "top"],
   3: ["bottom", "right", "top"],
   4: ["bottom", "right", "top", "left"]
 };
+
+const DIFF_PARAMS = {
+  easy:   { angleNoiseDeg: 32, power:[0.35,0.95], placeMode:"random", placeNoise:0,  thinkMs:350, aimMs:650 },
+  medium: { angleNoiseDeg: 11, power:[0.55,0.82], placeMode:"aimed",  placeNoise:55, thinkMs:550, aimMs:850 },
+  hard:   { angleNoiseDeg: 3,  power:[0.60,0.76], placeMode:"aimed",  placeNoise:14, thinkMs:800, aimMs:1050 }
+};
+
+/* =====================================================
+   ICONS (SVG, not emoji — avoids the system emoji-font look)
+===================================================== */
+const ICON_SOUND_ON = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19.3 5.7a9 9 0 0 1 0 12.6"/></svg>';
+const ICON_SOUND_OFF = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><line x1="16.5" y1="9" x2="22" y2="14.5"/><line x1="22" y1="9" x2="16.5" y2="14.5"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><rect x="5" y="4" width="4.5" height="16" rx="1.4"/><rect x="14.5" y="4" width="4.5" height="16" rx="1.4"/></svg>';
 
 /* =====================================================
    GAME STATE
@@ -457,13 +478,13 @@ function createCoins(){
   const list = [];
   list.push({ id:"queen", color:"queen", value:50, x:CENTER.x, y:CENTER.y, r:R_COIN, vx:0, vy:0, active:true, capturing:false, pocketed:false });
 
-  const ring1 = 6, r1 = 37;
+  const ring1 = 6, r1 = 33;
   for(let i=0;i<ring1;i++){
     const ang = (Math.PI*2/ring1)*i - Math.PI/2;
     const color = i%2===0 ? "black" : "white";
     list.push({ id:"c1_"+i, color, value: color==="black"?10:20, x:CENTER.x+Math.cos(ang)*r1, y:CENTER.y+Math.sin(ang)*r1, r:R_COIN, vx:0, vy:0, active:true, capturing:false, pocketed:false });
   }
-  const ring2 = 12, r2 = 74;
+  const ring2 = 12, r2 = 64;
   for(let i=0;i<ring2;i++){
     const ang = (Math.PI*2/ring2)*i - Math.PI/2 + (Math.PI/ring2);
     const color = i%2===0 ? "white" : "black";
@@ -504,7 +525,6 @@ function resetStriker(){
 function isHumanTurn(){
   return !players[gameState.currentPlayer].isAI;
 }
-
 function buildPlayers(count, config){
   const sides = SIDES_BY_COUNT[count];
   const names = ["Player One","Player Two","Player Three","Player Four"];
@@ -524,27 +544,67 @@ function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 /* =====================================================
    AI
 ===================================================== */
+function nearestPocket(pos){
+  let best=Infinity, bp=null;
+  POCKETS.forEach(pk=>{ const d=Math.hypot(pos.x-pk.x,pos.y-pk.y); if(d<best){best=d;bp=pk;} });
+  return { dist:best, pocket:bp };
+}
+// Choose which coin to target and the exact point on it the striker
+// should aim at, based on difficulty. Hard mode calculates the real
+// contact point needed to send the coin toward its nearest pocket.
+function pickAIShot(diff, activeCoins){
+  if(!activeCoins.length) return null;
+  const candidates = activeCoins.map(c=>{
+    const np = nearestPocket(c);
+    return { coin:c, pocket:np.pocket, dist:np.dist };
+  });
+  let target;
+  if(diff==="easy"){
+    target = candidates[Math.floor(Math.random()*candidates.length)];
+  } else if(diff==="medium"){
+    candidates.sort((a,b)=>a.dist-b.dist);
+    const poolSize = Math.max(2, Math.ceil(candidates.length*0.5));
+    const pool = candidates.slice(0, poolSize);
+    target = pool[Math.floor(Math.random()*pool.length)];
+  } else {
+    candidates.sort((a,b)=>(-a.dist + a.coin.value*0.4) < (-b.dist + b.coin.value*0.4) ? 1 : -1);
+    target = candidates[0];
+  }
+  const dirToPocket = norm({ x: target.pocket.x-target.coin.x, y: target.pocket.y-target.coin.y });
+  const contactR = R_COIN + R_STRIKER + 2;
+  const aimPoint = diff==="easy"
+    ? { x: target.coin.x, y: target.coin.y }
+    : { x: target.coin.x - dirToPocket.x*contactR, y: target.coin.y - dirToPocket.y*contactR };
+  return { coin: target.coin, aimPoint };
+}
+
 function scheduleAITurn(){
   clearAITimeouts();
   const p = players[gameState.currentPlayer];
-  const diff = p.difficulty;
-  const noiseDeg = diff==="easy"?26 : diff==="medium"?13 : 5;
-  const powerRange = diff==="easy"?[0.4,0.85] : diff==="medium"?[0.55,0.9] : [0.65,0.97];
+  const params = DIFF_PARAMS[p.difficulty] || DIFF_PARAMS.easy;
+  const bl = BASELINES[p.side];
 
   const t1 = setTimeout(()=>{
     if(gameState.mode!=="AI_THINKING" || gameState.paused) return;
     try{
-      const bl = BASELINES[p.side];
-      const randPos = bl.min + Math.random()*(bl.max-bl.min);
-      placeStrikerAt(p.side, randPos);
-
       const active = coins.filter(c=>c.active && !c.pocketed && !c.capturing);
-      let target = active.length ? active[Math.floor(Math.random()*active.length)] : CENTER;
-      let dx = target.x - striker.x, dy = target.y - striker.y;
-      let baseAng = Math.atan2(dy,dx);
-      const noise = (Math.random()-0.5)*2*(noiseDeg*Math.PI/180);
+      const shot = pickAIShot(p.difficulty, active);
+      const aimPoint = shot ? shot.aimPoint : CENTER;
+
+      let placeVal;
+      if(params.placeMode==="random" || !shot){
+        placeVal = bl.min + Math.random()*(bl.max-bl.min);
+      } else {
+        const proj = bl.axis==="x" ? aimPoint.x : aimPoint.y;
+        placeVal = clamp(proj + (Math.random()-0.5)*2*params.placeNoise, bl.min, bl.max);
+      }
+      placeStrikerAt(p.side, placeVal);
+
+      const dx = aimPoint.x-striker.x, dy = aimPoint.y-striker.y;
+      const baseAng = Math.atan2(dy,dx);
+      const noise = (Math.random()-0.5)*2*(params.angleNoiseDeg*Math.PI/180);
       const ang = baseAng + noise;
-      const power = powerRange[0] + Math.random()*(powerRange[1]-powerRange[0]);
+      const power = params.power[0] + Math.random()*(params.power[1]-params.power[0]);
       input.pull = { x: -Math.cos(ang)*MAX_PULL*power, y: -Math.sin(ang)*MAX_PULL*power };
       input.mode = "aim-preview";
     }catch(e){
@@ -556,9 +616,9 @@ function scheduleAITurn(){
       const pull = input.pull;
       input.mode = null;
       doShoot(pull);
-    }, 900);
+    }, params.aimMs);
     aiTimeouts.push(t2);
-  }, 550);
+  }, params.thinkMs);
   aiTimeouts.push(t1);
 }
 function clearAITimeouts(){ aiTimeouts.forEach(clearTimeout); aiTimeouts=[]; }
@@ -574,7 +634,7 @@ function updateTimerUI(){
   const frac = clamp(gameState.timer/TURN_SECONDS,0,1);
   fg.setAttribute("stroke-dashoffset", (circumference*(1-frac)).toFixed(1));
   num.textContent = Math.ceil(gameState.timer);
-  if(frac<0.25) fg.style.stroke = "#ff6a5a"; else fg.style.stroke = "";
+  fg.style.stroke = frac<0.25 ? "#ff6a5a" : "";
 }
 
 /* =====================================================
@@ -587,6 +647,16 @@ canvas.addEventListener("pointercancel", onPointerUp);
 
 function currentBaseline(){ return BASELINES[players[gameState.currentPlayer].side]; }
 
+function onRailHit(p, side){
+  const railY = RAIL_FIXED[side];
+  const bl = BASELINES[side];
+  if(bl.axis==="x"){
+    return Math.abs(p.y-railY) < (RAIL_HALF_THICK+18) && p.x > bl.min-35 && p.x < bl.max+35;
+  } else {
+    return Math.abs(p.x-railY) < (RAIL_HALF_THICK+18) && p.y > bl.min-35 && p.y < bl.max+35;
+  }
+}
+
 function onPointerDown(e){
   if(gameState.mode!=="READY" || gameState.paused || !isHumanTurn()) return;
   const p = toBoard(e.clientX, e.clientY);
@@ -597,10 +667,8 @@ function onPointerDown(e){
     canvas.setPointerCapture(e.pointerId);
     return;
   }
-  const bl = currentBaseline();
-  const onRail = bl.axis==="x" ? Math.abs(p.y-bl.fixed)<26 && p.x>bl.min-20 && p.x<bl.max+20
-                                : Math.abs(p.x-bl.fixed)<26 && p.y>bl.min-20 && p.y<bl.max+20;
-  if(onRail){
+  const side = players[gameState.currentPlayer].side;
+  if(onRailHit(p, side)){
     input.mode = "place";
     canvas.setPointerCapture(e.pointerId);
     movePlaceStriker(p);
@@ -667,7 +735,6 @@ function allBodies(){
 function updatePhysics(dt){
   const bodies = allBodies();
 
-  // integrate + friction
   bodies.forEach(b=>{
     if(b.capturing) return;
     b.x += b.vx*dt; b.y += b.vy*dt;
@@ -681,7 +748,6 @@ function updatePhysics(dt){
     }
   });
 
-  // wall collisions
   bodies.forEach(b=>{
     if(b.capturing) return;
     if(b.x-b.r < FIELD_MIN){ b.x=FIELD_MIN+b.r; b.vx=Math.abs(b.vx)*REST_WALL; }
@@ -690,7 +756,6 @@ function updatePhysics(dt){
     if(b.y+b.r > FIELD_MAX){ b.y=FIELD_MAX-b.r; b.vy=-Math.abs(b.vy)*REST_WALL; }
   });
 
-  // circle-circle collisions
   for(let i=0;i<bodies.length;i++){
     for(let j=i+1;j<bodies.length;j++){
       const a=bodies[i], b=bodies[j];
@@ -717,7 +782,6 @@ function updatePhysics(dt){
     }
   }
 
-  // pocket detection
   bodies.forEach(b=>{
     if(b.capturing || b.pocketed) return;
     for(const pk of POCKETS){
@@ -734,7 +798,6 @@ function updatePhysics(dt){
     }
   });
 
-  // capture animation progress
   bodies.forEach(b=>{
     if(!b.capturing) return;
     const t = (performance.now()-b.captureStart)/1000/CAPTURE_DURATION;
@@ -770,6 +833,7 @@ function resolveTurnEnd(){
   updateScoresUI();
   updatePillsUI();
 
+  // win check — identical for 2, 3 and 4 player matches
   if(player.score >= WIN_SCORE){
     endGame(player);
     return;
@@ -849,13 +913,15 @@ document.getElementById("soundBtn").onclick = toggleSound;
 document.getElementById("soundSwitch").onclick = toggleSound;
 function toggleSound(){
   gameState.soundOn = !gameState.soundOn;
-  document.getElementById("soundBtn").textContent = gameState.soundOn ? "🔊" : "🔇";
+  document.getElementById("soundBtn").innerHTML = gameState.soundOn ? ICON_SOUND_ON : ICON_SOUND_OFF;
   document.getElementById("soundSwitch").classList.toggle("on", gameState.soundOn);
 }
 document.getElementById("trajSwitch").onclick = ()=>{
   gameState.trajOn = !gameState.trajOn;
   document.getElementById("trajSwitch").classList.toggle("on", gameState.trajOn);
 };
+document.getElementById("soundBtn").innerHTML = ICON_SOUND_ON;
+document.getElementById("pauseBtn").innerHTML = ICON_PAUSE;
 
 /* =====================================================
    SETUP MODAL
@@ -947,9 +1013,9 @@ function setupUIForPlayers(){
   prow2.classList.toggle("hidden", gameState.playerCount < 3);
   pcard3.classList.toggle("hidden", gameState.playerCount < 4);
   for(let i=0;i<4;i++){
-    const card = document.getElementById("pcard"+i);
     if(i<gameState.playerCount){
       const p = players[i];
+      const card = document.getElementById("pcard"+i);
       document.getElementById("name"+i).textContent = p.name;
       document.getElementById("av"+i).textContent = p.isAI ? "AI" : "P"+(i+1);
       card.classList.toggle("ai", p.isAI);
@@ -974,30 +1040,6 @@ function updatePillsUI(){
 /* =====================================================
    BOARD RENDERING
 ===================================================== */
-function drawBoard(){
-  ctx.clearRect(0,0,BOARD,BOARD);
-
-  // outer frame
-  roundRect(0,0,BOARD,BOARD,34);
-  const gradF = ctx.createLinearGradient(0,0,BOARD,BOARD);
-  gradF.addColorStop(0,"#c78b45"); gradF.addColorStop(.5,"#8b5527"); gradF.addColorStop(1,"#4c2b16");
-  ctx.fillStyle = gradF; ctx.fill();
-
-  // inner bevel
-  roundRect(14,14,BOARD-28,BOARD-28,26);
-  ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.lineWidth=2; ctx.stroke();
-
-  // play surface
-  roundRect(FIELD_MIN-14, FIELD_MIN-14, (FIELD_MAX-FIELD_MIN)+28, (FIELD_MAX-FIELD_MIN)+28, 14);
-  const gradP = ctx.createLinearGradient(FIELD_MIN,FIELD_MIN,FIELD_MAX,FIELD_MAX);
-  gradP.addColorStop(0,"#e9c088"); gradP.addColorStop(1,"#d3a565");
-  ctx.fillStyle = gradP; ctx.fill();
-  ctx.strokeStyle="rgba(76,39,18,.5)"; ctx.lineWidth=2; ctx.stroke();
-
-  drawMarkings();
-  drawPockets();
-  drawRail();
-}
 function roundRect(x,y,w,h,r){
   ctx.beginPath();
   ctx.moveTo(x+r,y);
@@ -1007,27 +1049,52 @@ function roundRect(x,y,w,h,r){
   ctx.arcTo(x,y,x+w,y,r);
   ctx.closePath();
 }
+function drawBoard(){
+  ctx.clearRect(0,0,BOARD,BOARD);
+
+  // wooden frame — inset, leaving the outer band free for the rail
+  roundRect(FRAME_MIN, FRAME_MIN, FRAME_MAX-FRAME_MIN, FRAME_MAX-FRAME_MIN, 30);
+  const gradF = ctx.createLinearGradient(FRAME_MIN,FRAME_MIN,FRAME_MAX,FRAME_MAX);
+  gradF.addColorStop(0,"#c78b45"); gradF.addColorStop(.5,"#8b5527"); gradF.addColorStop(1,"#4c2b16");
+  ctx.fillStyle = gradF; ctx.fill();
+  ctx.shadowColor="rgba(0,0,0,.45)"; ctx.shadowBlur=26; ctx.shadowOffsetY=14;
+  ctx.fill();
+  ctx.shadowColor="transparent"; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+
+  roundRect(FRAME_MIN+12, FRAME_MIN+12, (FRAME_MAX-FRAME_MIN)-24, (FRAME_MAX-FRAME_MIN)-24, 22);
+  ctx.strokeStyle = "rgba(255,255,255,.16)"; ctx.lineWidth=2; ctx.stroke();
+
+  // play surface
+  roundRect(FIELD_MIN-12, FIELD_MIN-12, (FIELD_MAX-FIELD_MIN)+24, (FIELD_MAX-FIELD_MIN)+24, 12);
+  const gradP = ctx.createLinearGradient(FIELD_MIN,FIELD_MIN,FIELD_MAX,FIELD_MAX);
+  gradP.addColorStop(0,"#e9c088"); gradP.addColorStop(1,"#d3a565");
+  ctx.fillStyle = gradP; ctx.fill();
+  ctx.strokeStyle="rgba(76,39,18,.5)"; ctx.lineWidth=2; ctx.stroke();
+
+  drawMarkings();
+  drawPockets();
+  drawStrikerZone();
+  drawOuterRail();
+}
 function drawMarkings(){
   ctx.strokeStyle = "rgba(76,39,18,.55)"; ctx.lineWidth=2;
-  // center circle
-  ctx.beginPath(); ctx.arc(CENTER.x,CENTER.y,95,0,Math.PI*2); ctx.stroke();
-  // diagonals from near-corners to circle
-  const off = 150;
+  ctx.beginPath(); ctx.arc(CENTER.x,CENTER.y,82,0,Math.PI*2); ctx.stroke();
+
+  const off = 128;
   const corners = [[FIELD_MIN+off,FIELD_MIN+off],[FIELD_MAX-off,FIELD_MIN+off],[FIELD_MIN+off,FIELD_MAX-off],[FIELD_MAX-off,FIELD_MAX-off]];
   corners.forEach(([cx,cy])=>{
     ctx.beginPath(); ctx.moveTo(cx,cy);
     const ang = Math.atan2(CENTER.y-cy, CENTER.x-cx);
-    ctx.lineTo(CENTER.x-Math.cos(ang)*95, CENTER.y-Math.sin(ang)*95);
+    ctx.lineTo(CENTER.x-Math.cos(ang)*82, CENTER.y-Math.sin(ang)*82);
     ctx.stroke();
   });
-  // corner red-dot marks near each pocket
   POCKETS.forEach(pk=>{
     const ang = Math.atan2(CENTER.y-pk.y, CENTER.x-pk.x);
-    const d1=64, d2=104;
+    const d1=50, d2=86;
     const p1={x:pk.x+Math.cos(ang)*d1,y:pk.y+Math.sin(ang)*d1};
     const p2={x:pk.x+Math.cos(ang)*d2,y:pk.y+Math.sin(ang)*d2};
     ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
-    [p1,p2].forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fillStyle="#b23a2c"; ctx.fill(); });
+    [p1,p2].forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,4.5,0,Math.PI*2); ctx.fillStyle="#b23a2c"; ctx.fill(); });
   });
 }
 function drawPockets(){
@@ -1039,22 +1106,48 @@ function drawPockets(){
     ctx.strokeStyle="rgba(0,0,0,.6)"; ctx.lineWidth=3; ctx.stroke();
   });
 }
-function drawRail(){
+// large dashed shooting-zone circle around the active player's baseline
+function drawStrikerZone(){
+  if(gameState.mode==="GAME_OVER") return;
+  const side = players[gameState.currentPlayer].side;
+  const mid = defaultStrikerPos(side);
+  ctx.save();
+  ctx.setLineDash([5,7]);
+  ctx.strokeStyle = "rgba(76,39,18,.4)"; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.arc(mid.x, mid.y, 108, 0, Math.PI*2); ctx.stroke();
+  ctx.restore();
+}
+// rail track drawn OUTSIDE the wooden frame, in the margin band
+function drawOuterRail(){
   if(gameState.mode==="GAME_OVER") return;
   const side = players[gameState.currentPlayer].side;
   const bl = BASELINES[side];
+  const railFixed = RAIL_FIXED[side];
   ctx.save();
-  ctx.fillStyle = "rgba(255,216,106,.16)";
-  ctx.strokeStyle = "rgba(199,255,85,.4)"; ctx.lineWidth=1.5;
+
   if(bl.axis==="x"){
-    roundRect(bl.min-16, bl.fixed-16, (bl.max-bl.min)+32, 32, 16);
+    roundRect(bl.min-24, railFixed-RAIL_HALF_THICK, (bl.max-bl.min)+48, RAIL_HALF_THICK*2, RAIL_HALF_THICK);
   } else {
-    roundRect(bl.fixed-16, bl.min-16, 32, (bl.max-bl.min)+32, 16);
+    roundRect(railFixed-RAIL_HALF_THICK, bl.min-24, RAIL_HALF_THICK*2, (bl.max-bl.min)+48, RAIL_HALF_THICK);
   }
-  ctx.fill(); ctx.stroke();
-  // endpoint red dots
-  const p1 = bl.get(bl.min), p2 = bl.get(bl.max);
-  [p1,p2].forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,6,0,Math.PI*2); ctx.fillStyle="#c0392b"; ctx.fill(); });
+  const trackGrad = ctx.createLinearGradient(0,0,BOARD,BOARD);
+  trackGrad.addColorStop(0,"#6b4226"); trackGrad.addColorStop(1,"#3e2412");
+  ctx.fillStyle = trackGrad; ctx.fill();
+  ctx.strokeStyle = "rgba(199,255,85,.35)"; ctx.lineWidth=1.5; ctx.stroke();
+
+  const p1 = bl.axis==="x" ? {x:bl.min,y:railFixed} : {x:railFixed,y:bl.min};
+  const p2 = bl.axis==="x" ? {x:bl.max,y:railFixed} : {x:railFixed,y:bl.max};
+  [p1,p2].forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fillStyle="#c0392b"; ctx.fill(); });
+
+  // draggable handle, positioned to match the striker's current coordinate
+  const handleVal = bl.axis==="x" ? striker.x : striker.y;
+  const handlePos = bl.axis==="x" ? {x:handleVal,y:railFixed} : {x:railFixed,y:handleVal};
+  ctx.beginPath(); ctx.arc(handlePos.x, handlePos.y, 13, 0, Math.PI*2);
+  const hg = ctx.createRadialGradient(handlePos.x-4,handlePos.y-4,2,handlePos.x,handlePos.y,13);
+  hg.addColorStop(0,"#fff7e0"); hg.addColorStop(1,"#d9b46a");
+  ctx.fillStyle = hg; ctx.fill();
+  ctx.strokeStyle="rgba(0,0,0,.35)"; ctx.lineWidth=2; ctx.stroke();
+
   ctx.restore();
 }
 
@@ -1069,8 +1162,7 @@ function drawCoin(c){
   const g = ctx.createRadialGradient(c.x-c.r*0.35,c.y-c.r*0.35,c.r*0.15,c.x,c.y,c.r);
   if(c.color==="black"){ g.addColorStop(0,"#3a3a3a"); g.addColorStop(1,"#0a0a0a"); }
   else if(c.color==="white"){ g.addColorStop(0,"#fffdf6"); g.addColorStop(1,"#cfc2a3"); }
-  else if(c.color==="queen"){ g.addColorStop(0,"#f0827a"); g.addColorStop(1,"#9c2016"); }
-  else { g.addColorStop(0,"#ffffff"); g.addColorStop(1,"#d8cdb2"); }
+  else { g.addColorStop(0,"#f0827a"); g.addColorStop(1,"#9c2016"); }
 
   ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
   ctx.fillStyle=g; ctx.fill();
@@ -1103,7 +1195,7 @@ function drawAimArrow(){
   if(!showAim) return;
   const dir = norm({x:-input.pull.x,y:-input.pull.y});
   const power = clamp(len(input.pull)/MAX_PULL,0,1);
-  const arrowLen = 60 + power*130;
+  const arrowLen = 50 + power*110;
   const sx=striker.x, sy=striker.y;
   const ex = sx+dir.x*arrowLen, ey = sy+dir.y*arrowLen;
 
@@ -1111,7 +1203,7 @@ function drawAimArrow(){
     ctx.save();
     ctx.setLineDash([4,7]);
     ctx.strokeStyle="rgba(255,255,255,.55)"; ctx.lineWidth=2;
-    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(sx+dir.x*260, sy+dir.y*260); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(sx+dir.x*220, sy+dir.y*220); ctx.stroke();
     ctx.restore();
   }
   ctx.save();
@@ -1120,7 +1212,7 @@ function drawAimArrow(){
   ctx.strokeStyle = grad; ctx.lineWidth=7; ctx.lineCap="round";
   ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.stroke();
 
-  const headLen=22;
+  const headLen=20;
   const ang = Math.atan2(ey-sy, ex-sx);
   ctx.beginPath();
   ctx.moveTo(ex,ey);
@@ -1143,7 +1235,8 @@ function loop(ts){
 
   if(!gameState.paused && !gameState.gameOver){
     if(gameState.mode==="PHYSICS_RUNNING"){
-      updatePhysics(dt);
+      const sub = dt/PHYSICS_SUBSTEPS;
+      for(let s=0;s<PHYSICS_SUBSTEPS;s++) updatePhysics(sub);
       if(allStopped()){
         gameState.mode = "TURN_END";
         resolveTurnEnd();
