@@ -1,340 +1,1045 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#050b08">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Carrom — MAXGAME</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>MAXGAME — Carrom</title>
+
 <style>
 :root{
-  --bg:#050b08; --panel:#0b1812; --panel2:#0e2118;
-  --green:#c7ff55; --green2:#8ee33d;
-  --gold:#ffd86a; --white:#f6faf7; --text:#e8f0eb;
-  --muted:#8b9c93; --muted2:#64756d;
-  --line:rgba(255,255,255,.09); --line2:rgba(199,255,85,.18);
-  --radius:20px;
+  --bg:#06120e;
+  --panel:#0d211a;
+  --panel2:#123024;
+  --green:#20d889;
+  --green2:#10a968;
+  --gold:#f5c76b;
+  --red:#e85b62;
+  --white:#f4f4ef;
+  --muted:#91a79d;
+  --line:rgba(255,255,255,.08);
+  --shadow:0 18px 50px rgba(0,0,0,.45);
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;}
-html,body{height:100%;overflow:hidden;overscroll-behavior:none;}
-body{
-  color:var(--text);
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
   background:
-    radial-gradient(circle at 50% -15%, rgba(99,174,75,.20), transparent 32%),
-    radial-gradient(circle at 100% 90%, rgba(110,157,54,.08), transparent 30%),
-    var(--bg);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-  display:flex; flex-direction:column; height:100dvh;
+    radial-gradient(circle at 50% 20%,#123126 0,#06120e 52%,#030907 100%);
+  color:var(--white);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
-button{font:inherit;cursor:pointer;border:0;background:none;color:inherit;}
-button:active{transform:scale(.96);}
-.hidden{display:none!important;}
-svg{display:block;}
 
-/* ===== TOP BAR ===== */
-.topbar{ display:flex; align-items:center; gap:8px; padding:10px 12px; flex:0 0 auto; }
-.icon-btn{
-  width:38px;height:38px;border-radius:12px;
-  display:grid;place-items:center;
-  background:rgba(255,255,255,.05);border:1px solid var(--line);
-  color:var(--text);
+button{
+  font:inherit;
+  color:inherit;
+  border:0;
+  cursor:pointer;
 }
+
+.app{
+  width:100%;
+  height:100dvh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+/* TOP BAR */
+.topbar{
+  height:58px;
+  flex:0 0 58px;
+  display:grid;
+  grid-template-columns:44px 1fr auto auto auto;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-bottom:1px solid var(--line);
+  background:rgba(3,12,9,.78);
+  backdrop-filter:blur(14px);
+  z-index:20;
+}
+
+.iconbtn{
+  width:40px;
+  height:40px;
+  border-radius:13px;
+  background:#10261e;
+  border:1px solid var(--line);
+  display:grid;
+  place-items:center;
+  font-size:19px;
+}
+
+.iconbtn:active,
+.action:active,
+.chip:active{
+  transform:scale(.96);
+}
+
 .mode-pill{
-  flex:1; height:38px; display:flex; align-items:center; justify-content:center;
-  gap:6px; border-radius:12px; background:rgba(255,255,255,.05);
-  border:1px solid var(--line); font-size:11px; font-weight:800;
-  letter-spacing:.5px; color:var(--muted);
+  justify-self:start;
+  padding:8px 13px;
+  border-radius:999px;
+  background:#10281f;
+  border:1px solid rgba(32,216,137,.18);
+  color:#cce9dd;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.7px;
 }
 
-/* ===== PLAYER ROW ===== */
-.prow{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:2px 12px; flex:0 0 auto;}
-.pcard{
-  flex:1; display:flex; align-items:center; gap:8px;
-  padding:6px 10px; border-radius:14px; border:1px solid var(--line);
-  background:rgba(255,255,255,.03); min-width:0;
-  transition:.25s ease;
-}
-.pcard.active{
-  border-color:var(--line2); background:rgba(199,255,85,.08);
-  box-shadow:0 0 0 1px rgba(199,255,85,.15), 0 0 18px rgba(199,255,85,.10);
-}
-.pcard .av{
-  width:30px;height:30px;border-radius:50%;flex:0 0 auto;
-  display:grid;place-items:center;font-size:12px;font-weight:900;
-  background:linear-gradient(145deg,#dfff7e,#86da3b); color:#15250f;
-}
-.pcard.ai .av{background:linear-gradient(145deg,#7ea8ff,#3f66c9);color:#0c1530;}
-.pcard .meta{min-width:0;}
-.pcard .name{font-size:10px;font-weight:900;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pcard .score{font-size:14px;font-weight:950;color:var(--gold);}
-.timerwrap{ flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:2px;}
-.timerring{width:54px;height:54px;position:relative;}
-.timerring svg{width:100%;height:100%;transform:rotate(-90deg);}
-.timerring .bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:5;}
-.timerring .fg{fill:none;stroke:var(--green);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .2s linear;}
-.timerring .num{position:absolute;inset:0;display:grid;place-items:center;font-size:16px;font-weight:950;}
-.timerlbl{font-size:7px;font-weight:900;letter-spacing:1px;color:var(--muted2);}
-
-/* score pills */
-.pillrow{display:flex;justify-content:center;align-items:center;gap:8px;padding:6px 12px;flex:0 0 auto;}
-.pill{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line);font-size:11px;font-weight:900;}
-.dot{width:12px;height:12px;border-radius:50%;flex:0 0 auto;}
-.dot.q{background:radial-gradient(circle at 30% 30%,#e9695c,#a52318);}
-.dot.b{background:radial-gradient(circle at 30% 30%,#3a3a3a,#0a0a0a);}
-.dot.w{background:radial-gradient(circle at 30% 30%,#fffdf6,#cfc2a3);}
-
-/* power bar */
-.powerwrap{
-  position:absolute; left:50%; top:8px; transform:translateX(-50%);
-  display:flex; align-items:center; gap:6px; padding:5px 10px;
-  border-radius:999px; background:rgba(5,12,8,.75); border:1px solid var(--line2);
-  font-size:8px; font-weight:900; letter-spacing:1px; color:var(--gold);
-  opacity:0; transition:opacity .15s ease; pointer-events:none; z-index:5;
-}
-.powerwrap.show{opacity:1;}
-.powerbar{width:70px;height:6px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden;}
-.powerbar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--green2),var(--gold));border-radius:4px;}
-
-/* ===== BOARD ===== */
-.boardarea{flex:1 1 auto; display:flex; align-items:center; justify-content:center; min-height:0; position:relative; padding:2px 8px;}
-.boardwrap{position:relative; width:min(96vw, 82vh, 660px); aspect-ratio:1/1;}
-canvas{width:100%;height:100%;display:block;touch-action:none;}
-.hint{
-  position:absolute; left:50%; bottom:-26px; transform:translateX(-50%);
-  font-size:10px; color:var(--muted); text-align:center; white-space:nowrap;
+.top-timer{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#b8ccc4;
+  font-size:12px;
+  font-weight:800;
 }
 
-/* ===== BOTTOM PLAYERS (3/4p) ===== */
-.prow2{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:2px 12px; flex:0 0 auto;}
+.mini-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px rgba(32,216,137,.7);
+}
 
-/* ===== BOTTOM NAV ===== */
-.bottomnav{
-  display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
-  padding:8px 12px calc(10px + env(safe-area-inset-bottom));
+.ad-space{
+  height:22px;
+  flex:0 0 22px;
+  display:grid;
+  place-items:center;
+  color:#40564d;
+  font-size:8px;
+  letter-spacing:2px;
+}
+
+/* 2 PLAYER HEADER */
+.player-header{
+  height:70px;
+  flex:0 0 70px;
+  padding:6px 12px;
+  display:grid;
+  grid-template-columns:1fr 72px 1fr;
+  gap:10px;
+  align-items:center;
+  max-width:760px;
+  width:100%;
+  margin:auto;
+}
+
+.player-card{
+  min-width:0;
+  height:54px;
+  border-radius:17px;
+  background:linear-gradient(145deg,#122c22,#0b1c16);
+  border:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:7px 10px;
+  transition:.25s;
+  box-shadow:0 8px 25px rgba(0,0,0,.2);
+}
+
+.player-card.active{
+  border-color:rgba(32,216,137,.62);
+  box-shadow:0 0 0 1px rgba(32,216,137,.12),0 8px 28px rgba(0,0,0,.3);
+}
+
+.player-card.right{
+  flex-direction:row-reverse;
+  text-align:right;
+}
+
+.avatar{
+  width:37px;
+  height:37px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(145deg,#24513e,#10291f);
+  border:1px solid rgba(255,255,255,.1);
+  font-size:18px;
   flex:0 0 auto;
 }
-.navbtn{
-  display:flex; flex-direction:column; align-items:center; gap:3px;
-  padding:9px 4px; border-radius:14px; background:rgba(255,255,255,.04);
-  border:1px solid var(--line); font-size:8.5px; font-weight:900; letter-spacing:.5px; color:var(--muted);
-}
-.navbtn .ic{font-size:15px;}
-.navbtn.primary{background:rgba(199,255,85,.10);border-color:var(--line2);color:var(--green);}
 
-/* ===== MODALS ===== */
+.pinfo{
+  min-width:0;
+}
+
+.pname{
+  font-size:11px;
+  font-weight:900;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.pscore{
+  margin-top:3px;
+  font-size:17px;
+  font-weight:950;
+  color:#dff7ec;
+}
+
+.timer-box{
+  width:64px;
+  height:64px;
+  position:relative;
+  display:grid;
+  place-items:center;
+}
+
+.timer-box svg{
+  position:absolute;
+  inset:0;
+  width:64px;
+  height:64px;
+  transform:rotate(-90deg);
+}
+
+.timer-track{
+  fill:none;
+  stroke:#172d25;
+  stroke-width:5;
+}
+
+.timer-progress{
+  fill:none;
+  stroke:var(--green);
+  stroke-width:5;
+  stroke-linecap:round;
+  stroke-dasharray:163;
+  stroke-dashoffset:0;
+  transition:stroke-dashoffset .2s linear;
+}
+
+.timer-number{
+  position:relative;
+  font-size:17px;
+  font-weight:950;
+}
+
+/* SCORE BAR */
+.scorebar{
+  height:38px;
+  flex:0 0 38px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:7px;
+}
+
+.score-pill{
+  height:27px;
+  min-width:55px;
+  padding:0 10px;
+  border-radius:999px;
+  background:#0b1f18;
+  border:1px solid var(--line);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:5px;
+  font-size:10px;
+  font-weight:900;
+  color:#adc1b8;
+}
+
+.score-pill b{
+  color:white;
+}
+
+/* BOARD STAGE */
+.board-stage{
+  position:relative;
+  flex:1;
+  min-height:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:4px 8px 7px;
+}
+
+.board-wrap{
+  width:min(92vw,70dvh,680px);
+  aspect-ratio:1;
+  position:relative;
+  filter:drop-shadow(0 20px 30px rgba(0,0,0,.38));
+}
+
+#board{
+  width:100%;
+  height:100%;
+  display:block;
+  touch-action:none;
+}
+
+.power-wrap{
+  position:absolute;
+  left:50%;
+  bottom:8%;
+  transform:translateX(-50%);
+  min-width:125px;
+  padding:7px 12px;
+  border-radius:999px;
+  background:rgba(4,14,10,.82);
+  border:1px solid rgba(255,255,255,.1);
+  backdrop-filter:blur(8px);
+  text-align:center;
+  pointer-events:none;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.5px;
+  opacity:0;
+  transition:.2s;
+}
+
+.power-wrap.show{
+  opacity:1;
+}
+
+.power-line{
+  width:95px;
+  height:4px;
+  margin:5px auto 0;
+  background:#20352c;
+  border-radius:99px;
+  overflow:hidden;
+}
+
+.power-fill{
+  width:0;
+  height:100%;
+  background:linear-gradient(90deg,#28d98d,#f5c76b);
+  border-radius:99px;
+}
+
+.hint{
+  position:absolute;
+  left:50%;
+  bottom:1.5%;
+  transform:translateX(-50%);
+  white-space:nowrap;
+  padding:5px 9px;
+  border-radius:999px;
+  background:rgba(4,12,9,.62);
+  color:#8ea79c;
+  font-size:8px;
+  pointer-events:none;
+}
+
+/* AROUND PLAYER LAYER */
+.around-layer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  display:none;
+  z-index:8;
+}
+
+.around-card{
+  position:absolute;
+  width:125px;
+  pointer-events:auto;
+}
+
+.around-card.top{
+  top:3px;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+.around-card.bottom{
+  bottom:2px;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+.around-card.left{
+  left:2px;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+.around-card.right{
+  right:2px;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+.around-card .player-card{
+  width:100%;
+  height:48px;
+  padding:5px 7px;
+  border-radius:14px;
+}
+
+.around-card .avatar{
+  width:31px;
+  height:31px;
+  font-size:14px;
+}
+
+.around-card .pname{
+  font-size:9px;
+}
+
+.around-card .pscore{
+  font-size:14px;
+}
+
+.around-timer{
+  position:absolute;
+  top:53px;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  height:61px;
+  flex:0 0 61px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+  padding:7px 10px 9px;
+  background:rgba(3,12,9,.88);
+  border-top:1px solid var(--line);
+  backdrop-filter:blur(14px);
+  z-index:20;
+}
+
+.action{
+  border-radius:14px;
+  background:#0c2119;
+  border:1px solid var(--line);
+  color:#9db3aa;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.5px;
+  transition:.15s;
+}
+
+.action.main{
+  color:#d9eee5;
+  border-color:rgba(32,216,137,.16);
+}
+
+/* MODALS */
 .overlay{
-  position:fixed; inset:0; background:rgba(3,8,5,.72); backdrop-filter:blur(6px);
-  display:flex; align-items:center; justify-content:center; z-index:100; padding:20px;
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  place-items:center;
+  padding:18px;
+  background:rgba(0,0,0,.68);
+  backdrop-filter:blur(9px);
 }
+
+.overlay.show{
+  display:grid;
+}
+
 .modal{
-  width:min(420px,100%); max-height:85vh; overflow-y:auto;
-  background:linear-gradient(165deg,#0d1f14,#0a1610);
-  border:1px solid var(--line2); border-radius:24px; padding:22px;
-  box-shadow:0 30px 80px rgba(0,0,0,.55);
+  width:min(440px,94vw);
+  max-height:90dvh;
+  overflow:auto;
+  border-radius:25px;
+  background:linear-gradient(145deg,#10291f,#071610);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:var(--shadow);
+  padding:20px;
 }
-.modal h2{font-size:20px;margin-bottom:4px;letter-spacing:-.5px;}
-.modal .sub{font-size:11px;color:var(--muted);margin-bottom:16px;}
-.modal .row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+
+.modal h2{
+  margin:0 0 6px;
+  font-size:22px;
+}
+
+.modal-sub{
+  color:#8fa89d;
+  font-size:12px;
+  line-height:1.5;
+  margin-bottom:18px;
+}
+
+.close-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+}
+
+.close{
+  width:34px;
+  height:34px;
+  border-radius:11px;
+  background:#10261d;
+  border:1px solid var(--line);
+}
+
+.chips{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
 .chip{
-  padding:9px 14px;border-radius:12px;border:1px solid var(--line);
-  background:rgba(255,255,255,.04); font-size:11px; font-weight:800;
+  padding:9px 14px;
+  border-radius:12px;
+  background:#0b2118;
+  border:1px solid var(--line);
+  font-size:11px;
+  font-weight:900;
 }
-.chip.on{background:var(--green);color:#13220e;border-color:var(--green);}
-.slotrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-top:1px solid var(--line);}
-.slotrow:first-of-type{border-top:0;}
-.slotrow .lbl{font-size:12px;font-weight:800;}
-.slotsel{display:flex;gap:5px;flex-wrap:wrap;}
-.bigbtn{
-  width:100%; margin-top:16px; padding:14px; border-radius:14px; font-size:12px;
-  font-weight:950; letter-spacing:.5px; text-align:center;
-  background:linear-gradient(135deg,#dcff78,#91df3d); color:#14240e;
+
+.chip.active{
+  background:#143b2b;
+  border-color:rgba(32,216,137,.5);
+  color:#52e7a7;
 }
-.ghostbtn{
-  width:100%; margin-top:8px; padding:12px; border-radius:14px; font-size:11px;
-  font-weight:900; text-align:center; background:rgba(255,255,255,.05); border:1px solid var(--line);
+
+.setup-section{
+  margin-top:17px;
 }
-.twobtn{display:flex;gap:10px;margin-top:16px;}
-.twobtn button{flex:1;padding:13px;border-radius:14px;font-size:11px;font-weight:900;}
-.twobtn .cancel{background:rgba(255,255,255,.05);border:1px solid var(--line);}
-.twobtn .danger{background:linear-gradient(135deg,#ff8a6a,#e0492c);color:#2a0d05;}
-.rules p{font-size:12px;line-height:1.7;color:#c3d2c9;margin-bottom:8px;}
-.rules b{color:var(--green);}
-.winner-name{font-size:26px;font-weight:950;color:var(--gold);margin:10px 0 2px;}
-.winner-score{font-size:12px;color:var(--muted);margin-bottom:6px;}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line);}
-.toggle-row:first-child{border-top:0;}
-.switch{width:42px;height:24px;border-radius:999px;background:rgba(255,255,255,.1);position:relative;border:1px solid var(--line);}
-.switch.on{background:var(--green2);}
-.switch i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;display:block;}
-.switch.on i{left:20px;}
+
+.setup-label{
+  font-size:10px;
+  color:#839d92;
+  font-weight:900;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+
+.slot{
+  display:grid;
+  grid-template-columns:35px 1fr auto;
+  gap:9px;
+  align-items:center;
+  padding:10px;
+  margin-bottom:7px;
+  background:#0b2118;
+  border:1px solid var(--line);
+  border-radius:14px;
+}
+
+.slot-num{
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border-radius:10px;
+  background:#163428;
+  color:#a9c5b9;
+  font-size:10px;
+  font-weight:900;
+}
+
+.slot-name{
+  font-size:11px;
+  font-weight:900;
+}
+
+.slot-control{
+  display:flex;
+  gap:4px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.tiny-chip{
+  padding:6px 8px;
+  border-radius:8px;
+  background:#102a20;
+  border:1px solid var(--line);
+  font-size:8px;
+  font-weight:900;
+}
+
+.tiny-chip.active{
+  border-color:rgba(32,216,137,.55);
+  color:#50e6a6;
+}
+
+.primary{
+  width:100%;
+  height:46px;
+  margin-top:17px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#20d889,#0ea968);
+  color:#02120b;
+  font-size:12px;
+  font-weight:950;
+  box-shadow:0 8px 25px rgba(32,216,137,.18);
+}
+
+.menu-list{
+  display:grid;
+  gap:8px;
+}
+
+.menu-item{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  background:#0b2118;
+  border:1px solid var(--line);
+  text-align:left;
+  font-size:12px;
+  font-weight:850;
+}
+
+.menu-item.danger{
+  color:#ff8d92;
+}
+
+.rules{
+  color:#a9bcb5;
+  font-size:12px;
+  line-height:1.65;
+}
+
+.rules strong{
+  color:#eaf5f0;
+}
+
+.confirm{
+  text-align:center;
+}
+
+.confirm-icon{
+  width:58px;
+  height:58px;
+  margin:0 auto 12px;
+  border-radius:18px;
+  display:grid;
+  place-items:center;
+  background:#173528;
+  font-size:26px;
+}
+
+.confirm-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:15px;
+}
+
+.secondary{
+  height:44px;
+  border-radius:13px;
+  background:#10261d;
+  border:1px solid var(--line);
+  font-size:11px;
+  font-weight:900;
+}
+
+.danger-btn{
+  height:44px;
+  border-radius:13px;
+  background:#542327;
+  color:#ffadb0;
+  font-size:11px;
+  font-weight:900;
+}
+
+.winner{
+  text-align:center;
+}
+
+.winner-trophy{
+  font-size:48px;
+  margin-bottom:7px;
+}
+
+.winner-score{
+  font-size:35px;
+  font-weight:950;
+  color:#51e5a5;
+}
+
 .toast{
-  position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);
-  padding:11px 16px;border-radius:12px;background:#102119;border:1px solid var(--line);
-  font-size:11px;opacity:0;pointer-events:none;transition:.25s ease;z-index:200;
+  position:fixed;
+  left:50%;
+  bottom:78px;
+  transform:translate(-50%,20px);
+  z-index:200;
+  padding:10px 15px;
+  border-radius:999px;
+  background:#152d24;
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  color:#dcebe5;
+  font-size:10px;
+  font-weight:850;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+  white-space:nowrap;
 }
-.toast.show{opacity:1;transform:translate(-50%,0);}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+/* AI THINKING */
+.ai-badge{
+  display:none;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  z-index:30;
+  padding:9px 14px;
+  border-radius:999px;
+  background:rgba(5,18,12,.9);
+  border:1px solid rgba(32,216,137,.25);
+  color:#62e6ae;
+  font-size:10px;
+  font-weight:900;
+  pointer-events:none;
+}
+
+.ai-badge.show{
+  display:block;
+}
+
+/* SMALL SCREENS */
+@media(max-width:600px){
+  .topbar{
+    height:52px;
+    flex-basis:52px;
+    padding:6px 8px;
+  }
+
+  .iconbtn{
+    width:37px;
+    height:37px;
+  }
+
+  .player-header{
+    height:62px;
+    flex-basis:62px;
+    padding:4px 8px;
+    gap:6px;
+  }
+
+  .player-card{
+    height:48px;
+    padding:5px 7px;
+    border-radius:14px;
+  }
+
+  .avatar{
+    width:32px;
+    height:32px;
+    font-size:15px;
+  }
+
+  .pname{
+    font-size:9px;
+  }
+
+  .pscore{
+    font-size:14px;
+  }
+
+  .timer-box{
+    transform:scale(.86);
+  }
+
+  .scorebar{
+    height:32px;
+    flex-basis:32px;
+  }
+
+  .score-pill{
+    min-width:48px;
+    font-size:8px;
+  }
+
+  .board-stage{
+    padding:1px 2px 4px;
+  }
+
+  .bottom-nav{
+    height:57px;
+    flex-basis:57px;
+    padding:6px 7px 7px;
+  }
+
+  .around-card{
+    width:103px;
+  }
+
+  .around-card .player-card{
+    height:42px;
+  }
+
+  .around-card .avatar{
+    width:27px;
+    height:27px;
+  }
+
+  .around-card .pname{
+    font-size:8px;
+  }
+
+  .around-card .pscore{
+    font-size:12px;
+  }
+}
+
+@media(max-height:650px){
+  .ad-space{
+    display:none;
+  }
+
+  .player-header{
+    height:57px;
+    flex-basis:57px;
+  }
+
+  .scorebar{
+    height:31px;
+    flex-basis:31px;
+  }
+
+  .bottom-nav{
+    height:53px;
+    flex-basis:53px;
+  }
+}
 </style>
 </head>
+
 <body>
+<div class="app">
 
-<!-- Reserved space for an ad banner (kept empty on purpose) -->
-<div id="adSlotTop" style="height:50px;flex:0 0 auto;"></div>
+  <header class="topbar">
+    <button class="iconbtn" id="backBtn" aria-label="Back">‹</button>
+    <div class="mode-pill" id="modePill">2 PLAYER · LOCAL</div>
 
-<!-- TOP BAR -->
-<div class="topbar">
-  <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
-  <div class="mode-pill" id="modePill">2 PLAYER</div>
-  <button class="icon-btn" id="soundBtn" aria-label="Sound"></button>
-  <button class="icon-btn" id="pauseBtn" aria-label="Pause"></button>
-</div>
-
-<!-- TOP PLAYERS -->
-<div class="prow">
-  <div class="pcard" id="pcard0">
-    <div class="av" id="av0">P1</div>
-    <div class="meta"><div class="name" id="name0">Player One</div><div class="score" id="score0">0</div></div>
-  </div>
-  <div class="timerwrap">
-    <div class="timerring">
-      <svg viewBox="0 0 60 60"><circle class="bg" cx="30" cy="30" r="26"></circle><circle class="fg" id="timerFg" cx="30" cy="30" r="26" stroke-dasharray="163" stroke-dashoffset="0"></circle></svg>
-      <div class="num" id="timerNum">20</div>
+    <div class="top-timer">
+      <span class="mini-dot"></span>
+      <span id="topTimer">20s</span>
     </div>
-    <div class="timerlbl">TIME LEFT</div>
-  </div>
-  <div class="pcard" id="pcard1">
-    <div class="meta" style="text-align:right;"><div class="name" id="name1">Player Two</div><div class="score" id="score1">0</div></div>
-    <div class="av" id="av1">P2</div>
-  </div>
-</div>
 
-<!-- SCORE PILLS -->
-<div class="pillrow">
-  <div class="pill"><span class="dot q"></span><span id="qCount">×1</span></div>
-  <div class="pill"><span class="dot b"></span><span id="bCount">×9</span></div>
-  <div class="pill"><span class="dot w"></span><span id="wCount">×9</span></div>
-</div>
+    <button class="iconbtn" id="soundBtn" aria-label="Sound">🔊</button>
+    <button class="iconbtn" id="pauseBtn" aria-label="Pause">Ⅱ</button>
+  </header>
 
-<!-- BOARD -->
-<div class="boardarea">
-  <div class="boardwrap" id="boardWrap">
-    <div class="powerwrap" id="powerWrap">POWER<div class="powerbar"><i id="powerBar"></i></div></div>
-    <canvas id="board"></canvas>
-    <div class="hint">👆 Drag the outer rail to place · pull striker back to shoot</div>
-  </div>
-</div>
+  <div class="ad-space">MAXGAME</div>
 
-<!-- BOTTOM PLAYERS (3/4p) -->
-<div class="prow2 hidden" id="prow2">
-  <div class="pcard" id="pcard2"><div class="av" id="av2">P3</div><div class="meta"><div class="name" id="name2">Player Three</div><div class="score" id="score2">0</div></div></div>
-  <div class="pcard hidden" id="pcard3"><div class="meta" style="text-align:right;"><div class="name" id="name3">Player Four</div><div class="score" id="score3">0</div></div><div class="av" id="av3">P4</div></div>
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottomnav">
-  <button class="navbtn" id="navMenu"><span class="ic">☰</span>MENU</button>
-  <button class="navbtn" id="navRules"><span class="ic">📖</span>RULES</button>
-  <button class="navbtn primary" id="navRestart"><span class="ic">↻</span>RESTART</button>
-  <button class="navbtn" id="navUndo"><span class="ic">↩</span>UNDO</button>
-</div>
-
-<!-- SETUP MODAL -->
-<div class="overlay" id="setupOverlay">
-  <div class="modal">
-    <h2>Carrom</h2>
-    <div class="sub">Set up your match</div>
-    <div class="row" id="countRow">
-      <button class="chip on" data-count="2">2 Players</button>
-      <button class="chip" data-count="3">3 Players</button>
-      <button class="chip" data-count="4">4 Players</button>
+  <!-- 2 PLAYER HEADER -->
+  <section class="player-header" id="twoPlayerHeader">
+    <div class="player-card active" data-player="0">
+      <div class="avatar">👤</div>
+      <div class="pinfo">
+        <div class="pname">Player 1</div>
+        <div class="pscore">0</div>
+      </div>
     </div>
-    <div id="slotsContainer"></div>
-    <button class="bigbtn" id="startBtn">START MATCH</button>
-    <button class="ghostbtn" id="setupRulesBtn">View Rules</button>
-  </div>
-</div>
 
-<!-- MENU MODAL -->
-<div class="overlay hidden" id="menuOverlay">
-  <div class="modal">
-    <h2>Menu</h2>
-    <div class="sub">Game options</div>
-    <button class="ghostbtn" id="menuRules">📖 Rules</button>
-    <button class="ghostbtn" id="menuRestart">↻ Restart Game</button>
-    <button class="ghostbtn" id="menuExit">← Exit to MAXGAME</button>
-    <div class="toggle-row" style="margin-top:10px;">
-      <span style="font-size:12px;font-weight:800;">Sound</span>
-      <div class="switch on" id="soundSwitch"><i></i></div>
+    <div class="timer-box">
+      <svg viewBox="0 0 64 64">
+        <circle class="timer-track" cx="32" cy="32" r="26"></circle>
+        <circle class="timer-progress" id="timerProgress2" cx="32" cy="32" r="26"></circle>
+      </svg>
+      <div class="timer-number" id="timerNumber2">20</div>
     </div>
-    <div class="toggle-row">
-      <span style="font-size:12px;font-weight:800;">Aim trajectory</span>
-      <div class="switch on" id="trajSwitch"><i></i></div>
+
+    <div class="player-card right" data-player="1">
+      <div class="avatar">🤖</div>
+      <div class="pinfo">
+        <div class="pname">Player 2</div>
+        <div class="pscore">0</div>
+      </div>
     </div>
-    <button class="ghostbtn" id="menuClose">Close</button>
+  </section>
+
+  <!-- 3/4 PLAYER HEADER -->
+  <div class="around-layer" id="aroundLayer">
+    <div class="around-card top" data-around="2">
+      <div class="player-card" data-player="2"></div>
+    </div>
+
+    <div class="around-card right" data-around="1">
+      <div class="player-card" data-player="1"></div>
+    </div>
+
+    <div class="around-card bottom" data-around="0">
+      <div class="player-card" data-player="0"></div>
+    </div>
+
+    <div class="around-card left" data-around="3">
+      <div class="player-card" data-player="3"></div>
+    </div>
+
+    <div class="around-timer timer-box">
+      <svg viewBox="0 0 64 64">
+        <circle class="timer-track" cx="32" cy="32" r="26"></circle>
+        <circle class="timer-progress" id="timerProgressA" cx="32" cy="32" r="26"></circle>
+      </svg>
+      <div class="timer-number" id="timerNumberA">20</div>
+    </div>
+  </div>
+
+  <div class="scorebar">
+    <div class="score-pill">👑 <b id="queenCount">1</b></div>
+    <div class="score-pill">⚫ <b id="blackCount">9</b></div>
+    <div class="score-pill">⚪ <b id="whiteCount">9</b></div>
+  </div>
+
+  <main class="board-stage">
+    <div class="board-wrap" id="boardWrap">
+      <canvas id="board"></canvas>
+
+      <div class="power-wrap" id="powerWrap">
+        POWER <span id="powerText">0%</span>
+        <div class="power-line">
+          <div class="power-fill" id="powerFill"></div>
+        </div>
+      </div>
+
+      <div class="hint">
+        Drag the striker to aim · drag the baseline to place
+      </div>
+    </div>
+
+    <div class="ai-badge" id="aiBadge">🤖 AI THINKING…</div>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="action main" id="menuBtn">⋮ MENU</button>
+    <button class="action" id="rulesBtn">RULES</button>
+    <button class="action" id="restartBtn">RESTART</button>
+    <button class="action" id="undoBtn">UNDO</button>
+  </nav>
+</div>
+
+<!-- SETUP -->
+<div class="overlay show" id="setupOverlay">
+  <div class="modal">
+    <div class="close-row">
+      <div>
+        <h2>Carrom</h2>
+        <div class="modal-sub">Choose your players and start the table.</div>
+      </div>
+      <button class="close" id="setupClose">×</button>
+    </div>
+
+    <div class="setup-section">
+      <div class="setup-label">Players</div>
+      <div class="chips">
+        <button class="chip active" data-count="2">2 Players</button>
+        <button class="chip" data-count="3">3 Players</button>
+        <button class="chip" data-count="4">4 Players</button>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <div class="setup-label">Player Setup</div>
+      <div id="setupSlots"></div>
+    </div>
+
+    <button class="primary" id="startGameBtn">START GAME</button>
   </div>
 </div>
 
-<!-- PAUSE MODAL -->
-<div class="overlay hidden" id="pauseOverlay">
+<!-- MENU -->
+<div class="overlay" id="menuOverlay">
   <div class="modal">
-    <h2>Paused</h2>
-    <div class="sub">Game is paused</div>
-    <button class="bigbtn" id="resumeBtn">RESUME</button>
-    <button class="ghostbtn" id="pauseRestart">↻ Restart Game</button>
-    <button class="ghostbtn" id="pauseExit">← Exit to MAXGAME</button>
+    <div class="close-row">
+      <h2>Game Menu</h2>
+      <button class="close" data-close="menuOverlay">×</button>
+    </div>
+
+    <div class="menu-list">
+      <button class="menu-item" id="menuRules">📖 Rules</button>
+      <button class="menu-item" id="menuUndo">↩ Undo Last Shot</button>
+      <button class="menu-item" id="menuRestart">🔄 Restart Game</button>
+      <button class="menu-item" id="menuSound">🔊 Sound: ON</button>
+      <button class="menu-item" id="menuTrajectory">🎯 Aim Guide: ON</button>
+      <button class="menu-item danger" id="menuExit">🚪 Exit Game</button>
+    </div>
   </div>
 </div>
 
-<!-- RULES MODAL -->
-<div class="overlay hidden" id="rulesOverlay">
+<!-- RULES -->
+<div class="overlay" id="rulesOverlay">
   <div class="modal">
-    <h2>Rules</h2>
-    <div class="sub">How to play Carrom</div>
+    <div class="close-row">
+      <h2>Carrom Rules</h2>
+      <button class="close" data-close="rulesOverlay">×</button>
+    </div>
+
     <div class="rules">
-      <p><b>Scoring</b> — Black = 10 pts · White = 20 pts · Queen = 50 pts. First to <b>180 points</b> wins — this applies the same way in 2, 3, or 4 player matches.</p>
-      <p><b>Placing the striker</b> — Drag the rail track around the edge of the board (outside the wood frame) to slide your striker along your baseline.</p>
-      <p><b>Shooting</b> — Press and pull back on the striker itself, aim using the arrow, then release to shoot. Longer pull = more power.</p>
-      <p><b>Turns</b> — Each player has 20 seconds per turn. Turns rotate in order after every shot.</p>
-      <p><b>Pockets</b> — Get a coin into any corner pocket to score its points.</p>
-      <p><b>Foul</b> — If your striker itself falls into a pocket, that turn earns no points and the striker returns to your baseline.</p>
-      <p><b>AI</b> — Easy plays loose and mostly random. Medium aims for pocket-friendly coins with moderate accuracy. Hard calculates the actual angle needed to pot a coin and plays it with high precision.</p>
-    </div>
-    <button class="bigbtn" id="rulesClose">Got it</button>
-  </div>
-</div>
+      <p><strong>⚫ Black:</strong> 10 points</p>
+      <p><strong>⚪ White:</strong> 20 points</p>
+      <p><strong>👑 Queen:</strong> 50 points</p>
+      <p><strong>🏆 Winning:</strong> First player to 180 points wins.</p>
 
-<!-- RESTART CONFIRM -->
-<div class="overlay hidden" id="restartOverlay">
-  <div class="modal">
-    <h2>Restart Game?</h2>
-    <div class="sub">Your current match will be lost.</div>
-    <div class="twobtn">
-      <button class="cancel" id="restartCancel">CANCEL</button>
-      <button class="danger" id="restartConfirm">RESTART</button>
+      <p><strong>Extra shot:</strong> If you successfully pocket a coin, you get another turn.</p>
+
+      <p><strong>Miss:</strong> If you don't pocket anything, the turn passes.</p>
+
+      <p><strong>Foul:</strong> Pocketing the striker causes a 10-point penalty and the turn passes.</p>
+
+      <p><strong>Queen:</strong> The queen must be covered by pocketing another coin in the same or following shot.</p>
+
+      <p><strong>Aim:</strong> Pull the striker backward and release to shoot in the opposite direction.</p>
     </div>
   </div>
 </div>
 
-<!-- EXIT CONFIRM -->
-<div class="overlay hidden" id="exitOverlay">
-  <div class="modal">
-    <h2>Exit Game?</h2>
-    <div class="sub">Your current progress will be lost.</div>
-    <div class="twobtn">
-      <button class="cancel" id="exitCancel">CANCEL</button>
-      <button class="danger" id="exitConfirm">EXIT</button>
+<!-- PAUSE -->
+<div class="overlay" id="pauseOverlay">
+  <div class="modal confirm">
+    <div class="confirm-icon">Ⅱ</div>
+    <h2>Game Paused</h2>
+    <div class="modal-sub">Take your time. The board is frozen.</div>
+    <button class="primary" id="resumeBtn">RESUME GAME</button>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="overlay" id="confirmOverlay">
+  <div class="modal confirm">
+    <div class="confirm-icon" id="confirmIcon">⚠️</div>
+    <h2 id="confirmTitle">Restart Game?</h2>
+    <div class="modal-sub" id="confirmText">Your current progress will be lost.</div>
+
+    <div class="confirm-buttons">
+      <button class="secondary" id="confirmCancel">CANCEL</button>
+      <button class="danger-btn" id="confirmYes">CONFIRM</button>
     </div>
   </div>
 </div>
 
-<!-- WINNER MODAL -->
-<div class="overlay hidden" id="winOverlay">
-  <div class="modal" style="text-align:center;">
-    <div style="font-size:11px;font-weight:900;letter-spacing:2px;color:var(--green);">🏆 WINNER</div>
-    <div class="winner-name" id="winnerName">Player One</div>
-    <div class="winner-score" id="winnerScore">180 points</div>
-    <button class="bigbtn" id="winRestart">PLAY AGAIN</button>
-    <button class="ghostbtn" id="winExit">← Exit to MAXGAME</button>
+<!-- WINNER -->
+<div class="overlay" id="winnerOverlay">
+  <div class="modal winner">
+    <div class="winner-trophy">🏆</div>
+    <h2 id="winnerName">Player 1 Wins!</h2>
+    <div class="modal-sub">Congratulations!</div>
+    <div class="winner-score" id="winnerScore">180</div>
+    <div class="modal-sub">POINTS</div>
+    <button class="primary" id="winnerRestart">PLAY AGAIN</button>
   </div>
 </div>
 
@@ -343,981 +1048,2924 @@ canvas{width:100%;height:100%;display:block;touch-action:none;}
 <script>
 "use strict";
 
-/* =====================================================
-   CONFIG
-===================================================== */
-const BOARD = 800;
+/* =========================================================
+   MAXGAME CARROM — COMPLETE SINGLE FILE ENGINE
+   ========================================================= */
 
-// wooden frame occupies this inset area; the band OUTSIDE it
-// (0..FRAME_MIN and FRAME_MAX..BOARD) is reserved for the rail track
-const FRAME_MIN = 60, FRAME_MAX = 740;
+const BOARD = 900;
 
-// playable physics surface, inset within the frame
-const FIELD_MIN = 130, FIELD_MAX = 670;
+const FIELD = {
+  min: 110,
+  max: 790
+};
 
-const R_COIN = 15, R_STRIKER = 19;
-const CENTER = { x: 400, y: 400 };
+const FRAME = {
+  min: 38,
+  max: 862
+};
+
+const CENTER = {
+  x: 450,
+  y: 450
+};
+
 const POCKETS = [
-  { x: 168, y: 168 }, { x: 632, y: 168 },
-  { x: 168, y: 632 }, { x: 632, y: 632 }
+  {x:110,y:110},
+  {x:790,y:110},
+  {x:110,y:790},
+  {x:790,y:790}
 ];
-const POCKET_VIS_R = 27, POCKET_CAPTURE_R = 30;
 
-const MAX_PULL = 150, MIN_PULL = 10;
-const MAX_SPEED = 950;
-const FRICTION_DECEL = 700;
-const REST_WALL = 0.66, REST_COIN = 0.82;
-const EPS_STOP = 5;
-const PHYSICS_SUBSTEPS = 3;
-const TURN_SECONDS = 20;
-const CAPTURE_DURATION = 0.16;
-const WIN_SCORE = 180;
+const COIN_R = 15;
+const STRIKER_R = 20;
+
+const POCKET_CAPTURE_R = 38;
+const POCKET_MOUTH = 53;
 
 const BASELINES = {
-  bottom: { axis: "x", fixed: 630, min: 300, max: 500, get:(v)=>({x:v,y:630}) },
-  top:    { axis: "x", fixed: 170, min: 300, max: 500, get:(v)=>({x:v,y:170}) },
-  left:   { axis: "y", fixed: 170, min: 300, max: 500, get:(v)=>({x:170,y:v}) },
-  right:  { axis: "y", fixed: 630, min: 300, max: 500, get:(v)=>({x:630,y:v}) }
+  bottom:{
+    axis:"x",
+    fixed:720,
+    min:285,
+    max:615,
+    get:v=>({x:v,y:720})
+  },
+  top:{
+    axis:"x",
+    fixed:180,
+    min:285,
+    max:615,
+    get:v=>({x:v,y:180})
+  },
+  left:{
+    axis:"y",
+    fixed:180,
+    min:285,
+    max:615,
+    get:v=>({x:180,y:v})
+  },
+  right:{
+    axis:"y",
+    fixed:720,
+    min:285,
+    max:615,
+    get:v=>({x:720,y:v})
+  }
 };
-// where the OUTER rail track is drawn, outside the wooden frame
-const RAIL_FIXED = { bottom: 770, top: 30, left: 30, right: 770 };
-const RAIL_HALF_THICK = 15;
 
 const SIDES_BY_COUNT = {
-  2: ["bottom", "top"],
-  3: ["bottom", "right", "top"],
-  4: ["bottom", "right", "top", "left"]
+  2:["bottom","top"],
+  3:["bottom","right","top"],
+  4:["bottom","right","top","left"]
 };
+
+const TURN_SECONDS = 20;
+const WIN_SCORE = 180;
+
+const BLACK_VALUE = 10;
+const WHITE_VALUE = 20;
+const QUEEN_VALUE = 50;
+const FOUL_PENALTY = 10;
+
+const MAX_PULL = 175;
+const MIN_PULL = 9;
+const MAX_SPEED = 820;
+
+const STOP_SPEED = 8;
+const WALL_RESTITUTION = .79;
+const COIN_RESTITUTION = .88;
+const FRICTION_PER_60FPS = .987;
+
+const FIXED_DT = 1/120;
 
 const DIFF_PARAMS = {
-  easy:   { angleNoiseDeg: 28, powerNoise: 0.28, placeMode:"random", placeNoise:0,  thinkMs:350, aimMs:650 },
-  medium: { angleNoiseDeg: 8,  powerNoise: 0.13, placeMode:"aimed",  placeNoise:45, thinkMs:550, aimMs:850 },
-  hard:   { angleNoiseDeg: 2,  powerNoise: 0.05, placeMode:"aimed",  placeNoise:9,  thinkMs:800, aimMs:1050 }
+  easy:{
+    think:650,
+    accuracy:.72,
+    powerNoise:.12
+  },
+  medium:{
+    think:500,
+    accuracy:.87,
+    powerNoise:.07
+  },
+  hard:{
+    think:350,
+    accuracy:.96,
+    powerNoise:.025
+  }
 };
-// distance-based power so the AI doesn't just guess randomly —
-// farther shots automatically get more force
-function calcAIPower(dist, noise){
-  const base = clamp(0.32 + (dist/480)*0.55, 0.32, 0.97);
-  const p = base + (Math.random()-0.5)*2*noise;
-  return clamp(p, 0.3, 0.98);
-}
 
-/* =====================================================
-   ICONS (SVG, not emoji — avoids the system emoji-font look)
-===================================================== */
-const ICON_SOUND_ON = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19.3 5.7a9 9 0 0 1 0 12.6"/></svg>';
-const ICON_SOUND_OFF = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><line x1="16.5" y1="9" x2="22" y2="14.5"/><line x1="22" y1="9" x2="16.5" y2="14.5"/></svg>';
-const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><rect x="5" y="4" width="4.5" height="16" rx="1.4"/><rect x="14.5" y="4" width="4.5" height="16" rx="1.4"/></svg>';
+/* -------------------------
+   STATE
+------------------------- */
 
-/* =====================================================
-   GAME STATE
-===================================================== */
+let canvas = document.getElementById("board");
+let ctx = canvas.getContext("2d");
+
 let gameState = {
-  mode: "SETUP",
-  playerCount: 2,
-  currentPlayer: 0,
-  timer: TURN_SECONDS,
-  paused: false,
-  gameOver: false,
-  soundOn: true,
-  trajOn: true
+  mode:"SETUP",
+  playerCount:2,
+  currentPlayer:0,
+  timer:TURN_SECONDS,
+  paused:false,
+  gameOver:false,
+  soundOn:true,
+  trajOn:true
 };
+
 let players = [];
+
 let coins = [];
 let striker = null;
-let shotPoints = 0, shotFoul = false, shotTaken = false;
-let input = { mode: null, pull: { x: 0, y: 0 } };
-let aiTimeouts = [];
 
-/* =====================================================
-   CANVAS
-===================================================== */
-const canvas = document.getElementById("board");
-const ctx = canvas.getContext("2d");
-const boardWrap = document.getElementById("boardWrap");
+let queenState = {
+  status:"onboard",
+  owner:null
+};
 
-function resizeCanvas() {
-  const size = boardWrap.clientWidth;
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width = size * dpr;
-  canvas.height = size * dpr;
-  canvas.style.width = size + "px";
-  canvas.style.height = size + "px";
-  const scale = (size / BOARD) * dpr;
-  ctx.setTransform(scale, 0, 0, scale, 0, 0);
+let shot = {
+  active:false,
+  coinCount:0,
+  points:0,
+  queen:false,
+  foul:false
+};
+
+let input = {
+  type:null,
+  pointerId:null,
+  start:{x:0,y:0},
+  current:{x:0,y:0},
+  pull:{x:0,y:0},
+  placementSide:null
+};
+
+let undoSnapshot = null;
+
+let aiTimers = [];
+
+let accumulator = 0;
+let lastFrame = performance.now();
+
+let toastTimer = null;
+
+let setupCount = 2;
+
+let setupConfig = [
+  {isAI:false,difficulty:"easy"},
+  {isAI:true,difficulty:"easy"},
+  {isAI:true,difficulty:"easy"},
+  {isAI:true,difficulty:"easy"}
+];
+
+/* -------------------------
+   HELPERS
+------------------------- */
+
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+
+const lerp = (a,b,t)=>a+(b-a)*t;
+
+function dist(a,b){
+  return Math.hypot(a.x-b.x,a.y-b.y);
 }
-window.addEventListener("resize", resizeCanvas);
-window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 100));
 
-function toBoard(clientX, clientY) {
-  const rect = canvas.getBoundingClientRect();
-  const s = BOARD / rect.width;
-  return { x: (clientX - rect.left) * s, y: (clientY - rect.top) * s };
+function norm(v){
+  const d=Math.hypot(v.x,v.y)||1;
+  return {x:v.x/d,y:v.y/d};
 }
 
-/* =====================================================
-   UTIL
-===================================================== */
-function len(v){ return Math.hypot(v.x, v.y); }
-function norm(v){ const l=len(v)||1; return {x:v.x/l, y:v.y/l}; }
-function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
-function toast(msg){
-  const t = document.getElementById("toast");
-  t.textContent = msg; t.classList.add("show");
-  clearTimeout(toast._t);
-  toast._t = setTimeout(()=>t.classList.remove("show"), 1700);
+function dot(a,b){
+  return a.x*b.x+a.y*b.y;
 }
-function beep(freq, dur, type){
-  if(!gameState.soundOn) return;
+
+function randomRange(a,b){
+  return a+Math.random()*(b-a);
+}
+
+function deepClone(obj){
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function toast(message){
+  const el=document.getElementById("toast");
+  el.textContent=message;
+  el.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer=setTimeout(()=>{
+    el.classList.remove("show");
+  },1800);
+}
+
+function show(id){
+  document.getElementById(id).classList.add("show");
+}
+
+function hide(id){
+  document.getElementById(id).classList.remove("show");
+}
+
+/* -------------------------
+   CANVAS RESIZE
+------------------------- */
+
+function resizeCanvas(){
+  const rect=canvas.getBoundingClientRect();
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+
+  canvas.width=Math.max(1,Math.round(rect.width*dpr));
+  canvas.height=Math.max(1,Math.round(rect.height*dpr));
+
+  ctx.setTransform(
+    dpr*rect.width/BOARD,
+    0,
+    0,
+    dpr*rect.height/BOARD,
+    0,
+    0
+  );
+}
+
+window.addEventListener("resize",resizeCanvas);
+
+/* -------------------------
+   LOCAL STORAGE
+------------------------- */
+
+function loadStoredSettings(){
+
   try{
-    const actx = beep._ctx || (beep._ctx = new (window.AudioContext||window.webkitAudioContext)());
-    const o = actx.createOscillator(), g = actx.createGain();
-    o.type = type||"sine"; o.frequency.value = freq;
-    g.gain.value = 0.06;
-    o.connect(g); g.connect(actx.destination);
-    o.start();
-    g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
-    o.stop(actx.currentTime + dur);
+
+    const count=parseInt(
+      localStorage.getItem("maxgame_carrom_players"),
+      10
+    );
+
+    if([2,3,4].includes(count)){
+      setupCount=count;
+    }
+
+    const mode=(localStorage.getItem("maxgame_carrom_mode")||"")
+      .toLowerCase();
+
+    const difficulty=(localStorage.getItem(
+      "maxgame_carrom_difficulty"
+    )||"easy").toLowerCase();
+
+    if(["easy","medium","hard"].includes(difficulty)){
+
+      setupConfig[1].difficulty=difficulty;
+      setupConfig[2].difficulty=difficulty;
+      setupConfig[3].difficulty=difficulty;
+    }
+
+    if(
+      mode.includes("local") ||
+      mode.includes("friend")
+    ){
+
+      for(let i=0;i<4;i++){
+        setupConfig[i].isAI=false;
+      }
+
+    }else if(
+      mode.includes("ai") ||
+      mode.includes("computer")
+    ){
+
+      setupConfig[0].isAI=false;
+
+      for(let i=1;i<4;i++){
+        setupConfig[i].isAI=true;
+      }
+    }
+
   }catch(e){}
+
+  renderSetup();
 }
 
-/* =====================================================
-   COIN SYSTEM
-===================================================== */
-function createCoins(){
-  const list = [];
-  list.push({ id:"queen", color:"queen", value:50, x:CENTER.x, y:CENTER.y, r:R_COIN, vx:0, vy:0, active:true, capturing:false, pocketed:false });
+/* -------------------------
+   SETUP
+------------------------- */
 
-  const ring1 = 6, r1 = 33;
-  for(let i=0;i<ring1;i++){
-    const ang = (Math.PI*2/ring1)*i - Math.PI/2;
-    const color = i%2===0 ? "black" : "white";
-    list.push({ id:"c1_"+i, color, value: color==="black"?10:20, x:CENTER.x+Math.cos(ang)*r1, y:CENTER.y+Math.sin(ang)*r1, r:R_COIN, vx:0, vy:0, active:true, capturing:false, pocketed:false });
+function renderSetup(){
+
+  document.querySelectorAll("[data-count]").forEach(btn=>{
+    btn.classList.toggle(
+      "active",
+      Number(btn.dataset.count)===setupCount
+    );
+  });
+
+  const container=document.getElementById("setupSlots");
+  container.innerHTML="";
+
+  for(let i=0;i<setupCount;i++){
+
+    const cfg=setupConfig[i];
+
+    const slot=document.createElement("div");
+    slot.className="slot";
+
+    const diffButtons=cfg.isAI ? `
+      <button class="tiny-chip ${cfg.difficulty==="easy"?"active":""}"
+              data-slot="${i}" data-diff="easy">EASY</button>
+      <button class="tiny-chip ${cfg.difficulty==="medium"?"active":""}"
+              data-slot="${i}" data-diff="medium">MED</button>
+      <button class="tiny-chip ${cfg.difficulty==="hard"?"active":""}"
+              data-slot="${i}" data-diff="hard">HARD</button>
+    `:"";
+
+    slot.innerHTML=`
+      <div class="slot-num">${i+1}</div>
+
+      <div>
+        <div class="slot-name">
+          Player ${i+1}${i===0?" · YOU":""}
+        </div>
+      </div>
+
+      <div class="slot-control">
+        ${
+          i===0
+          ? `<span class="tiny-chip active">HUMAN</span>`
+          : `
+            <button class="tiny-chip ${!cfg.isAI?"active":""}"
+                    data-slot="${i}" data-type="human">
+              HUMAN
+            </button>
+            <button class="tiny-chip ${cfg.isAI?"active":""}"
+                    data-slot="${i}" data-type="ai">
+              AI
+            </button>
+            ${diffButtons}
+          `
+        }
+      </div>
+    `;
+
+    container.appendChild(slot);
   }
-  const ring2 = 12, r2 = 64;
-  for(let i=0;i<ring2;i++){
-    const ang = (Math.PI*2/ring2)*i - Math.PI/2 + (Math.PI/ring2);
-    const color = i%2===0 ? "white" : "black";
-    list.push({ id:"c2_"+i, color, value: color==="black"?10:20, x:CENTER.x+Math.cos(ang)*r2, y:CENTER.y+Math.sin(ang)*r2, r:R_COIN, vx:0, vy:0, active:true, capturing:false, pocketed:false });
+
+  container.querySelectorAll("[data-type]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+
+      const i=Number(btn.dataset.slot);
+
+      setupConfig[i].isAI=btn.dataset.type==="ai";
+
+      renderSetup();
+    });
+  });
+
+  container.querySelectorAll("[data-diff]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+
+      const i=Number(btn.dataset.slot);
+
+      setupConfig[i].difficulty=btn.dataset.diff;
+
+      renderSetup();
+    });
+  });
+}
+
+document.querySelectorAll("[data-count]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+
+    setupCount=Number(btn.dataset.count);
+
+    renderSetup();
+  });
+});
+
+/* -------------------------
+   PLAYER DATA
+------------------------- */
+
+function createPlayers(){
+
+  players=[];
+
+  for(let i=0;i<setupCount;i++){
+
+    const cfg=setupConfig[i];
+
+    players.push({
+      id:i,
+      name:i===0?"Player 1":`Player ${i+1}`,
+      score:0,
+      black:0,
+      white:0,
+      queen:0,
+      isAI:!!cfg.isAI,
+      difficulty:cfg.difficulty||"easy",
+      side:SIDES_BY_COUNT[setupCount][i]
+    });
   }
+}
+
+function playerAvatar(player){
+  if(player.isAI)return "🤖";
+  return "👤";
+}
+
+function updatePlayerCards(){
+
+  document.querySelectorAll(".player-card[data-player]").forEach(card=>{
+
+    const i=Number(card.dataset.player);
+    const p=players[i];
+
+    if(!p)return;
+
+    card.classList.toggle(
+      "active",
+      i===gameState.currentPlayer
+    );
+
+    card.innerHTML=`
+      <div class="avatar">${playerAvatar(p)}</div>
+      <div class="pinfo">
+        <div class="pname">${p.name}</div>
+        <div class="pscore">${Math.max(0,p.score)}</div>
+      </div>
+    `;
+  });
+
+  document.getElementById("modePill").textContent=
+    `${gameState.playerCount} PLAYER${gameState.playerCount>1?"S":""} · ${
+      players.some(p=>p.isAI)?"AI":"LOCAL"
+    }`;
+
+  const around=document.getElementById("aroundLayer");
+  const header=document.getElementById("twoPlayerHeader");
+
+  if(gameState.playerCount===2){
+    header.style.display="grid";
+    around.style.display="none";
+  }else{
+    header.style.display="none";
+    around.style.display="block";
+
+    document.querySelectorAll(".around-card").forEach(card=>{
+      card.style.display="none";
+    });
+
+    for(let i=0;i<gameState.playerCount;i++){
+
+      const side=players[i].side;
+
+      const el=document.querySelector(
+        `.around-card.${side}`
+      );
+
+      if(el){
+        el.style.display="block";
+      }
+    }
+  }
+}
+
+/* -------------------------
+   TIMER
+------------------------- */
+
+function updateTimerUI(){
+
+  const t=clamp(gameState.timer,0,TURN_SECONDS);
+
+  document.getElementById("topTimer").textContent=
+    `${Math.ceil(t)}s`;
+
+  document.getElementById("timerNumber2").textContent=
+    Math.ceil(t);
+
+  document.getElementById("timerNumberA").textContent=
+    Math.ceil(t);
+
+  const progress=1-t/TURN_SECONDS;
+  const offset=163*progress;
+
+  document.getElementById("timerProgress2")
+    .style.strokeDashoffset=offset;
+
+  document.getElementById("timerProgressA")
+    .style.strokeDashoffset=offset;
+}
+
+/* -------------------------
+   COINS
+------------------------- */
+
+function createCoin(id,x,y,color,value,queen=false){
+
+  return {
+    id,
+    x,
+    y,
+    vx:0,
+    vy:0,
+    r:COIN_R,
+    color,
+    value,
+    queen,
+    active:true,
+    capturing:false,
+    captureT:0,
+    pocketX:0,
+    pocketY:0
+  };
+}
+
+function createCoins(){
+
+  coins=[];
+
+  let id=0;
+
+  // Queen
+  coins.push(
+    createCoin(
+      id++,
+      CENTER.x,
+      CENTER.y,
+      "queen",
+      QUEEN_VALUE,
+      true
+    )
+  );
+
+  const innerRadius=36;
+
+  for(let i=0;i<6;i++){
+
+    const a=(Math.PI*2/6)*i;
+
+    const color=i%2===0?"black":"white";
+    const value=color==="black"?BLACK_VALUE:WHITE_VALUE;
+
+    coins.push(
+      createCoin(
+        id++,
+        CENTER.x+Math.cos(a)*innerRadius,
+        CENTER.y+Math.sin(a)*innerRadius,
+        color,
+        value
+      )
+    );
+  }
+
+  const outerRadius=72;
+
+  for(let i=0;i<12;i++){
+
+    const a=(Math.PI*2/12)*i+Math.PI/12;
+
+    const color=i%2===0?"white":"black";
+    const value=color==="black"?BLACK_VALUE:WHITE_VALUE;
+
+    coins.push(
+      createCoin(
+        id++,
+        CENTER.x+Math.cos(a)*outerRadius,
+        CENTER.y+Math.sin(a)*outerRadius,
+        color,
+        value
+      )
+    );
+  }
+
+  queenState={
+    status:"onboard",
+    owner:null
+  };
+}
+
+/* -------------------------
+   STRIKER
+------------------------- */
+
+function defaultStrikerPos(side){
+
+  const base=BASELINES[side];
+
+  return base.get(
+    (base.min+base.max)/2
+  );
+}
+
+function resetStriker(){
+
+  const p=players[gameState.currentPlayer];
+
+  if(!p)return;
+
+  const pos=defaultStrikerPos(p.side);
+
+  striker={
+    id:"striker",
+    x:pos.x,
+    y:pos.y,
+    vx:0,
+    vy:0,
+    r:STRIKER_R,
+    active:true,
+    capturing:false,
+    captureT:0,
+    pocketX:0,
+    pocketY:0
+  };
+}
+
+function placeStrikerAt(value){
+
+  const p=players[gameState.currentPlayer];
+  if(!p||!striker)return;
+
+  const base=BASELINES[p.side];
+
+  value=clamp(
+    value,
+    base.min,
+    base.max
+  );
+
+  const pos=base.get(value);
+
+  striker.x=pos.x;
+  striker.y=pos.y;
+  striker.vx=0;
+  striker.vy=0;
+}
+
+/* -------------------------
+   DRAW BOARD
+------------------------- */
+
+function roundedRect(x,y,w,h,r){
+
+  ctx.beginPath();
+  ctx.roundRect(x,y,w,h,r);
+}
+
+function drawBoard(){
+
+  ctx.clearRect(0,0,BOARD,BOARD);
+
+  /* outer shadow */
+  ctx.fillStyle="#020705";
+  roundedRect(26,26,848,848,45);
+  ctx.fill();
+
+  /* outer wooden frame */
+  const wood=ctx.createLinearGradient(
+    0,0,BOARD,BOARD
+  );
+
+  wood.addColorStop(0,"#8a552d");
+  wood.addColorStop(.25,"#c8874b");
+  wood.addColorStop(.52,"#7a4526");
+  wood.addColorStop(.75,"#b46e39");
+  wood.addColorStop(1,"#60361e");
+
+  ctx.fillStyle=wood;
+  roundedRect(38,38,824,824,42);
+  ctx.fill();
+
+  /* inner frame */
+  ctx.strokeStyle="#e0a663";
+  ctx.lineWidth=5;
+  roundedRect(54,54,792,792,34);
+  ctx.stroke();
+
+  /* playing surface */
+  const surface=ctx.createLinearGradient(
+    100,100,800,800
+  );
+
+  surface.addColorStop(0,"#e7c18c");
+  surface.addColorStop(.5,"#d9a96e");
+  surface.addColorStop(1,"#c58b4f");
+
+  ctx.fillStyle=surface;
+  roundedRect(82,82,736,736,26);
+  ctx.fill();
+
+  /* subtle wood grain */
+  ctx.globalAlpha=.09;
+
+  for(let i=0;i<45;i++){
+
+    const y=95+i*16;
+
+    ctx.strokeStyle=i%2?"#5d351f":"#fff1c8";
+    ctx.lineWidth=1;
+
+    ctx.beginPath();
+    ctx.moveTo(95,y);
+    ctx.bezierCurveTo(
+      280,y+randomSeed(i)*8-4,
+      580,y-randomSeed(i+10)*8+4,
+      805,y
+    );
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha=1;
+
+  drawBoardMarkings();
+  drawPockets();
+  drawBaselines();
+  drawCoins();
+  drawStriker();
+  drawAim();
+}
+
+/* deterministic decorative noise */
+function randomSeed(n){
+  const x=Math.sin(n*12.9898)*43758.5453;
+  return x-Math.floor(x);
+}
+
+function drawBoardMarkings(){
+
+  ctx.save();
+
+  /* center circle */
+  ctx.strokeStyle="rgba(120,48,35,.72)";
+  ctx.lineWidth=5;
+
+  ctx.beginPath();
+  ctx.arc(CENTER.x,CENTER.y,88,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.lineWidth=2;
+
+  ctx.beginPath();
+  ctx.arc(CENTER.x,CENTER.y,19,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(CENTER.x,CENTER.y,9,0,Math.PI*2);
+  ctx.stroke();
+
+  /* diagonal guides */
+  ctx.strokeStyle="rgba(121,53,38,.38)";
+  ctx.lineWidth=3;
+
+  const lines=[
+    [115,115,285,285],
+    [785,115,615,285],
+    [115,785,285,615],
+    [785,785,615,615]
+  ];
+
+  lines.forEach(l=>{
+    ctx.beginPath();
+    ctx.moveTo(l[0],l[1]);
+    ctx.lineTo(l[2],l[3]);
+    ctx.stroke();
+  });
+
+  ctx.restore();
+}
+
+function drawPockets(){
+
+  POCKETS.forEach((p,index)=>{
+
+    /* corner pocket plate */
+    ctx.fillStyle="#6c3d22";
+
+    ctx.beginPath();
+
+    const sx=p.x<450?p.x+6:p.x-6;
+    const sy=p.y<450?p.y+6:p.y-6;
+
+    ctx.arc(sx,sy,49,0,Math.PI*2);
+    ctx.fill();
+
+    /* rim */
+    ctx.strokeStyle="#edb36b";
+    ctx.lineWidth=5;
+
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,43,0,Math.PI*2);
+    ctx.stroke();
+
+    /* hole */
+    const hole=ctx.createRadialGradient(
+      p.x-5,p.y-5,3,
+      p.x,p.y,37
+    );
+
+    hole.addColorStop(0,"#050403");
+    hole.addColorStop(.7,"#11100d");
+    hole.addColorStop(1,"#000000");
+
+    ctx.fillStyle=hole;
+
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,37,0,Math.PI*2);
+    ctx.fill();
+
+    /* highlight */
+    ctx.strokeStyle="rgba(255,230,180,.3)";
+    ctx.lineWidth=2;
+
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,34,Math.PI*1.05,Math.PI*1.7);
+    ctx.stroke();
+  });
+}
+
+function drawBaselines(){
+
+  const activeSide=
+    players[gameState.currentPlayer]?.side;
+
+  Object.entries(BASELINES).forEach(([side,b])=>{
+
+    const active=side===activeSide;
+
+    ctx.save();
+
+    ctx.strokeStyle=active
+      ?"rgba(70,65,40,.95)"
+      :"rgba(100,60,40,.45)";
+
+    ctx.lineWidth=active?4:2;
+
+    ctx.fillStyle=active
+      ?"rgba(255,235,190,.18)"
+      :"rgba(80,45,30,.06)";
+
+    if(b.axis==="x"){
+
+      ctx.fillRect(
+        b.min-28,
+        b.fixed-27,
+        b.max-b.min+56,
+        54
+      );
+
+      ctx.strokeRect(
+        b.min-28,
+        b.fixed-27,
+        b.max-b.min+56,
+        54
+      );
+
+      ctx.beginPath();
+      ctx.moveTo(b.min,b.fixed);
+      ctx.lineTo(b.max,b.fixed);
+      ctx.stroke();
+
+      [b.min,b.max].forEach(x=>{
+        ctx.fillStyle=active?"#9e4034":"#754032";
+        ctx.beginPath();
+        ctx.arc(x,b.fixed,8,0,Math.PI*2);
+        ctx.fill();
+      });
+
+    }else{
+
+      ctx.fillRect(
+        b.fixed-27,
+        b.min-28,
+        54,
+        b.max-b.min+56
+      );
+
+      ctx.strokeRect(
+        b.fixed-27,
+        b.min-28,
+        54,
+        b.max-b.min+56
+      );
+
+      ctx.beginPath();
+      ctx.moveTo(b.fixed,b.min);
+      ctx.lineTo(b.fixed,b.max);
+      ctx.stroke();
+
+      [b.min,b.max].forEach(y=>{
+        ctx.fillStyle=active?"#9e4034":"#754032";
+        ctx.beginPath();
+        ctx.arc(b.fixed,y,8,0,Math.PI*2);
+        ctx.fill();
+      });
+    }
+
+    ctx.restore();
+  });
+
+  /* active placement handle */
+  if(striker && activeSide){
+
+    const b=BASELINES[activeSide];
+
+    ctx.save();
+
+    ctx.fillStyle="#20d889";
+    ctx.globalAlpha=.22;
+
+    ctx.beginPath();
+    ctx.arc(striker.x,striker.y,29,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.globalAlpha=1;
+
+    ctx.strokeStyle="#f5c76b";
+    ctx.lineWidth=3;
+
+    ctx.beginPath();
+    ctx.arc(striker.x,striker.y,25,0,Math.PI*2);
+    ctx.stroke();
+
+    ctx.fillStyle="#f5c76b";
+
+    ctx.beginPath();
+    ctx.arc(striker.x,striker.y,4,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+}
+
+function drawCoins(){
+
+  coins.forEach(c=>{
+
+    if(!c.active && !c.capturing)return;
+
+    let x=c.x;
+    let y=c.y;
+
+    if(c.capturing){
+      x=lerp(c.x,c.pocketX,c.captureT);
+      y=lerp(c.y,c.pocketY,c.captureT);
+    }
+
+    drawPiece(
+      x,
+      y,
+      c.r,
+      c.color==="black"
+        ?"#141513"
+        :c.color==="white"
+        ?"#f2ead8"
+        :"#d74e52",
+      c.capturing?1-c.captureT*.75:1
+    );
+  });
+}
+
+function drawStriker(){
+
+  if(!striker || !striker.active)return;
+
+  let x=striker.x;
+  let y=striker.y;
+
+  if(striker.capturing){
+    x=lerp(striker.x,striker.pocketX,striker.captureT);
+    y=lerp(striker.y,striker.pocketY,striker.captureT);
+  }
+
+  drawPiece(
+    x,
+    y,
+    striker.r,
+    "#f0eee6",
+    striker.capturing?1-striker.captureT*.75:1,
+    true
+  );
+}
+
+function drawPiece(x,y,r,color,alpha=1,strikerPiece=false){
+
+  ctx.save();
+
+  ctx.globalAlpha=alpha;
+
+  const g=ctx.createRadialGradient(
+    x-r*.35,
+    y-r*.4,
+    2,
+    x,
+    y,
+    r*1.15
+  );
+
+  if(color==="#141513"){
+    g.addColorStop(0,"#50534d");
+    g.addColorStop(.35,"#252723");
+    g.addColorStop(1,"#090a09");
+  }else if(color==="#f2ead8"){
+    g.addColorStop(0,"#ffffff");
+    g.addColorStop(.35,"#e8dfcb");
+    g.addColorStop(1,"#b7a990");
+  }else if(color==="#d74e52"){
+    g.addColorStop(0,"#ff8b86");
+    g.addColorStop(.4,"#d74e52");
+    g.addColorStop(1,"#7e272d");
+  }else{
+    g.addColorStop(0,"#fff");
+    g.addColorStop(1,color);
+  }
+
+  ctx.fillStyle=g;
+
+  ctx.beginPath();
+  ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.strokeStyle=strikerPiece
+    ?"rgba(75,62,45,.95)"
+    :"rgba(70,55,42,.8)";
+
+  ctx.lineWidth=strikerPiece?3:2;
+
+  ctx.stroke();
+
+  if(strikerPiece){
+
+    ctx.strokeStyle="rgba(32,216,137,.75)";
+    ctx.lineWidth=2;
+
+    ctx.beginPath();
+    ctx.arc(x,y,r-5,0,Math.PI*2);
+    ctx.stroke();
+
+  }else{
+
+    ctx.fillStyle="rgba(255,255,255,.2)";
+
+    ctx.beginPath();
+    ctx.arc(
+      x-r*.32,
+      y-r*.35,
+      Math.max(2,r*.16),
+      0,
+      Math.PI*2
+    );
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+/* -------------------------
+   AIM
+------------------------- */
+
+function getAimData(){
+
+  if(!striker)return null;
+
+  let pull=input.pull;
+
+  const len=Math.hypot(pull.x,pull.y);
+
+  if(len<MIN_PULL)return null;
+
+  const power=clamp(
+    len/MAX_PULL,
+    0,
+    1
+  );
+
+  const direction=norm({
+    x:-pull.x,
+    y:-pull.y
+  });
+
+  return {
+    power,
+    direction
+  };
+}
+
+function drawAim(){
+
+  if(
+    !striker ||
+    !striker.active ||
+    striker.capturing
+  )return;
+
+  const data=getAimData();
+
+  if(!data)return;
+
+  if(
+    !gameState.trajOn &&
+    gameState.mode!=="AI_THINKING"
+  )return;
+
+  const len=95+data.power*260;
+
+  ctx.save();
+
+  ctx.strokeStyle="rgba(32,216,137,.82)";
+  ctx.lineWidth=4;
+  ctx.setLineDash([13,9]);
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    striker.x,
+    striker.y
+  );
+
+  ctx.lineTo(
+    striker.x+data.direction.x*len,
+    striker.y+data.direction.y*len
+  );
+
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+
+  /* arrow head */
+  const ex=
+    striker.x+data.direction.x*len;
+
+  const ey=
+    striker.y+data.direction.y*len;
+
+  const px=-data.direction.y;
+  const py=data.direction.x;
+
+  ctx.fillStyle="#20d889";
+
+  ctx.beginPath();
+  ctx.moveTo(ex,ey);
+  ctx.lineTo(
+    ex-data.direction.x*20+px*8,
+    ey-data.direction.y*20+py*8
+  );
+  ctx.lineTo(
+    ex-data.direction.x*20-px*8,
+    ey-data.direction.y*20-py*8
+  );
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+}
+
+/* -------------------------
+   PLACEMENT HIT TEST
+------------------------- */
+
+function screenToBoard(e){
+
+  const rect=canvas.getBoundingClientRect();
+
+  return {
+    x:(e.clientX-rect.left)/rect.width*BOARD,
+    y:(e.clientY-rect.top)/rect.height*BOARD
+  };
+}
+
+function placementValue(point,side){
+
+  const b=BASELINES[side];
+
+  if(b.axis==="x"){
+    return clamp(point.x,b.min,b.max);
+  }
+
+  return clamp(point.y,b.min,b.max);
+}
+
+function hitPlacement(point){
+
+  if(gameState.mode!=="READY")return null;
+
+  const p=players[gameState.currentPlayer];
+  if(!p || p.isAI)return null;
+
+  const b=BASELINES[p.side];
+
+  let d;
+
+  if(b.axis==="x"){
+
+    d=Math.abs(point.y-b.fixed);
+
+    if(
+      d<32 &&
+      point.x>b.min-35 &&
+      point.x<b.max+35
+    ){
+      return p.side;
+    }
+
+  }else{
+
+    d=Math.abs(point.x-b.fixed);
+
+    if(
+      d<32 &&
+      point.y>b.min-35 &&
+      point.y<b.max+35
+    ){
+      return p.side;
+    }
+  }
+
+  if(
+    striker &&
+    dist(point,striker)<32
+  ){
+    return p.side;
+  }
+
+  return null;
+}
+
+/* -------------------------
+   INPUT
+------------------------- */
+
+canvas.addEventListener("pointerdown",e=>{
+
+  if(gameState.paused)return;
+
+  if(gameState.mode!=="READY")return;
+
+  const p=players[gameState.currentPlayer];
+
+  if(!p || p.isAI)return;
+
+  const point=screenToBoard(e);
+
+  const side=hitPlacement(point);
+
+  if(!side)return;
+
+  input.pointerId=e.pointerId;
+  input.placementSide=side;
+
+  /* If directly touching striker, start aim */
+  if(striker && dist(point,striker)<28){
+
+    input.type="aim";
+    input.start={...point};
+    input.current={...point};
+    input.pull={x:0,y:0};
+
+  }else{
+
+    input.type="place";
+
+    const value=placementValue(
+      point,
+      side
+    );
+
+    placeStrikerAt(value);
+  }
+
+  canvas.setPointerCapture?.(e.pointerId);
+
+  e.preventDefault();
+});
+
+canvas.addEventListener("pointermove",e=>{
+
+  if(input.pointerId!==e.pointerId)return;
+
+  if(
+    gameState.mode!=="READY" ||
+    gameState.paused
+  )return;
+
+  const point=screenToBoard(e);
+
+  if(input.type==="place"){
+
+    const value=placementValue(
+      point,
+      input.placementSide
+    );
+
+    placeStrikerAt(value);
+
+  }else if(input.type==="aim"){
+
+    input.current={...point};
+
+    input.pull={
+      x:point.x-striker.x,
+      y:point.y-striker.y
+    };
+
+    const len=Math.hypot(
+      input.pull.x,
+      input.pull.y
+    );
+
+    const scale=clamp(
+      MAX_PULL/Math.max(len,1),
+      0,
+      1
+    );
+
+    if(len>MAX_PULL){
+
+      input.pull.x*=scale;
+      input.pull.y*=scale;
+    }
+
+    updatePowerUI();
+  }
+
+  e.preventDefault();
+});
+
+canvas.addEventListener("pointerup",e=>{
+
+  if(input.pointerId!==e.pointerId)return;
+
+  if(
+    input.type==="aim" &&
+    gameState.mode==="READY"
+  ){
+
+    const len=Math.hypot(
+      input.pull.x,
+      input.pull.y
+    );
+
+    if(len>=MIN_PULL){
+
+      doShoot(input.pull);
+    }
+  }
+
+  input.type=null;
+  input.pointerId=null;
+  input.placementSide=null;
+  input.pull={x:0,y:0};
+
+  updatePowerUI();
+
+  try{
+    canvas.releasePointerCapture?.(e.pointerId);
+  }catch(err){}
+});
+
+canvas.addEventListener("pointercancel",()=>{
+  input.type=null;
+  input.pointerId=null;
+  input.placementSide=null;
+  input.pull={x:0,y:0};
+  updatePowerUI();
+});
+
+function updatePowerUI(){
+
+  const wrap=document.getElementById("powerWrap");
+
+  const len=Math.hypot(
+    input.pull.x,
+    input.pull.y
+  );
+
+  if(input.type!=="aim" || len<MIN_PULL){
+
+    wrap.classList.remove("show");
+    return;
+  }
+
+  const pct=Math.round(
+    clamp(len/MAX_PULL,0,1)*100
+  );
+
+  wrap.classList.add("show");
+
+  document.getElementById("powerText")
+    .textContent=`${pct}%`;
+
+  document.getElementById("powerFill")
+    .style.width=`${pct}%`;
+}
+
+/* -------------------------
+   PHYSICS
+------------------------- */
+
+function allBodies(){
+
+  const list=[];
+
+  coins.forEach(c=>{
+    if(c.active)list.push(c);
+  });
+
+  if(striker && striker.active){
+    list.push(striker);
+  }
+
   return list;
 }
 
-function remainingCounts(){
-  let q=0,b=0,w=0;
-  coins.forEach(c=>{ if(c.active && !c.pocketed){ if(c.color==="queen") q++; else if(c.color==="black") b++; else w++; } });
-  return {q,b,w};
+function isPocketMouthForTopBottom(b){
+
+  return (
+    Math.abs(b.x-POCKETS[0].x)<=POCKET_MOUTH ||
+    Math.abs(b.x-POCKETS[1].x)<=POCKET_MOUTH
+  );
 }
 
-/* =====================================================
-   STRIKER SYSTEM
-===================================================== */
-function defaultStrikerPos(side){
-  const bl = BASELINES[side];
-  const mid = (bl.min+bl.max)/2;
-  return bl.get(mid);
-}
-function placeStrikerAt(side, value){
-  const bl = BASELINES[side];
-  const v = clamp(value, bl.min, bl.max);
-  const p = bl.get(v);
-  striker.x = p.x; striker.y = p.y;
-}
-function resetStriker(){
-  const side = players[gameState.currentPlayer].side;
-  const p = defaultStrikerPos(side);
-  striker = { x:p.x, y:p.y, r:R_STRIKER, vx:0, vy:0, active:true, capturing:false, pocketed:false, color:"striker" };
+function isPocketMouthForLeftRight(b){
+
+  return (
+    Math.abs(b.y-POCKETS[0].y)<=POCKET_MOUTH ||
+    Math.abs(b.y-POCKETS[2].y)<=POCKET_MOUTH
+  );
 }
 
-/* =====================================================
-   PLAYER SYSTEM
-===================================================== */
-function isHumanTurn(){
-  return !players[gameState.currentPlayer].isAI;
+function captureBody(b,pk){
+
+  if(b.capturing)return;
+
+  b.capturing=true;
+  b.captureT=0;
+  b.pocketX=pk.x;
+  b.pocketY=pk.y;
+
+  b.vx=0;
+  b.vy=0;
 }
-function buildPlayers(count, config){
-  const sides = SIDES_BY_COUNT[count];
-  const names = ["Player One","Player Two","Player Three","Player Four"];
-  const arr = [];
-  for(let i=0;i<count;i++){
-    const cfg = config[i] || { isAI:false, difficulty:"easy" };
-    arr.push({
-      id:i, name: cfg.isAI ? "AI · "+cap(cfg.difficulty) : names[i],
-      isAI: cfg.isAI, difficulty: cfg.difficulty || "easy",
-      side: sides[i], score:0
-    });
+
+function checkPocket(b){
+
+  if(b.capturing)return;
+
+  for(const pk of POCKETS){
+
+    const d=Math.hypot(
+      b.x-pk.x,
+      b.y-pk.y
+    );
+
+    if(d<=POCKET_CAPTURE_R){
+
+      captureBody(b,pk);
+      return true;
+    }
   }
-  return arr;
-}
-function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
-/* =====================================================
-   AI
-===================================================== */
-function nearestPocket(pos){
-  let best=Infinity, bp=null;
-  POCKETS.forEach(pk=>{ const d=Math.hypot(pos.x-pk.x,pos.y-pk.y); if(d<best){best=d;bp=pk;} });
-  return { dist:best, pocket:bp };
+  return false;
 }
-// Choose which coin to target and the exact point on it the striker
-// should aim at, based on difficulty. Hard mode calculates the real
-// contact point needed to send the coin toward its nearest pocket.
-function pickAIShot(diff, activeCoins){
-  if(!activeCoins.length) return null;
-  const candidates = activeCoins.map(c=>{
-    const np = nearestPocket(c);
-    return { coin:c, pocket:np.pocket, dist:np.dist };
+
+function updateCaptures(dt){
+
+  coins.forEach(c=>{
+
+    if(!c.capturing)return;
+
+    c.captureT+=dt/.14;
+
+    if(c.captureT>=1){
+
+      c.captureT=1;
+      c.active=false;
+      c.capturing=false;
+
+      handleCoinPocket(c);
+    }
   });
-  let target;
-  if(diff==="easy"){
-    target = candidates[Math.floor(Math.random()*candidates.length)];
-  } else if(diff==="medium"){
-    candidates.sort((a,b)=>a.dist-b.dist);
-    const poolSize = Math.max(2, Math.ceil(candidates.length*0.5));
-    const pool = candidates.slice(0, poolSize);
-    target = pool[Math.floor(Math.random()*pool.length)];
-  } else {
-    candidates.sort((a,b)=>(-a.dist + a.coin.value*0.4) < (-b.dist + b.coin.value*0.4) ? 1 : -1);
-    target = candidates[0];
+
+  if(striker && striker.capturing){
+
+    striker.captureT+=dt/.14;
+
+    if(striker.captureT>=1){
+
+      striker.captureT=1;
+      striker.active=false;
+      striker.capturing=false;
+
+      shot.foul=true;
+    }
   }
-  const dirToPocket = norm({ x: target.pocket.x-target.coin.x, y: target.pocket.y-target.coin.y });
-  const contactR = R_COIN + R_STRIKER + 2;
-  const aimPoint = diff==="easy"
-    ? { x: target.coin.x, y: target.coin.y }
-    : { x: target.coin.x - dirToPocket.x*contactR, y: target.coin.y - dirToPocket.y*contactR };
-  return { coin: target.coin, aimPoint };
+}
+
+function handleCoinPocket(c){
+
+  if(!shot.active)return;
+
+  shot.coinCount++;
+  shot.points+=c.value;
+
+  if(c.queen){
+    shot.queen=true;
+  }
+}
+
+function handleWallCollision(b){
+
+  const r=b.r;
+
+  /* TOP */
+  if(b.y-r<FIELD.min){
+
+    const mouth=isPocketMouthForTopBottom(b);
+
+    if(!mouth){
+
+      b.y=FIELD.min+r;
+
+      if(b.vy<0){
+        b.vy=-b.vy*WALL_RESTITUTION;
+      }
+    }
+  }
+
+  /* BOTTOM */
+  if(b.y+r>FIELD.max){
+
+    const mouth=isPocketMouthForTopBottom(b);
+
+    if(!mouth){
+
+      b.y=FIELD.max-r;
+
+      if(b.vy>0){
+        b.vy=-b.vy*WALL_RESTITUTION;
+      }
+    }
+  }
+
+  /* LEFT */
+  if(b.x-r<FIELD.min){
+
+    const mouth=isPocketMouthForLeftRight(b);
+
+    if(!mouth){
+
+      b.x=FIELD.min+r;
+
+      if(b.vx<0){
+        b.vx=-b.vx*WALL_RESTITUTION;
+      }
+    }
+  }
+
+  /* RIGHT */
+  if(b.x+r>FIELD.max){
+
+    const mouth=isPocketMouthForLeftRight(b);
+
+    if(!mouth){
+
+      b.x=FIELD.max-r;
+
+      if(b.vx>0){
+        b.vx=-b.vx*WALL_RESTITUTION;
+      }
+    }
+  }
+}
+
+function resolveCollision(a,b){
+
+  if(a.capturing || b.capturing)return;
+
+  const dx=b.x-a.x;
+  const dy=b.y-a.y;
+
+  const d=Math.hypot(dx,dy);
+  const minDist=a.r+b.r;
+
+  if(d<=0 || d>=minDist)return;
+
+  const nx=dx/d;
+  const ny=dy/d;
+
+  const overlap=minDist-d;
+
+  /* positional correction */
+  const totalMass=(a===striker?1.15:1)+(b===striker?1.15:1);
+
+  const ma=a===striker?1.15:1;
+  const mb=b===striker?1.15:1;
+
+  a.x-=nx*overlap*(mb/totalMass);
+  a.y-=ny*overlap*(mb/totalMass);
+
+  b.x+=nx*overlap*(ma/totalMass);
+  b.y+=ny*overlap*(ma/totalMass);
+
+  const rvx=b.vx-a.vx;
+  const rvy=b.vy-a.vy;
+
+  const velAlongNormal=
+    rvx*nx+rvy*ny;
+
+  if(velAlongNormal>0)return;
+
+  const restitution=
+    (a===striker || b===striker)
+      ?COIN_RESTITUTION
+      :COIN_RESTITUTION;
+
+  const impulse=
+    -(1+restitution)*
+    velAlongNormal/
+    (1/ma+1/mb);
+
+  const ix=impulse*nx;
+  const iy=impulse*ny;
+
+  a.vx-=ix/ma;
+  a.vy-=iy/ma;
+
+  b.vx+=ix/mb;
+  b.vy+=iy/mb;
+}
+
+function updatePhysics(dt){
+
+  if(!shot.active)return;
+
+  updateCaptures(dt);
+
+  const bodies=allBodies();
+
+  /* movement + friction */
+  bodies.forEach(b=>{
+
+    if(b.capturing)return;
+
+    b.x+=b.vx*dt;
+    b.y+=b.vy*dt;
+
+    const damping=
+      Math.pow(
+        FRICTION_PER_60FPS,
+        dt*60
+      );
+
+    b.vx*=damping;
+    b.vy*=damping;
+
+    if(
+      Math.hypot(b.vx,b.vy)<STOP_SPEED
+    ){
+
+      b.vx=0;
+      b.vy=0;
+    }
+  });
+
+  /* pocket check BEFORE wall check */
+  bodies.forEach(b=>{
+    checkPocket(b);
+  });
+
+  bodies.forEach(b=>{
+
+    if(!b.capturing){
+      handleWallCollision(b);
+    }
+  });
+
+  /* collisions */
+  const active=allBodies();
+
+  for(let i=0;i<active.length;i++){
+
+    for(let j=i+1;j<active.length;j++){
+
+      resolveCollision(
+        active[i],
+        active[j]
+      );
+    }
+  }
+}
+
+function allStopped(){
+
+  if(
+    striker &&
+    striker.capturing
+  )return false;
+
+  for(const c of coins){
+
+    if(c.capturing)return false;
+
+    if(
+      c.active &&
+      Math.hypot(c.vx,c.vy)>STOP_SPEED
+    ){
+      return false;
+    }
+  }
+
+  if(
+    striker &&
+    striker.active &&
+    Math.hypot(striker.vx,striker.vy)>STOP_SPEED
+  ){
+    return false;
+  }
+
+  return true;
+}
+
+/* -------------------------
+   SHOOT
+------------------------- */
+
+function saveUndoSnapshot(){
+
+  undoSnapshot={
+    players:deepClone(players),
+    coins:deepClone(coins),
+    striker:deepClone(striker),
+    gameState:{
+      ...gameState
+    },
+    queenState:deepClone(queenState)
+  };
+}
+
+function doShoot(pull){
+
+  if(
+    gameState.mode!=="READY" &&
+    gameState.mode!=="AI_THINKING"
+  )return;
+
+  if(!striker || !striker.active)return;
+
+  const length=Math.hypot(
+    pull.x,
+    pull.y
+  );
+
+  if(length<MIN_PULL)return;
+
+  saveUndoSnapshot();
+
+  clearAITimers();
+
+  shot={
+    active:true,
+    coinCount:0,
+    points:0,
+    queen:false,
+    foul:false
+  };
+
+  const direction=norm({
+    x:-pull.x,
+    y:-pull.y
+  });
+
+  const power=clamp(
+    length/MAX_PULL,
+    0,
+    1
+  );
+
+  const speed=
+    MAX_SPEED*
+    (.12+.88*power);
+
+  striker.vx=direction.x*speed;
+  striker.vy=direction.y*speed;
+
+  gameState.mode="PHYSICS_RUNNING";
+
+  updatePlayerCards();
+  updatePowerUI();
+
+  playSound("shoot");
+}
+
+/* -------------------------
+   SHOT RESOLUTION
+------------------------- */
+
+function resolveShot(){
+
+  if(!shot.active)return;
+
+  shot.active=false;
+
+  const p=players[gameState.currentPlayer];
+
+  if(!p)return;
+
+  /* FOUL */
+  if(shot.foul){
+
+    p.score-=FOUL_PENALTY;
+
+    p.score=Math.max(0,p.score);
+
+    /* pending queen returns */
+    if(
+      queenState.status==="pending" &&
+      queenState.owner===p.id
+    ){
+
+      returnQueen();
+    }
+
+    toast(`Foul −${FOUL_PENALTY}`);
+
+    nextPlayer();
+
+    return;
+  }
+
+  /* QUEEN */
+  if(shot.queen){
+
+    if(shot.coinCount>=2 || (
+      shot.coinCount>=1 &&
+      queenState.status!=="pending"
+    )){
+
+      awardQueen(p);
+
+    }else{
+
+      queenState.status="pending";
+      queenState.owner=p.id;
+
+      toast("Queen potted — cover it!");
+    }
+  }
+
+  /* pending queen cover */
+  else if(
+    queenState.status==="pending" &&
+    queenState.owner===p.id
+  ){
+
+    if(shot.coinCount>0){
+
+      awardQueen(p);
+
+    }else{
+
+      returnQueen();
+
+      toast("Queen returned — no cover");
+    }
+  }
+
+  /* regular coins */
+  addShotScore(p);
+
+  /* winning */
+  if(
+    p.score>=WIN_SCORE
+  ){
+
+    endGame(p);
+    return;
+  }
+
+  /* if board cleared */
+  const remaining=coins.filter(
+    c=>c.active
+  ).length;
+
+  if(remaining===0){
+
+    endGame(
+      players.reduce(
+        (best,x)=>
+          x.score>best.score?x:best,
+        players[0]
+      )
+    );
+
+    return;
+  }
+
+  /* coin/queen pocket = extra shot */
+  if(
+    shot.coinCount>0 ||
+    shot.queen
+  ){
+
+    gameState.mode=
+      p.isAI
+        ?"AI_THINKING"
+        :"READY";
+
+    gameState.timer=TURN_SECONDS;
+
+    resetStriker();
+
+    updatePlayerCards();
+    updateTimerUI();
+
+    if(p.isAI){
+      scheduleAITurn();
+    }
+
+    return;
+  }
+
+  nextPlayer();
+}
+
+function addShotScore(p){
+
+  let remainingPoints=shot.points;
+
+  if(shot.foul)return;
+
+  /* queen is handled separately */
+  if(shot.queen){
+    remainingPoints-=QUEEN_VALUE;
+  }
+
+  /* Count black / white from inactive coins */
+  const justPocketed=coins.filter(
+    c=>!c.active && !c.queen
+  );
+
+  /*
+    We don't want old pockets to be counted again.
+    Use only values already stored in shot.
+  */
+
+  let blackAdded=0;
+  let whiteAdded=0;
+
+  /*
+    Calculate score by shot points.
+    Since black=10 and white=20,
+    exact count can be reconstructed from
+    current pocketed state only with snapshot.
+    For gameplay score, shot.points is enough.
+  */
+
+  p.score+=Math.max(0,remainingPoints);
+
+  /* update visual counts approximately from shot */
+  const blackCountGlobal=coins.filter(
+    c=>!c.active && c.color==="black"
+  ).length;
+
+  const whiteCountGlobal=coins.filter(
+    c=>!c.active && c.color==="white"
+  ).length;
+
+  p.black=blackCountGlobal;
+  p.white=whiteCountGlobal;
+
+  updateScorePills();
+}
+
+function awardQueen(p){
+
+  if(
+    queenState.status==="awarded"
+  )return;
+
+  queenState.status="awarded";
+  queenState.owner=p.id;
+
+  p.score+=QUEEN_VALUE;
+  p.queen++;
+
+  toast(`Queen +${QUEEN_VALUE}`);
+
+  updateScorePills();
+}
+
+function returnQueen(){
+
+  const q=coins.find(c=>c.queen);
+
+  if(!q)return;
+
+  q.active=true;
+  q.capturing=false;
+  q.captureT=0;
+  q.x=CENTER.x;
+  q.y=CENTER.y;
+  q.vx=0;
+  q.vy=0;
+
+  queenState={
+    status:"onboard",
+    owner:null
+  };
+}
+
+function nextPlayer(){
+
+  gameState.currentPlayer=
+    (gameState.currentPlayer+1)%
+    gameState.playerCount;
+
+  gameState.timer=TURN_SECONDS;
+
+  resetStriker();
+
+  const p=players[gameState.currentPlayer];
+
+  gameState.mode=
+    p.isAI
+      ?"AI_THINKING"
+      :"READY";
+
+  updatePlayerCards();
+  updateTimerUI();
+
+  if(p.isAI){
+    scheduleAITurn();
+  }
+}
+
+function forceEndTurn(){
+
+  if(
+    gameState.mode!=="READY" &&
+    gameState.mode!=="AI_THINKING"
+  )return;
+
+  clearAITimers();
+
+  toast("Time's up!");
+
+  if(
+    queenState.status==="pending" &&
+    queenState.owner===gameState.currentPlayer
+  ){
+
+    returnQueen();
+  }
+
+  nextPlayer();
+}
+
+/* -------------------------
+   AI
+------------------------- */
+
+function clearAITimers(){
+
+  aiTimers.forEach(t=>clearTimeout(t));
+  aiTimers=[];
+}
+
+function chooseAICandidate(){
+
+  const active=coins.filter(
+    c=>c.active
+  );
+
+  if(!active.length)return null;
+
+  const p=players[gameState.currentPlayer];
+  const params=DIFF_PARAMS[p.difficulty]||DIFF_PARAMS.easy;
+
+  const candidates=[];
+
+  for(const coin of active){
+
+    for(const pocket of POCKETS){
+
+      const toPocket=norm({
+        x:pocket.x-coin.x,
+        y:pocket.y-coin.y
+      });
+
+      const contact={
+        x:coin.x-
+          toPocket.x*
+          (coin.r+STRIKER_R+3),
+
+        y:coin.y-
+          toPocket.y*
+          (coin.r+STRIKER_R+3)
+      };
+
+      const base=BASELINES[p.side];
+
+      let strikerPos;
+
+      if(base.axis==="x"){
+
+        strikerPos={
+          x:clamp(
+            contact.x,
+            base.min,
+            base.max
+          ),
+          y:base.fixed
+        };
+
+      }else{
+
+        strikerPos={
+          x:base.fixed,
+          y:clamp(
+            contact.y,
+            base.min,
+            base.max
+          )
+        };
+      }
+
+      const distanceToContact=
+        dist(strikerPos,contact);
+
+      const coinDistance=
+        dist(coin,pocket);
+
+      const total=
+        distanceToContact+
+        coinDistance*.65;
+
+      let score=total;
+
+      if(coin.queen){
+        score-=p.difficulty==="hard"?100:35;
+      }
+
+      candidates.push({
+        coin,
+        pocket,
+        contact,
+        strikerPos,
+        score,
+        distanceToContact,
+        coinDistance
+      });
+    }
+  }
+
+  candidates.sort(
+    (a,b)=>a.score-b.score
+  );
+
+  if(p.difficulty==="easy"){
+
+    const top=candidates.slice(
+      0,
+      Math.min(8,candidates.length)
+    );
+
+    return top[
+      Math.floor(Math.random()*top.length)
+    ];
+
+  }
+
+  if(p.difficulty==="medium"){
+
+    const top=candidates.slice(
+      0,
+      Math.min(4,candidates.length)
+    );
+
+    return top[
+      Math.floor(Math.random()*top.length)
+    ];
+  }
+
+  return candidates[0];
 }
 
 function scheduleAITurn(){
-  clearAITimeouts();
-  const p = players[gameState.currentPlayer];
-  const params = DIFF_PARAMS[p.difficulty] || DIFF_PARAMS.easy;
-  const bl = BASELINES[p.side];
 
-  const t1 = setTimeout(()=>{
-    if(gameState.mode!=="AI_THINKING" || gameState.paused) return;
-    try{
-      const active = coins.filter(c=>c.active && !c.pocketed && !c.capturing);
-      const shot = pickAIShot(p.difficulty, active);
-      const aimPoint = shot ? shot.aimPoint : CENTER;
+  clearAITimers();
 
-      let placeVal;
-      if(params.placeMode==="random" || !shot){
-        placeVal = bl.min + Math.random()*(bl.max-bl.min);
-      } else {
-        const proj = bl.axis==="x" ? aimPoint.x : aimPoint.y;
-        placeVal = clamp(proj + (Math.random()-0.5)*2*params.placeNoise, bl.min, bl.max);
-      }
-      placeStrikerAt(p.side, placeVal);
+  const p=players[gameState.currentPlayer];
 
-      const dx = aimPoint.x-striker.x, dy = aimPoint.y-striker.y;
-      const dist = Math.hypot(dx,dy);
-      const baseAng = Math.atan2(dy,dx);
-      const noise = (Math.random()-0.5)*2*(params.angleNoiseDeg*Math.PI/180);
-      const ang = baseAng + noise;
-      const power = calcAIPower(dist, params.powerNoise);
-      input.pull = { x: -Math.cos(ang)*MAX_PULL*power, y: -Math.sin(ang)*MAX_PULL*power };
-      input.mode = "aim-preview";
-    }catch(e){
-      input.pull = { x:0, y:-MAX_PULL*0.6 }; input.mode="aim-preview";
+  if(
+    !p ||
+    !p.isAI ||
+    gameState.mode!=="AI_THINKING"
+  )return;
+
+  const params=
+    DIFF_PARAMS[p.difficulty]||
+    DIFF_PARAMS.easy;
+
+  document.getElementById("aiBadge")
+    .classList.add("show");
+
+  const think=()=>{
+
+    if(
+      gameState.mode!=="AI_THINKING" ||
+      gameState.gameOver
+    )return;
+
+    if(gameState.paused){
+
+      aiTimers.push(
+        setTimeout(think,250)
+      );
+
+      return;
     }
 
-    const t2 = setTimeout(()=>{
-      if(gameState.mode!=="AI_THINKING" || gameState.paused) return;
-      const pull = input.pull;
-      input.mode = null;
-      doShoot(pull);
-    }, params.aimMs);
-    aiTimeouts.push(t2);
-  }, params.thinkMs);
-  aiTimeouts.push(t1);
+    const candidate=chooseAICandidate();
+
+    if(!candidate){
+
+      document.getElementById("aiBadge")
+        .classList.remove("show");
+
+      nextPlayer();
+      return;
+    }
+
+    /* place striker */
+    if(
+      BASELINES[p.side].axis==="x"
+    ){
+
+      placeStrikerAt(
+        candidate.strikerPos.x
+      );
+
+    }else{
+
+      placeStrikerAt(
+        candidate.strikerPos.y
+      );
+    }
+
+    /* small accuracy error */
+    const error=
+      (1-params.accuracy)*25;
+
+    let aimX=
+      candidate.contact.x-
+      striker.x;
+
+    let aimY=
+      candidate.contact.y-
+      striker.y;
+
+    aimX+=randomRange(-error,error);
+    aimY+=randomRange(-error,error);
+
+    const aim=norm({
+      x:aimX,
+      y:aimY
+    });
+
+    /*
+      Physics-based approximate power.
+      More distance = more power.
+    */
+    let required=
+      candidate.distanceToContact*.78+
+      120+
+      candidate.coinDistance*.16;
+
+    let power=
+      clamp(
+        required/MAX_SPEED,
+        .35,
+        .94
+      );
+
+    power+=randomRange(
+      -params.powerNoise,
+      params.powerNoise
+    );
+
+    power=clamp(power,.3,.98);
+
+    const pullLength=
+      power*MAX_PULL;
+
+    const pull={
+      x:-aim.x*pullLength,
+      y:-aim.y*pullLength
+    };
+
+    input.pull={...pull};
+
+    document.getElementById("powerWrap")
+      .classList.add("show");
+
+    document.getElementById("powerText")
+      .textContent=`${Math.round(power*100)}%`;
+
+    document.getElementById("powerFill")
+      .style.width=`${Math.round(power*100)}%`;
+
+    setTimeout(()=>{
+
+      if(
+        gameState.mode==="AI_THINKING" &&
+        !gameState.paused
+      ){
+
+        document.getElementById("aiBadge")
+          .classList.remove("show");
+
+        doShoot(pull);
+
+      }else if(
+        gameState.mode==="AI_THINKING"
+      ){
+
+        scheduleAITurn();
+
+      }
+
+    },220);
+  };
+
+  aiTimers.push(
+    setTimeout(
+      think,
+      params.think
+    )
+  );
 }
-function clearAITimeouts(){ aiTimeouts.forEach(clearTimeout); aiTimeouts=[]; }
 
-/* =====================================================
-   TIMER
-===================================================== */
-function resetTimer(){ gameState.timer = TURN_SECONDS; updateTimerUI(); }
-function updateTimerUI(){
-  const fg = document.getElementById("timerFg");
-  const num = document.getElementById("timerNum");
-  const circumference = 163;
-  const frac = clamp(gameState.timer/TURN_SECONDS,0,1);
-  fg.setAttribute("stroke-dashoffset", (circumference*(1-frac)).toFixed(1));
-  num.textContent = Math.ceil(gameState.timer);
-  fg.style.stroke = frac<0.25 ? "#ff6a5a" : "";
+/* -------------------------
+   SCORE COUNTERS
+------------------------- */
+
+function updateScorePills(){
+
+  const black=coins.filter(
+    c=>c.active && c.color==="black"
+  ).length;
+
+  const white=coins.filter(
+    c=>c.active && c.color==="white"
+  ).length;
+
+  const queen=coins.some(
+    c=>c.active && c.queen
+  )?1:0;
+
+  document.getElementById("blackCount")
+    .textContent=black;
+
+  document.getElementById("whiteCount")
+    .textContent=white;
+
+  document.getElementById("queenCount")
+    .textContent=queen;
 }
 
-/* =====================================================
-   INPUT (POINTER)
-===================================================== */
-canvas.addEventListener("pointerdown", onPointerDown);
-canvas.addEventListener("pointermove", onPointerMove);
-canvas.addEventListener("pointerup", onPointerUp);
-canvas.addEventListener("pointercancel", onPointerUp);
+/* -------------------------
+   UNDO
+------------------------- */
 
-function currentBaseline(){ return BASELINES[players[gameState.currentPlayer].side]; }
+function undoLastShot(){
 
-function onRailHit(p, side){
-  const railY = RAIL_FIXED[side];
-  const bl = BASELINES[side];
-  if(bl.axis==="x"){
-    return Math.abs(p.y-railY) < (RAIL_HALF_THICK+18) && p.x > bl.min-35 && p.x < bl.max+35;
-  } else {
-    return Math.abs(p.x-railY) < (RAIL_HALF_THICK+18) && p.y > bl.min-35 && p.y < bl.max+35;
-  }
-}
+  if(!undoSnapshot){
 
-function onPointerDown(e){
-  if(gameState.mode!=="READY" || gameState.paused || !isHumanTurn()) return;
-  const p = toBoard(e.clientX, e.clientY);
-  const dStriker = Math.hypot(p.x-striker.x, p.y-striker.y);
-  if(dStriker < R_STRIKER+14){
-    input.mode = "aim";
-    input.pull = {x:0,y:0};
-    canvas.setPointerCapture(e.pointerId);
+    toast("No shot to undo");
     return;
   }
-  const side = players[gameState.currentPlayer].side;
-  if(onRailHit(p, side)){
-    input.mode = "place";
-    canvas.setPointerCapture(e.pointerId);
-    movePlaceStriker(p);
-  }
-}
-function onPointerMove(e){
-  if(!input.mode || gameState.paused) return;
-  const p = toBoard(e.clientX, e.clientY);
-  if(input.mode==="place"){ movePlaceStriker(p); }
-  else if(input.mode==="aim"){
-    let pull = { x: p.x-striker.x, y: p.y-striker.y };
-    const l = len(pull);
-    if(l>MAX_PULL){ pull.x = pull.x/l*MAX_PULL; pull.y = pull.y/l*MAX_PULL; }
-    input.pull = pull;
-    updatePowerUI(l);
-  }
-}
-function onPointerUp(e){
-  if(input.mode==="aim"){
-    const pull = input.pull;
-    input.mode = null;
-    hidePowerUI();
-    if(len(pull) > MIN_PULL){ doShoot(pull); }
-  } else {
-    input.mode = null;
-  }
-}
-function movePlaceStriker(p){
-  const bl = currentBaseline();
-  const v = bl.axis==="x" ? clamp(p.x, bl.min, bl.max) : clamp(p.y, bl.min, bl.max);
-  placeStrikerAt(players[gameState.currentPlayer].side, v);
-}
-function updatePowerUI(l){
-  const wrap = document.getElementById("powerWrap");
-  const bar = document.getElementById("powerBar");
-  wrap.classList.add("show");
-  bar.style.width = clamp(l/MAX_PULL*100,0,100)+"%";
-}
-function hidePowerUI(){ document.getElementById("powerWrap").classList.remove("show"); }
 
-/* =====================================================
-   SHOOTING
-===================================================== */
-function doShoot(pull){
-  const l = clamp(len(pull), 0, MAX_PULL);
-  if(l < 1){ return; }
-  const dir = norm({x:-pull.x, y:-pull.y});
-  const power = l/MAX_PULL;
-  striker.vx = dir.x*power*MAX_SPEED;
-  striker.vy = dir.y*power*MAX_SPEED;
-  shotPoints = 0; shotFoul = false; shotTaken = true;
-  gameState.mode = "PHYSICS_RUNNING";
-  beep(220,0.08,"triangle");
+  if(
+    gameState.mode==="PHYSICS_RUNNING"
+  ){
+
+    toast("Wait for the shot to finish");
+    return;
+  }
+
+  clearAITimers();
+
+  players=deepClone(
+    undoSnapshot.players
+  );
+
+  coins=deepClone(
+    undoSnapshot.coins
+  );
+
+  striker=deepClone(
+    undoSnapshot.striker
+  );
+
+  gameState=deepClone(
+    undoSnapshot.gameState
+  );
+
+  queenState=deepClone(
+    undoSnapshot.queenState
+  );
+
+  gameState.mode=
+    players[gameState.currentPlayer]?.isAI
+      ?"AI_THINKING"
+      :"READY";
+
+  undoSnapshot=null;
+
+  updatePlayerCards();
+  updateScorePills();
+  updateTimerUI();
+
+  if(
+    players[gameState.currentPlayer]?.isAI
+  ){
+    scheduleAITurn();
+  }
+
+  toast("Last shot undone");
 }
 
-/* =====================================================
-   PHYSICS
-===================================================== */
-function allBodies(){
-  const arr = coins.filter(c=>c.active && !c.pocketed);
-  if(striker.active && !striker.pocketed) arr.push(striker);
-  return arr;
-}
-function updatePhysics(dt){
-  const bodies = allBodies();
+/* -------------------------
+   GAME START
+------------------------- */
 
-  bodies.forEach(b=>{
-    if(b.capturing) return;
-    b.x += b.vx*dt; b.y += b.vy*dt;
-    const speed = Math.hypot(b.vx,b.vy);
-    if(speed>0){
-      const dec = FRICTION_DECEL*dt;
-      const ns = Math.max(0, speed-dec);
-      const f = ns/speed;
-      b.vx*=f; b.vy*=f;
-      if(ns<EPS_STOP){ b.vx=0; b.vy=0; }
+function startGame(){
+
+  clearAITimers();
+
+  setupCount=clamp(
+    setupCount,
+    2,
+    4
+  );
+
+  gameState={
+    mode:"READY",
+    playerCount:setupCount,
+    currentPlayer:0,
+    timer:TURN_SECONDS,
+    paused:false,
+    gameOver:false,
+    soundOn:gameState.soundOn,
+    trajOn:gameState.trajOn
+  };
+
+  createPlayers();
+  createCoins();
+  resetStriker();
+
+  undoSnapshot=null;
+
+  try{
+    localStorage.setItem(
+      "maxgame_carrom_players",
+      String(setupCount)
+    );
+
+    localStorage.setItem(
+      "maxgame_carrom_difficulty",
+      setupConfig[1]?.difficulty||"easy"
+    );
+
+    localStorage.setItem(
+      "maxgame_carrom_mode",
+      players.some(p=>p.isAI)
+        ?"ai"
+        :"local"
+    );
+  }catch(e){}
+
+  hide("setupOverlay");
+
+  updatePlayerCards();
+  updateScorePills();
+  updateTimerUI();
+
+  const p=players[0];
+
+  if(p.isAI){
+
+    gameState.mode="AI_THINKING";
+    scheduleAITurn();
+
+  }else{
+
+    gameState.mode="READY";
+  }
+
+  toast("Your turn — place and shoot");
+}
+
+/* -------------------------
+   RESTART / EXIT
+------------------------- */
+
+let confirmAction=null;
+
+function askConfirm(type){
+
+  confirmAction=type;
+
+  if(type==="restart"){
+
+    document.getElementById("confirmIcon")
+      .textContent="🔄";
+
+    document.getElementById("confirmTitle")
+      .textContent="Restart Game?";
+
+    document.getElementById("confirmText")
+      .textContent=
+      "Your current progress will be lost.";
+
+  }else{
+
+    document.getElementById("confirmIcon")
+      .textContent="🚪";
+
+    document.getElementById("confirmTitle")
+      .textContent="Exit Game?";
+
+    document.getElementById("confirmText")
+      .textContent=
+      "You will return to the MAXGAME home screen.";
+  }
+
+  show("confirmOverlay");
+}
+
+function performConfirm(){
+
+  hide("confirmOverlay");
+
+  if(confirmAction==="restart"){
+
+    startGame();
+
+  }else if(confirmAction==="exit"){
+
+    location.href="index.html";
+  }
+
+  confirmAction=null;
+}
+
+/* -------------------------
+   END GAME
+------------------------- */
+
+function endGame(player){
+
+  clearAITimers();
+
+  gameState.gameOver=true;
+  gameState.mode="GAME_OVER";
+
+  document.getElementById("winnerName")
+    .textContent=
+      `${player.name} Wins!`;
+
+  document.getElementById("winnerScore")
+    .textContent=
+      Math.max(0,player.score);
+
+  show("winnerOverlay");
+}
+
+/* -------------------------
+   PAUSE
+------------------------- */
+
+function togglePause(){
+
+  if(
+    gameState.mode==="SETUP" ||
+    gameState.gameOver
+  )return;
+
+  gameState.paused=!gameState.paused;
+
+  document.getElementById("pauseBtn")
+    .textContent=
+      gameState.paused
+        ?"▶"
+        :"Ⅱ";
+
+  if(gameState.paused){
+
+    show("pauseOverlay");
+
+  }else{
+
+    hide("pauseOverlay");
+  }
+}
+
+/* -------------------------
+   SOUND
+------------------------- */
+
+let audioCtx=null;
+
+function playSound(type){
+
+  if(!gameState.soundOn)return;
+
+  try{
+
+    audioCtx ||= new (
+      window.AudioContext||
+      window.webkitAudioContext
+    )();
+
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now=audioCtx.currentTime;
+
+    if(type==="shoot"){
+
+      osc.frequency.setValueAtTime(
+        180,
+        now
+      );
+
+      osc.frequency.exponentialRampToValueAtTime(
+        90,
+        now+.08
+      );
+
+      gain.gain.setValueAtTime(
+        .04,
+        now
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        .001,
+        now+.08
+      );
+
+    }else{
+
+      osc.frequency.setValueAtTime(
+        300,
+        now
+      );
+
+      gain.gain.setValueAtTime(
+        .025,
+        now
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        .001,
+        now+.07
+      );
     }
-  });
 
-  bodies.forEach(b=>{
-    if(b.capturing) return;
-    if(b.x-b.r < FIELD_MIN){ b.x=FIELD_MIN+b.r; b.vx=Math.abs(b.vx)*REST_WALL; }
-    if(b.x+b.r > FIELD_MAX){ b.x=FIELD_MAX-b.r; b.vx=-Math.abs(b.vx)*REST_WALL; }
-    if(b.y-b.r < FIELD_MIN){ b.y=FIELD_MIN+b.r; b.vy=Math.abs(b.vy)*REST_WALL; }
-    if(b.y+b.r > FIELD_MAX){ b.y=FIELD_MAX-b.r; b.vy=-Math.abs(b.vy)*REST_WALL; }
-  });
+    osc.start(now);
+    osc.stop(now+.09);
 
-  for(let i=0;i<bodies.length;i++){
-    for(let j=i+1;j<bodies.length;j++){
-      const a=bodies[i], b=bodies[j];
-      if(a.capturing||b.capturing) continue;
-      const dx=b.x-a.x, dy=b.y-a.y;
-      const dist=Math.hypot(dx,dy)||0.0001;
-      const minD=a.r+b.r;
-      if(dist<minD){
-        const nx=dx/dist, ny=dy/dist;
-        const overlap=(minD-dist)/2;
-        a.x-=nx*overlap; a.y-=ny*overlap;
-        b.x+=nx*overlap; b.y+=ny*overlap;
-        const ma = a.color==="striker"?1.3:1, mb = b.color==="striker"?1.3:1;
-        const rvx=b.vx-a.vx, rvy=b.vy-a.vy;
-        const velAlong = rvx*nx+rvy*ny;
-        if(velAlong<0){
-          const jimp = -(1+REST_COIN)*velAlong / (1/ma+1/mb);
-          const ix=jimp*nx, iy=jimp*ny;
-          a.vx -= ix/ma; a.vy -= iy/ma;
-          b.vx += ix/mb; b.vy += iy/mb;
-          beep(340,0.05,"square");
+  }catch(e){}
+}
+
+function updateSoundUI(){
+
+  document.getElementById("soundBtn")
+    .textContent=
+      gameState.soundOn?"🔊":"🔇";
+
+  document.getElementById("menuSound")
+    .textContent=
+      gameState.soundOn
+        ?"🔊 Sound: ON"
+        :"🔇 Sound: OFF";
+}
+
+/* -------------------------
+   MENU BUTTONS
+------------------------- */
+
+document.getElementById("menuBtn")
+  .onclick=()=>show("menuOverlay");
+
+document.getElementById("rulesBtn")
+  .onclick=()=>show("rulesOverlay");
+
+document.getElementById("restartBtn")
+  .onclick=()=>askConfirm("restart");
+
+document.getElementById("undoBtn")
+  .onclick=undoLastShot;
+
+document.getElementById("backBtn")
+  .onclick=()=>askConfirm("exit");
+
+document.getElementById("pauseBtn")
+  .onclick=togglePause;
+
+document.getElementById("soundBtn")
+  .onclick=()=>{
+
+    gameState.soundOn=!gameState.soundOn;
+
+    updateSoundUI();
+  };
+
+document.querySelectorAll("[data-close]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    hide(btn.dataset.close);
+  });
+});
+
+document.getElementById("menuRules")
+  .onclick=()=>{
+    hide("menuOverlay");
+    show("rulesOverlay");
+  };
+
+document.getElementById("menuUndo")
+  .onclick=()=>{
+    hide("menuOverlay");
+    undoLastShot();
+  };
+
+document.getElementById("menuRestart")
+  .onclick=()=>{
+    hide("menuOverlay");
+    askConfirm("restart");
+  };
+
+document.getElementById("menuExit")
+  .onclick=()=>{
+    hide("menuOverlay");
+    askConfirm("exit");
+  };
+
+document.getElementById("menuSound")
+  .onclick=()=>{
+
+    gameState.soundOn=!gameState.soundOn;
+
+    updateSoundUI();
+  };
+
+document.getElementById("menuTrajectory")
+  .onclick=()=>{
+
+    gameState.trajOn=!gameState.trajOn;
+
+    document.getElementById("menuTrajectory")
+      .textContent=
+        gameState.trajOn
+          ?"🎯 Aim Guide: ON"
+          :"🎯 Aim Guide: OFF";
+  };
+
+document.getElementById("confirmCancel")
+  .onclick=()=>{
+    hide("confirmOverlay");
+    confirmAction=null;
+  };
+
+document.getElementById("confirmYes")
+  .onclick=performConfirm;
+
+document.getElementById("resumeBtn")
+  .onclick=()=>{
+
+    gameState.paused=false;
+
+    document.getElementById("pauseBtn")
+      .textContent="Ⅱ";
+
+    hide("pauseOverlay");
+  };
+
+document.getElementById("startGameBtn")
+  .onclick=startGame;
+
+document.getElementById("setupClose")
+  .onclick=()=>{
+
+    hide("setupOverlay");
+
+    if(gameState.mode==="SETUP"){
+
+      /*
+        Direct page access should still allow
+        a game to start instead of leaving blank.
+      */
+      startGame();
+    }
+  };
+
+document.getElementById("winnerRestart")
+  .onclick=()=>{
+
+    hide("winnerOverlay");
+    startGame();
+  };
+
+/* -------------------------
+   MAIN LOOP
+------------------------- */
+
+function gameLoop(timestamp){
+
+  const frameDt=
+    Math.min(
+      (timestamp-lastFrame)/1000,
+      .05
+    );
+
+  lastFrame=timestamp;
+
+  if(
+    !gameState.paused &&
+    !gameState.gameOver
+  ){
+
+    /* Timer */
+    if(
+      gameState.mode==="READY" ||
+      gameState.mode==="AI_THINKING"
+    ){
+
+      gameState.timer-=frameDt;
+
+      if(gameState.timer<=0){
+
+        gameState.timer=0;
+        forceEndTurn();
+      }
+
+    }
+
+    /* Physics fixed timestep */
+    if(
+      gameState.mode==="PHYSICS_RUNNING"
+    ){
+
+      accumulator+=frameDt;
+
+      let steps=0;
+
+      while(
+        accumulator>=FIXED_DT &&
+        steps<8
+      ){
+
+        updatePhysics(FIXED_DT);
+
+        accumulator-=FIXED_DT;
+        steps++;
+
+        if(allStopped()){
+
+          accumulator=0;
+
+          resolveShot();
+
+          break;
         }
       }
     }
   }
 
-  bodies.forEach(b=>{
-    if(b.capturing || b.pocketed) return;
-    for(const pk of POCKETS){
-      const d = Math.hypot(b.x-pk.x, b.y-pk.y);
-      if(d < POCKET_CAPTURE_R){
-        b.capturing = true;
-        b.captureStart = performance.now();
-        b.captureFrom = { x:b.x, y:b.y };
-        b.capturePocket = pk;
-        b.vx=0; b.vy=0;
-        beep(180,0.18,"sine");
-        break;
-      }
-    }
-  });
-
-  bodies.forEach(b=>{
-    if(!b.capturing) return;
-    const t = (performance.now()-b.captureStart)/1000/CAPTURE_DURATION;
-    if(t>=1){
-      b.pocketed = true; b.active=false; b.capturing=false;
-      if(b.color==="striker"){ shotFoul = true; }
-      else { shotPoints += b.value; }
-    } else {
-      b.x = b.captureFrom.x + (b.capturePocket.x-b.captureFrom.x)*t;
-      b.y = b.captureFrom.y + (b.capturePocket.y-b.captureFrom.y)*t;
-    }
-  });
-}
-function allStopped(){
-  const bodies = allBodies();
-  for(const b of bodies){
-    if(b.capturing) return false;
-    if(Math.hypot(b.vx,b.vy) > EPS_STOP) return false;
-  }
-  return true;
-}
-
-/* =====================================================
-   TURN RESOLUTION
-===================================================== */
-function resolveTurnEnd(){
-  const player = players[gameState.currentPlayer];
-  let potted = false;
-  if(!shotFoul){
-    player.score += shotPoints;
-    potted = shotPoints > 0;
-  } else {
-    toast("Striker pocketed — no points this turn");
-  }
-  if(shotFoul){ striker.pocketed=false; }
-  updateScoresUI();
-  updatePillsUI();
-
-  // board fully cleared -> highest score wins, regardless of player count
-  const {q,b,w} = remainingCounts();
-  if(q===0 && b===0 && w===0){
-    const winner = players.reduce((best,p)=> p.score>best.score ? p : best, players[0]);
-    endGame(winner);
-    return;
-  }
-
-  // first to 180 wins — identical for 2, 3 and 4 player matches
-  if(player.score >= WIN_SCORE){
-    endGame(player);
-    return;
-  }
-
-  // real carrom rule: potting a coin earns another turn for the same player
-  if(potted && !shotFoul){
-    resetStriker();
-    resetTimer();
-    updateActivePlayerUI();
-    const p = players[gameState.currentPlayer];
-    if(p.isAI){
-      gameState.mode = "AI_THINKING";
-      scheduleAITurn();
-    } else {
-      gameState.mode = "READY";
-      toast("Nice shot — go again!");
-    }
-    return;
-  }
-
-  nextPlayer();
-}
-function nextPlayer(){
-  gameState.currentPlayer = (gameState.currentPlayer+1) % gameState.playerCount;
-  resetStriker();
-  resetTimer();
-  updateActivePlayerUI();
-  const p = players[gameState.currentPlayer];
-  if(p.isAI){
-    gameState.mode = "AI_THINKING";
-    scheduleAITurn();
-  } else {
-    gameState.mode = "READY";
-  }
-}
-function forceEndTurn(){
-  shotPoints=0; shotFoul=false;
-  toast("Time's up!");
-  nextPlayer();
-}
-function endGame(winner){
-  gameState.mode = "GAME_OVER";
-  gameState.gameOver = true;
-  document.getElementById("winnerName").textContent = winner.name;
-  document.getElementById("winnerScore").textContent = winner.score + " points";
-  document.getElementById("winOverlay").classList.remove("hidden");
-  beep(520,0.3,"triangle");
-}
-
-/* =====================================================
-   MENU / MODALS
-===================================================== */
-function show(id){ document.getElementById(id).classList.remove("hidden"); }
-function hide(id){ document.getElementById(id).classList.add("hidden"); }
-
-document.getElementById("navMenu").onclick = ()=> show("menuOverlay");
-document.getElementById("menuClose").onclick = ()=> hide("menuOverlay");
-document.getElementById("navRules").onclick = ()=> show("rulesOverlay");
-document.getElementById("setupRulesBtn").onclick = ()=> show("rulesOverlay");
-document.getElementById("menuRules").onclick = ()=>{ hide("menuOverlay"); show("rulesOverlay"); };
-document.getElementById("rulesClose").onclick = ()=> hide("rulesOverlay");
-
-document.getElementById("navRestart").onclick = ()=> show("restartOverlay");
-document.getElementById("menuRestart").onclick = ()=>{ hide("menuOverlay"); show("restartOverlay"); };
-document.getElementById("restartCancel").onclick = ()=> hide("restartOverlay");
-document.getElementById("restartConfirm").onclick = ()=>{ hide("restartOverlay"); restartGame(); };
-document.getElementById("pauseRestart").onclick = ()=>{ hide("pauseOverlay"); show("restartOverlay"); };
-document.getElementById("winRestart").onclick = ()=>{ hide("winOverlay"); restartGame(); };
-
-document.getElementById("backBtn").onclick = ()=> show("exitOverlay");
-document.getElementById("menuExit").onclick = ()=>{ hide("menuOverlay"); show("exitOverlay"); };
-document.getElementById("pauseExit").onclick = ()=>{ hide("pauseOverlay"); show("exitOverlay"); };
-document.getElementById("winExit").onclick = ()=> doExit();
-document.getElementById("exitCancel").onclick = ()=> hide("exitOverlay");
-document.getElementById("exitConfirm").onclick = ()=> doExit();
-function doExit(){ window.location.href = "index.html"; }
-
-document.getElementById("navUndo").onclick = ()=> toast("Undo isn't available yet");
-
-document.getElementById("pauseBtn").onclick = ()=>{
-  if(gameState.gameOver) return;
-  gameState.paused = true;
-  show("pauseOverlay");
-};
-document.getElementById("resumeBtn").onclick = ()=>{
-  gameState.paused = false;
-  hide("pauseOverlay");
-};
-
-document.getElementById("soundBtn").onclick = toggleSound;
-document.getElementById("soundSwitch").onclick = toggleSound;
-function toggleSound(){
-  gameState.soundOn = !gameState.soundOn;
-  document.getElementById("soundBtn").innerHTML = gameState.soundOn ? ICON_SOUND_ON : ICON_SOUND_OFF;
-  document.getElementById("soundSwitch").classList.toggle("on", gameState.soundOn);
-}
-document.getElementById("trajSwitch").onclick = ()=>{
-  gameState.trajOn = !gameState.trajOn;
-  document.getElementById("trajSwitch").classList.toggle("on", gameState.trajOn);
-};
-document.getElementById("soundBtn").innerHTML = ICON_SOUND_ON;
-document.getElementById("pauseBtn").innerHTML = ICON_PAUSE;
-
-/* =====================================================
-   SETUP MODAL
-===================================================== */
-let setupCount = 2;
-let setupConfig = [ {isAI:false}, {isAI:true,difficulty:"easy"}, {isAI:true,difficulty:"easy"}, {isAI:true,difficulty:"easy"} ];
-
-document.querySelectorAll("#countRow .chip").forEach(btn=>{
-  btn.onclick = ()=>{
-    document.querySelectorAll("#countRow .chip").forEach(b=>b.classList.remove("on"));
-    btn.classList.add("on");
-    setupCount = parseInt(btn.dataset.count,10);
-    renderSlots();
-  };
-});
-
-function renderSlots(){
-  const c = document.getElementById("slotsContainer");
-  c.innerHTML = "";
-  const names = ["Player One","Player Two","Player Three","Player Four"];
-  for(let i=0;i<setupCount;i++){
-    const row = document.createElement("div");
-    row.className = "slotrow";
-    if(i===0){
-      row.innerHTML = `<div class="lbl">${names[0]} (You)</div><div class="slotsel"><span class="chip on">Human</span></div>`;
-      c.appendChild(row);
-      continue;
-    }
-    const cfg = setupConfig[i];
-    const diffs = ["easy","medium","hard"];
-    row.innerHTML = `<div class="lbl">${names[i]}</div><div class="slotsel">
-      <button class="chip ${!cfg.isAI?'on':''}" data-i="${i}" data-type="human">Human</button>
-      ${diffs.map(d=>`<button class="chip ${cfg.isAI && cfg.difficulty===d?'on':''}" data-i="${i}" data-type="ai" data-diff="${d}">AI ${cap(d)}</button>`).join("")}
-    </div>`;
-    c.appendChild(row);
-  }
-  c.querySelectorAll("button[data-i]").forEach(b=>{
-    b.onclick = ()=>{
-      const i = parseInt(b.dataset.i,10);
-      if(b.dataset.type==="human"){ setupConfig[i] = {isAI:false}; }
-      else { setupConfig[i] = {isAI:true, difficulty:b.dataset.diff}; }
-      renderSlots();
-    };
-  });
-}
-renderSlots();
-
-document.getElementById("startBtn").onclick = ()=>{
-  hide("setupOverlay");
-  startGame(setupCount, setupConfig.slice(0,setupCount));
-};
-
-/* =====================================================
-   GAME INIT / UI SYNC
-===================================================== */
-function startGame(count, config){
-  gameState.playerCount = count;
-  gameState.currentPlayer = 0;
-  gameState.gameOver = false;
-  gameState.paused = false;
-  players = buildPlayers(count, config);
-  coins = createCoins();
-  resetStriker();
-  resetTimer();
-
-  document.getElementById("modePill").textContent =
-    count+" PLAYER" + (players.some(p=>p.isAI) ? " · AI" : "");
-
-  setupUIForPlayers();
-  updateActivePlayerUI();
-  updateScoresUI();
-  updatePillsUI();
-
-  gameState.mode = players[0].isAI ? "AI_THINKING" : "READY";
-  if(players[0].isAI) scheduleAITurn();
-
-  if(!loopStarted){ loopStarted = true; requestAnimationFrame(loop); }
-  resizeCanvas();
-}
-function restartGame(){
-  clearAITimeouts();
-  hide("winOverlay");
-  const cfg = players.map(p=>({isAI:p.isAI, difficulty:p.difficulty}));
-  startGame(gameState.playerCount, cfg);
-}
-function setupUIForPlayers(){
-  const prow2 = document.getElementById("prow2");
-  const pcard3 = document.getElementById("pcard3");
-  prow2.classList.toggle("hidden", gameState.playerCount < 3);
-  pcard3.classList.toggle("hidden", gameState.playerCount < 4);
-  for(let i=0;i<4;i++){
-    if(i<gameState.playerCount){
-      const p = players[i];
-      const card = document.getElementById("pcard"+i);
-      document.getElementById("name"+i).textContent = p.name;
-      document.getElementById("av"+i).textContent = p.isAI ? "AI" : "P"+(i+1);
-      card.classList.toggle("ai", p.isAI);
-    }
-  }
-}
-function updateActivePlayerUI(){
-  for(let i=0;i<4;i++){
-    document.getElementById("pcard"+i).classList.toggle("active", i===gameState.currentPlayer);
-  }
-}
-function updateScoresUI(){
-  players.forEach((p,i)=>{ document.getElementById("score"+i).textContent = p.score; });
-}
-function updatePillsUI(){
-  const {q,b,w} = remainingCounts();
-  document.getElementById("qCount").textContent = "×"+q;
-  document.getElementById("bCount").textContent = "×"+b;
-  document.getElementById("wCount").textContent = "×"+w;
-}
-
-/* =====================================================
-   BOARD RENDERING
-===================================================== */
-function roundRect(x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-}
-function drawBoard(){
-  ctx.clearRect(0,0,BOARD,BOARD);
-
-  // wooden frame — inset, leaving the outer band free for the rail
-  roundRect(FRAME_MIN, FRAME_MIN, FRAME_MAX-FRAME_MIN, FRAME_MAX-FRAME_MIN, 30);
-  const gradF = ctx.createLinearGradient(FRAME_MIN,FRAME_MIN,FRAME_MAX,FRAME_MAX);
-  gradF.addColorStop(0,"#c78b45"); gradF.addColorStop(.5,"#8b5527"); gradF.addColorStop(1,"#4c2b16");
-  ctx.fillStyle = gradF; ctx.fill();
-  ctx.shadowColor="rgba(0,0,0,.45)"; ctx.shadowBlur=26; ctx.shadowOffsetY=14;
-  ctx.fill();
-  ctx.shadowColor="transparent"; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
-
-  roundRect(FRAME_MIN+12, FRAME_MIN+12, (FRAME_MAX-FRAME_MIN)-24, (FRAME_MAX-FRAME_MIN)-24, 22);
-  ctx.strokeStyle = "rgba(255,255,255,.16)"; ctx.lineWidth=2; ctx.stroke();
-
-  // play surface
-  roundRect(FIELD_MIN-12, FIELD_MIN-12, (FIELD_MAX-FIELD_MIN)+24, (FIELD_MAX-FIELD_MIN)+24, 12);
-  const gradP = ctx.createLinearGradient(FIELD_MIN,FIELD_MIN,FIELD_MAX,FIELD_MAX);
-  gradP.addColorStop(0,"#e9c088"); gradP.addColorStop(1,"#d3a565");
-  ctx.fillStyle = gradP; ctx.fill();
-  ctx.strokeStyle="rgba(76,39,18,.5)"; ctx.lineWidth=2; ctx.stroke();
-
-  drawMarkings();
-  drawBaselineTracks();
-  drawPockets();
-  drawStrikerZone();
-  drawOuterRail();
-}
-// permanent striker "home track" on every side of the board — always
-// visible, not just the active player's, so the board looks complete
-function drawBaselineTracks(){
-  Object.keys(BASELINES).forEach(side=>{
-    const bl = BASELINES[side];
-    ctx.save();
-    if(bl.axis==="x"){
-      roundRect(bl.min, bl.fixed-9, bl.max-bl.min, 18, 9);
-    } else {
-      roundRect(bl.fixed-9, bl.min, 18, bl.max-bl.min, 9);
-    }
-    ctx.fillStyle = "rgba(76,39,18,.22)";
-    ctx.fill();
-    ctx.strokeStyle = "rgba(76,39,18,.55)"; ctx.lineWidth=1.5; ctx.stroke();
-    const p1 = bl.get(bl.min), p2 = bl.get(bl.max);
-    [p1,p2].forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,4.5,0,Math.PI*2); ctx.fillStyle="#b23a2c"; ctx.fill(); });
-    ctx.restore();
-  });
-}
-function drawMarkings(){
-  ctx.strokeStyle = "rgba(76,39,18,.55)"; ctx.lineWidth=2;
-  ctx.beginPath(); ctx.arc(CENTER.x,CENTER.y,82,0,Math.PI*2); ctx.stroke();
-
-  const off = 128;
-  const corners = [[FIELD_MIN+off,FIELD_MIN+off],[FIELD_MAX-off,FIELD_MIN+off],[FIELD_MIN+off,FIELD_MAX-off],[FIELD_MAX-off,FIELD_MAX-off]];
-  corners.forEach(([cx,cy])=>{
-    ctx.beginPath(); ctx.moveTo(cx,cy);
-    const ang = Math.atan2(CENTER.y-cy, CENTER.x-cx);
-    ctx.lineTo(CENTER.x-Math.cos(ang)*82, CENTER.y-Math.sin(ang)*82);
-    ctx.stroke();
-  });
-  POCKETS.forEach(pk=>{
-    const ang = Math.atan2(CENTER.y-pk.y, CENTER.x-pk.x);
-    const d1=50, d2=86;
-    const p1={x:pk.x+Math.cos(ang)*d1,y:pk.y+Math.sin(ang)*d1};
-    const p2={x:pk.x+Math.cos(ang)*d2,y:pk.y+Math.sin(ang)*d2};
-    ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
-    [p1,p2].forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,4.5,0,Math.PI*2); ctx.fillStyle="#b23a2c"; ctx.fill(); });
-  });
-}
-function drawPockets(){
-  POCKETS.forEach(pk=>{
-    const g = ctx.createRadialGradient(pk.x,pk.y,2,pk.x,pk.y,POCKET_VIS_R);
-    g.addColorStop(0,"#000"); g.addColorStop(.7,"#1c0d06"); g.addColorStop(1,"#3a2010");
-    ctx.beginPath(); ctx.arc(pk.x,pk.y,POCKET_VIS_R,0,Math.PI*2);
-    ctx.fillStyle=g; ctx.fill();
-    ctx.strokeStyle="rgba(0,0,0,.6)"; ctx.lineWidth=3; ctx.stroke();
-  });
-}
-// large dashed shooting-zone circle around the active player's baseline
-function drawStrikerZone(){
-  if(gameState.mode==="GAME_OVER") return;
-  const side = players[gameState.currentPlayer].side;
-  const mid = defaultStrikerPos(side);
-  ctx.save();
-  ctx.setLineDash([5,7]);
-  ctx.strokeStyle = "rgba(76,39,18,.4)"; ctx.lineWidth=2;
-  ctx.beginPath(); ctx.arc(mid.x, mid.y, 108, 0, Math.PI*2); ctx.stroke();
-  ctx.restore();
-}
-// rail track drawn OUTSIDE the wooden frame, in the margin band
-function drawOuterRail(){
-  if(gameState.mode==="GAME_OVER") return;
-  const side = players[gameState.currentPlayer].side;
-  const bl = BASELINES[side];
-  const railFixed = RAIL_FIXED[side];
-  ctx.save();
-
-  if(bl.axis==="x"){
-    roundRect(bl.min-24, railFixed-RAIL_HALF_THICK, (bl.max-bl.min)+48, RAIL_HALF_THICK*2, RAIL_HALF_THICK);
-  } else {
-    roundRect(railFixed-RAIL_HALF_THICK, bl.min-24, RAIL_HALF_THICK*2, (bl.max-bl.min)+48, RAIL_HALF_THICK);
-  }
-  const trackGrad = ctx.createLinearGradient(0,0,BOARD,BOARD);
-  trackGrad.addColorStop(0,"#6b4226"); trackGrad.addColorStop(1,"#3e2412");
-  ctx.fillStyle = trackGrad; ctx.fill();
-  ctx.strokeStyle = "rgba(199,255,85,.35)"; ctx.lineWidth=1.5; ctx.stroke();
-
-  const p1 = bl.axis==="x" ? {x:bl.min,y:railFixed} : {x:railFixed,y:bl.min};
-  const p2 = bl.axis==="x" ? {x:bl.max,y:railFixed} : {x:railFixed,y:bl.max};
-  [p1,p2].forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fillStyle="#c0392b"; ctx.fill(); });
-
-  // draggable handle, positioned to match the striker's current coordinate
-  const handleVal = bl.axis==="x" ? striker.x : striker.y;
-  const handlePos = bl.axis==="x" ? {x:handleVal,y:railFixed} : {x:railFixed,y:handleVal};
-  ctx.beginPath(); ctx.arc(handlePos.x, handlePos.y, 13, 0, Math.PI*2);
-  const hg = ctx.createRadialGradient(handlePos.x-4,handlePos.y-4,2,handlePos.x,handlePos.y,13);
-  hg.addColorStop(0,"#fff7e0"); hg.addColorStop(1,"#d9b46a");
-  ctx.fillStyle = hg; ctx.fill();
-  ctx.strokeStyle="rgba(0,0,0,.35)"; ctx.lineWidth=2; ctx.stroke();
-
-  ctx.restore();
-}
-
-/* =====================================================
-   COIN / STRIKER RENDERING
-===================================================== */
-function drawCoin(c){
-  ctx.save();
-  ctx.beginPath(); ctx.arc(c.x,c.y+3,c.r,0,Math.PI*2);
-  ctx.fillStyle="rgba(0,0,0,.28)"; ctx.fill();
-
-  const g = ctx.createRadialGradient(c.x-c.r*0.35,c.y-c.r*0.35,c.r*0.15,c.x,c.y,c.r);
-  if(c.color==="black"){ g.addColorStop(0,"#3a3a3a"); g.addColorStop(1,"#0a0a0a"); }
-  else if(c.color==="white"){ g.addColorStop(0,"#fffdf6"); g.addColorStop(1,"#cfc2a3"); }
-  else { g.addColorStop(0,"#f0827a"); g.addColorStop(1,"#9c2016"); }
-
-  ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
-  ctx.fillStyle=g; ctx.fill();
-  ctx.strokeStyle="rgba(0,0,0,.25)"; ctx.lineWidth=1; ctx.stroke();
-
-  if(c.color==="queen"){
-    ctx.beginPath(); ctx.arc(c.x,c.y,c.r*0.45,0,Math.PI*2);
-    ctx.strokeStyle="rgba(255,255,255,.55)"; ctx.lineWidth=1.5; ctx.stroke();
-  }
-  ctx.restore();
-}
-function drawStriker(){
-  if(!striker.active || striker.pocketed) return;
-  const c = striker;
-  ctx.save();
-  ctx.beginPath(); ctx.arc(c.x,c.y+3,c.r,0,Math.PI*2);
-  ctx.fillStyle="rgba(0,0,0,.3)"; ctx.fill();
-
-  const g = ctx.createRadialGradient(c.x-c.r*0.3,c.y-c.r*0.3,c.r*0.2,c.x,c.y,c.r);
-  g.addColorStop(0,"#ffffff"); g.addColorStop(1,"#d9cca9");
-  ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
-  ctx.fillStyle=g; ctx.fill();
-  ctx.strokeStyle="#b23a2c"; ctx.lineWidth=2; ctx.stroke();
-  ctx.beginPath(); ctx.arc(c.x,c.y,c.r*0.55,0,Math.PI*2);
-  ctx.strokeStyle="rgba(178,58,44,.6)"; ctx.lineWidth=1; ctx.stroke();
-  ctx.restore();
-}
-function drawAimArrow(){
-  const showAim = (input.mode==="aim" || input.mode==="aim-preview") && len(input.pull) > 4;
-  if(!showAim) return;
-  const dir = norm({x:-input.pull.x,y:-input.pull.y});
-  const power = clamp(len(input.pull)/MAX_PULL,0,1);
-  const arrowLen = 50 + power*110;
-  const sx=striker.x, sy=striker.y;
-  const ex = sx+dir.x*arrowLen, ey = sy+dir.y*arrowLen;
-
-  if(gameState.trajOn){
-    ctx.save();
-    ctx.setLineDash([4,7]);
-    ctx.strokeStyle="rgba(255,255,255,.55)"; ctx.lineWidth=2;
-    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(sx+dir.x*220, sy+dir.y*220); ctx.stroke();
-    ctx.restore();
-  }
-  ctx.save();
-  const grad = ctx.createLinearGradient(sx,sy,ex,ey);
-  grad.addColorStop(0,"#ffd86a"); grad.addColorStop(1,"#ff6a3d");
-  ctx.strokeStyle = grad; ctx.lineWidth=7; ctx.lineCap="round";
-  ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.stroke();
-
-  const headLen=20;
-  const ang = Math.atan2(ey-sy, ex-sx);
-  ctx.beginPath();
-  ctx.moveTo(ex,ey);
-  ctx.lineTo(ex-headLen*Math.cos(ang-0.4), ey-headLen*Math.sin(ang-0.4));
-  ctx.lineTo(ex-headLen*Math.cos(ang+0.4), ey-headLen*Math.sin(ang+0.4));
-  ctx.closePath();
-  ctx.fillStyle="#ff6a3d"; ctx.fill();
-  ctx.restore();
-
-  if(input.mode==="aim") updatePowerUI(len(input.pull));
-}
-
-/* =====================================================
-   GAME LOOP
-===================================================== */
-let lastTs = 0, loopStarted = false;
-function loop(ts){
-  const dt = Math.min((ts-lastTs)/1000 || 0, 0.033);
-  lastTs = ts;
-
-  if(!gameState.paused && !gameState.gameOver){
-    if(gameState.mode==="PHYSICS_RUNNING"){
-      const sub = dt/PHYSICS_SUBSTEPS;
-      for(let s=0;s<PHYSICS_SUBSTEPS;s++) updatePhysics(sub);
-      if(allStopped()){
-        gameState.mode = "TURN_END";
-        resolveTurnEnd();
-      }
-    } else if(gameState.mode==="READY" && isHumanTurn()){
-      gameState.timer -= dt;
-      if(gameState.timer<=0){ gameState.timer=0; forceEndTurn(); }
-      updateTimerUI();
-    }
-  }
-
+  updateTimerUI();
   drawBoard();
-  coins.forEach(c=>{ if(c.active || c.capturing) drawCoin(c); });
-  drawStriker();
-  drawAimArrow();
 
-  requestAnimationFrame(loop);
+  requestAnimationFrame(gameLoop);
 }
 
-/* =====================================================
+/* -------------------------
    INIT
-===================================================== */
+------------------------- */
+
+loadStoredSettings();
+
 resizeCanvas();
+
+updateSoundUI();
+
+requestAnimationFrame(gameLoop);
+
 </script>
 </body>
-</html>
-
+  </html>
