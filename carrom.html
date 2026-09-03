@@ -1,3873 +1,1398 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#06140d">
-<title>MAXGAME — Carrom</title>
-
-<link rel="stylesheet" href="css/styles.css">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#050b08">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Carrom — MAXGAME</title>
 <style>
-
-/* =========================================================
-   MAXGAME CARROM — POLISHED UI
-   ========================================================= */
-
 :root{
-  --green:#07170f;
-  --green-2:#0b2418;
-  --green-3:#123522;
-  --lime:#b8ff3d;
-  --gold:#e6ad3d;
-  --gold-light:#ffd982;
-  --cream:#f6e7c8;
-  --muted:#89978f;
-  --panel:rgba(10,25,17,.88);
-  --line:rgba(230,173,61,.35);
+  --bg:#050b08; --panel:#0b1812; --panel2:#0e2118;
+  --green:#c7ff55; --green2:#8ee33d;
+  --gold:#ffd86a; --white:#f6faf7; --text:#e8f0eb;
+  --muted:#8b9c93; --muted2:#64756d;
+  --line:rgba(255,255,255,.09); --line2:rgba(199,255,85,.18);
+  --radius:20px;
 }
-
-/* =========================================================
-   BASE
-   ========================================================= */
-
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-html,
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;}
 body{
-  margin:0;
-  padding:0;
-  min-height:100%;
+  color:var(--text);
   background:
-    radial-gradient(
-      circle at 50% 20%,
-      #123a26 0%,
-      #07170f 42%,
-      #030b07 100%
-    );
-  color:#f5f7f4;
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,
-    "Segoe UI",sans-serif;
-}
-
-button,
-a{
-  font:inherit;
-}
-
-button{
-  -webkit-appearance:none;
-}
-
-.carrom-page{
-  min-height:100vh;
-  padding:24px 18px 80px;
-}
-
-/* =========================================================
-   COMMON BUTTON
-   ========================================================= */
-
-.back-btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  text-decoration:none;
-  color:#f5f7f4;
-  background:rgba(255,255,255,.055);
-  border:1px solid rgba(255,255,255,.12);
-  padding:12px 16px;
-  border-radius:15px;
-  font-weight:800;
-  cursor:pointer;
-  transition:.18s ease;
-}
-
-.back-btn:hover{
-  border-color:rgba(184,255,61,.5);
-}
-
-.back-btn:active{
-  transform:scale(.96);
-}
-
-/* =========================================================
-   PRE-GAME HEADER
-   ========================================================= */
-
-.carrom-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:28px;
-}
-
-.xi-balance{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  padding:9px 13px;
-  border-radius:17px;
-  background:rgba(255,255,255,.055);
-  border:1px solid rgba(255,255,255,.1);
-}
-
-.xi-icon{
-  width:31px;
-  height:31px;
-  display:grid;
-  place-items:center;
-  border-radius:50%;
-  background:var(--lime);
-  color:#07120d;
-  font-size:10px;
-  font-weight:1000;
-}
-
-/* =========================================================
-   PRE-GAME TITLE
-   ========================================================= */
-
-.carrom-title{
-  margin-bottom:24px;
-}
-
-.eyebrow{
-  color:var(--lime);
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:2px;
-}
-
-.carrom-title h1{
-  font-size:clamp(43px,12vw,72px);
-  line-height:.88;
-  margin:11px 0 15px;
-  letter-spacing:-4px;
-}
-
-.carrom-title h1 span{
-  color:var(--lime);
-}
-
-.carrom-title p{
-  color:#9aa89f;
-  line-height:1.6;
-  margin:0;
-}
-
-/* =========================================================
-   PREVIEW BOARD
-   ========================================================= */
-
-.board-preview{
-  position:relative;
-  min-height:270px;
-  margin:25px 0 30px;
-  border-radius:26px;
-  overflow:hidden;
-
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(255,255,255,.12),
-      transparent 35%
-    ),
-    linear-gradient(135deg,#a6672e,#542d13);
-
-  border:7px solid #2a160b;
-
-  box-shadow:
-    inset 0 0 0 5px #c58a45,
-    0 25px 55px rgba(0,0,0,.4);
-}
-
-.pocket{
-  position:absolute;
-  width:36px;
-  height:36px;
-  background:#0d0906;
-  border-radius:50%;
-  box-shadow:
-    inset 0 3px 8px rgba(255,255,255,.1),
-    0 4px 10px rgba(0,0,0,.3);
-}
-
-.p1{top:12px;left:12px}
-.p2{top:12px;right:12px}
-.p3{bottom:12px;left:12px}
-.p4{bottom:12px;right:12px}
-
-.coins{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
-}
-
-.coin-piece{
-  width:26px;
-  height:26px;
-  border-radius:50%;
-  box-shadow:
-    inset 0 2px 3px rgba(255,255,255,.35),
-    0 4px 8px rgba(0,0,0,.45);
-}
-
-.black{
-  background:radial-gradient(circle at 30% 25%,#555,#111 60%);
-}
-
-.white{
-  background:radial-gradient(circle at 30% 25%,#fff,#ded5c4 65%);
-}
-
-.queen{
-  background:radial-gradient(circle at 30% 25%,#ff7c85,#b82d3d 65%);
-}
-
-/* =========================================================
-   MODE SELECTION
-   ========================================================= */
-
-.mode-section h2{
-  font-size:20px;
-  margin:0 0 14px;
-}
-
-.mode-grid{
-  display:grid;
-  gap:12px;
-}
-
-.mode-card{
-  width:100%;
-  text-align:left;
-  padding:18px;
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,.09);
-  background:rgba(255,255,255,.045);
-  color:#f5f7f4;
-  cursor:pointer;
-  transition:.2s ease;
-}
-
-.mode-card:hover{
-  border-color:rgba(184,255,61,.4);
-  background:rgba(184,255,61,.07);
-}
-
-.mode-card:active{
-  transform:scale(.98);
-}
-
-.mode-icon{
-  font-size:26px;
-  margin-bottom:8px;
-}
-
-.mode-card strong{
-  display:block;
-  font-size:17px;
-}
-
-.mode-card small{
-  display:block;
-  color:#8f9d94;
-  margin-top:5px;
-  line-height:1.4;
-}
-
-.options{
-  display:none;
-  margin-top:12px;
-  padding:15px;
-  border-radius:18px;
-  background:rgba(0,0,0,.25);
-  border:1px solid rgba(255,255,255,.07);
-}
-
-.options.show{
-  display:block;
-}
-
-.options-title{
-  color:var(--lime);
-  font-size:12px;
-  font-weight:900;
-  letter-spacing:1.3px;
-  margin-bottom:10px;
-}
-
-.option-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-}
-
-.option-btn{
-  padding:12px 5px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.1);
-  background:rgba(255,255,255,.05);
-  color:#fff;
-  font-weight:800;
-  cursor:pointer;
-  transition:.16s ease;
-}
-
-.option-btn:hover{
-  background:var(--lime);
-  color:#07120d;
-}
-
-.online-note{
-  margin-top:18px;
-  padding:15px;
-  border-radius:18px;
-  background:linear-gradient(
-    135deg,
-    rgba(184,255,61,.10),
-    rgba(255,255,255,.03)
-  );
-  border:1px solid rgba(184,255,61,.15);
-}
-
-.online-note strong{
-  display:block;
-  color:var(--lime);
-  margin-bottom:5px;
-}
-
-.online-note span{
-  color:#89978f;
-  font-size:13px;
-}
-
-/* =========================================================
-   GAME SCREEN
-   ========================================================= */
-
-.game-screen{
-  width:100%;
-  max-width:1100px;
-  min-height:100vh;
-  margin:auto;
-  padding:10px 8px 28px;
-}
-
-/* =========================================================
-   GAME TOP
-   ========================================================= */
-
-.game-top{
-  display:grid;
-  grid-template-columns:1fr 96px 1fr;
-  align-items:center;
-  gap:12px;
-  margin-bottom:13px;
-}
-
-.player-card{
-  min-width:0;
-  min-height:88px;
-  padding:13px 15px;
-  border-radius:24px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(18,45,29,.95),
-      rgba(7,19,13,.94)
-    );
-
-  border:1px solid rgba(255,255,255,.10);
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.04),
-    0 12px 30px rgba(0,0,0,.18);
-
-  transition:.2s ease;
-}
-
-.player-card.active{
-  border-color:var(--lime);
-  box-shadow:
-    0 0 0 1px rgba(184,255,61,.18),
-    0 0 25px rgba(184,255,61,.08),
-    inset 0 1px 0 rgba(184,255,61,.1);
-}
-
-.player-inner{
-  display:flex;
-  align-items:center;
-  gap:11px;
-}
-
-.player-avatar{
-  width:50px;
-  height:50px;
-  flex-shrink:0;
-  display:grid;
-  place-items:center;
-  border-radius:50%;
-
-  background:
-    radial-gradient(
-      circle at 35% 25%,
-      #d7a36a,
-      #77431f 58%,
-      #351b0d
-    );
-
-  border:2px solid rgba(230,173,61,.7);
-
-  color:#fff;
-  font-size:15px;
-  font-weight:1000;
-
-  box-shadow:
-    0 5px 15px rgba(0,0,0,.35);
-}
-
-.player-info{
-  min-width:0;
-}
-
-.player-name{
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-
-  color:#d4d9d4;
-  font-size:12px;
-  font-weight:900;
-  letter-spacing:.8px;
-}
-
-.player-score{
-  margin-top:2px;
-  color:#fff;
-  font-size:27px;
-  font-weight:1000;
-  line-height:1;
-}
-
-.player-sub{
-  margin-top:4px;
-  color:#839087;
-  font-size:9px;
-}
-
-/* =========================================================
-   TIMER
-   ========================================================= */
-
-.timer-ring{
-  position:relative;
-  width:92px;
-  height:92px;
-  display:grid;
-  place-items:center;
-  border-radius:50%;
-
-  background:
-    conic-gradient(
-      var(--lime) 0deg,
-      var(--lime) 25deg,
-      #142b1d 25deg,
-      #142b1d 360deg
-    );
-
-  box-shadow:
-    0 10px 30px rgba(0,0,0,.25);
-}
-
-.timer-ring::before{
-  content:"";
-  position:absolute;
-  inset:6px;
-  border-radius:50%;
-  background:#0a1b11;
-  border:1px solid rgba(255,255,255,.06);
-}
-
-.timer-content{
-  position:relative;
-  z-index:2;
-  text-align:center;
-}
-
-.timer-label{
-  display:block;
-  color:#d9cda9;
-  font-size:8px;
-  font-weight:800;
-  letter-spacing:.6px;
-}
-
-.timer-number{
-  display:block;
-  margin-top:0;
-  color:#fff0cf;
-  font-size:31px;
-  font-weight:1000;
-  line-height:1;
-}
-
-.timer-sec{
-  display:block;
-  margin-top:2px;
-  color:var(--gold);
-  font-size:8px;
-  font-weight:900;
-}
-
-/* =========================================================
-   GAME CONTROLS
-   ========================================================= */
-
-.game-controls{
-  display:flex;
-  justify-content:center;
-  gap:9px;
-  margin-bottom:13px;
-}
-
-.game-control-btn{
-  min-width:95px;
-  border:1px solid rgba(255,255,255,.10);
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.075),
-      rgba(255,255,255,.035)
-    );
-  color:#f2f4f1;
-  padding:11px 15px;
-  border-radius:16px;
-  font-size:12px;
-  font-weight:900;
-  cursor:pointer;
-  transition:.16s ease;
-}
-
-.game-control-btn:hover{
-  border-color:rgba(230,173,61,.45);
-}
-
-.game-control-btn:active{
-  transform:scale(.95);
-}
-
-/* =========================================================
-   SCORE LEGEND
-   ========================================================= */
-
-.score-legend{
-  width:min(520px,92vw);
-  margin:0 auto 13px;
-  padding:9px 14px;
-  display:flex;
-  justify-content:center;
-  gap:18px;
-  align-items:center;
-
-  border-radius:17px;
-
-  background:rgba(7,24,15,.78);
-  border:1px solid rgba(230,173,61,.25);
-}
-
-.legend-item{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  color:#eadfc6;
-  font-size:11px;
-  font-weight:800;
-}
-
-.legend-coin{
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  display:inline-block;
-  box-shadow:0 2px 4px rgba(0,0,0,.4);
-}
-
-/* =========================================================
-   BOARD
-   ========================================================= */
-
-.game-board-wrap{
-  width:100%;
-  display:flex;
-  justify-content:center;
-  position:relative;
-}
-
-.board-frame{
-  position:relative;
-  width:min(86vw,700px);
-  aspect-ratio:1;
-  padding:0;
-  border-radius:31px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #71401d,
-      #b27435 35%,
-      #5a2f14 75%,
-      #2a1408
-    );
-
-  box-shadow:
-    0 30px 65px rgba(0,0,0,.55),
-    0 0 0 2px #170b05,
-    inset 0 0 0 5px rgba(255,205,115,.25);
-}
-
-#carromCanvas{
-  display:block;
-  width:100%;
-  height:100%;
-  border-radius:27px;
-  touch-action:none;
-}
-
-/* =========================================================
-   TURN
-   ========================================================= */
-
-.turn-panel{
-  text-align:center;
-  margin-top:14px;
-}
-
-.turn-label{
-  color:#79877e;
-  font-size:11px;
-  letter-spacing:1.7px;
-  font-weight:1000;
-}
-
-.turn-player{
-  margin-top:4px;
-  color:var(--lime);
-  font-size:22px;
-  font-weight:1000;
-}
-
-/* =========================================================
-   POWER
-   ========================================================= */
-
-.power-bar{
-  width:min(650px,90vw);
-  height:10px;
-  margin:13px auto 0;
-
-  background:
-    rgba(255,255,255,.075);
-
-  border-radius:20px;
-  overflow:hidden;
-
-  border:1px solid rgba(255,255,255,.05);
-}
-
-.power-fill{
-  width:0%;
-  height:100%;
-
-  background:
-    linear-gradient(
-      90deg,
-      #80bd25,
-      var(--lime),
-      #e2ff9b
-    );
-
-  box-shadow:
-    0 0 12px rgba(184,255,61,.35);
-
-  transition:.05s;
-}
-
-.game-hint{
-  text-align:center;
-  color:#6f7c74;
-  font-size:11px;
-  margin-top:8px;
-}
-
-/* =========================================================
-   RULES PANEL
-   ========================================================= */
-
-.rules-panel{
-  display:none;
-  width:min(620px,92vw);
-  margin:15px auto 0;
-  padding:20px;
-
-  border-radius:21px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(20,42,28,.95),
-      rgba(5,17,11,.96)
-    );
-
-  border:1px solid rgba(230,173,61,.25);
-
-  box-shadow:
-    0 20px 45px rgba(0,0,0,.25);
-}
-
-.rules-panel.show{
-  display:block;
-}
-
-.rules-panel h3{
-  margin:0 0 14px;
-  color:var(--gold-light);
-  font-size:16px;
-}
-
-.rule-row{
-  display:flex;
-  justify-content:space-between;
-  gap:15px;
-  padding:9px 0;
-  border-bottom:1px solid rgba(255,255,255,.06);
-  color:#aab5ae;
-  font-size:12px;
-}
-
-.rule-row:last-child{
-  border-bottom:0;
-}
-
-.rule-row strong{
-  color:#fff;
-}
-
-/* =========================================================
-   BOTTOM GAME BAR
-   ========================================================= */
-
-.bottom-game-bar{
-  width:min(900px,100%);
-  margin:22px auto 0;
-
-  display:grid;
-  grid-template-columns:1fr 1fr 1.7fr 1fr 1fr;
-  gap:9px;
-}
-
-.bottom-game-btn{
-  min-height:68px;
-
-  border-radius:18px;
-
-  border:1px solid rgba(230,173,61,.28);
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.07),
-      rgba(255,255,255,.025)
-    );
-
-  color:#eadfc6;
-  font-weight:900;
-  font-size:11px;
-
-  cursor:pointer;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:5px;
-
-  transition:.16s ease;
-}
-
-.bottom-game-btn span:first-child{
-  font-size:22px;
-}
-
-.bottom-game-btn:hover{
-  border-color:rgba(230,173,61,.65);
-}
-
-.bottom-game-btn:active{
-  transform:scale(.96);
-}
-
-.bottom-game-btn.restart{
-  background:
-    linear-gradient(
-      145deg,
-      rgba(32,75,45,.95),
-      rgba(8,28,17,.95)
-    );
-
-  color:#f1e5c7;
-
-  border-color:
-    rgba(184,255,61,.35);
-}
-
-/* =========================================================
-   PAUSE OVERLAY
-   ========================================================= */
-
-.pause-overlay{
-  position:fixed;
-  inset:0;
-  z-index:1000;
-
-  display:none;
-  align-items:center;
-  justify-content:center;
-
-  padding:25px;
-
-  background:rgba(1,8,5,.78);
-  backdrop-filter:blur(10px);
-}
-
-.pause-overlay.show{
-  display:flex;
-}
-
-.pause-card{
-  width:min(390px,92vw);
-  padding:28px;
-  text-align:center;
-
-  border-radius:26px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #122b1c,
-      #07150d
-    );
-
-  border:1px solid rgba(230,173,61,.3);
-
-  box-shadow:
-    0 30px 80px rgba(0,0,0,.5);
-}
-
-.pause-icon{
-  font-size:42px;
-}
-
-.pause-card h2{
-  margin:12px 0 5px;
-}
-
-.pause-card p{
-  color:#89978f;
-  font-size:13px;
-}
-
-.resume-btn{
-  width:100%;
-  margin-top:16px;
-  padding:15px;
-
-  border:0;
-  border-radius:15px;
-
-  background:var(--lime);
-  color:#07120d;
-
-  font-weight:1000;
-  cursor:pointer;
-}
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
-@media(max-width:700px){
-
-  .carrom-page{
-    padding:18px 12px 70px;
-  }
-
-  .game-screen{
-    padding:6px 2px 20px;
-  }
-
-  .game-top{
-    grid-template-columns:1fr 70px 1fr;
-    gap:6px;
-  }
-
-  .player-card{
-    min-height:67px;
-    padding:8px;
-    border-radius:18px;
-  }
-
-  .player-inner{
-    justify-content:center;
-  }
-
-  .player-avatar{
-    width:35px;
-    height:35px;
-    font-size:11px;
-  }
-
-  .player-name{
-    font-size:9px;
-  }
-
-  .player-score{
-    font-size:21px;
-  }
-
-  .player-sub{
-    display:none;
-  }
-
-  .timer-ring{
-    width:69px;
-    height:69px;
-  }
-
-  .timer-ring::before{
-    inset:5px;
-  }
-
-  .timer-number{
-    font-size:24px;
-  }
-
-  .timer-label{
-    font-size:6px;
-  }
-
-  .timer-sec{
-    font-size:6px;
-  }
-
-  .game-controls{
-    gap:6px;
-  }
-
-  .game-control-btn{
-    min-width:0;
-    padding:9px 10px;
-    font-size:10px;
-  }
-
-  .score-legend{
-    gap:9px;
-    padding:7px 8px;
-  }
-
-  .legend-item{
-    font-size:9px;
-  }
-
-  .legend-coin{
-    width:15px;
-    height:15px;
-  }
-
-  .board-frame{
-    width:min(96vw,700px);
-    border-radius:22px;
-  }
-
-  .turn-player{
-    font-size:18px;
-  }
-
-  .bottom-game-bar{
-    grid-template-columns:repeat(5,1fr);
-    gap:5px;
-  }
-
-  .bottom-game-btn{
-    min-height:58px;
-    border-radius:13px;
-    font-size:8px;
-  }
-
-  .bottom-game-btn span:first-child{
-    font-size:18px;
-  }
-
-}
-
-@media(max-width:420px){
-
-  .score-legend{
-    gap:6px;
-  }
-
-  .legend-item{
-    font-size:8px;
-  }
-
-  .bottom-game-btn{
-    min-height:52px;
-  }
-
-  .bottom-game-btn span:first-child{
-    font-size:16px;
-  }
-
-}
-
-/* =========================================================
-   3 / 4 PLAYER LAYOUT
-   ========================================================= */
-
-.player-grid{
-  display:grid;
-  gap:8px;
-}
-
-.player-grid.players-3{
-  grid-template-columns:1fr 70px 1fr;
-}
-
-.player-grid.players-4{
-  grid-template-columns:1fr 70px 1fr;
-}
-
-.hidden-player{
-  display:none;
-}
-
+    radial-gradient(circle at 50% -15%, rgba(99,174,75,.20), transparent 32%),
+    radial-gradient(circle at 100% 90%, rgba(110,157,54,.08), transparent 30%),
+    var(--bg);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  display:flex; flex-direction:column; height:100dvh;
+}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit;}
+button:active{transform:scale(.96);}
+.hidden{display:none!important;}
+svg{display:block;}
+
+/* ===== TOP BAR ===== */
+.topbar{ display:flex; align-items:center; gap:8px; padding:10px 12px; flex:0 0 auto; }
+.icon-btn{
+  width:38px;height:38px;border-radius:12px;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.05);border:1px solid var(--line);
+  color:var(--text);
+}
+.mode-pill{
+  flex:1; height:38px; display:flex; align-items:center; justify-content:center;
+  gap:6px; border-radius:12px; background:rgba(255,255,255,.05);
+  border:1px solid var(--line); font-size:11px; font-weight:800;
+  letter-spacing:.5px; color:var(--muted);
+}
+
+/* ===== PLAYER ROW ===== */
+.prow{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:2px 12px; flex:0 0 auto;}
+.pcard{
+  flex:1; display:flex; align-items:center; gap:8px;
+  padding:6px 10px; border-radius:14px; border:1px solid var(--line);
+  background:rgba(255,255,255,.03); min-width:0;
+  transition:.25s ease;
+}
+.pcard.active{
+  border-color:var(--line2); background:rgba(199,255,85,.08);
+  box-shadow:0 0 0 1px rgba(199,255,85,.15), 0 0 18px rgba(199,255,85,.10);
+}
+.pcard .av{
+  width:30px;height:30px;border-radius:50%;flex:0 0 auto;
+  display:grid;place-items:center;font-size:12px;font-weight:900;
+  background:linear-gradient(145deg,#dfff7e,#86da3b); color:#15250f;
+}
+.pcard.ai .av{background:linear-gradient(145deg,#7ea8ff,#3f66c9);color:#0c1530;}
+.pcard .meta{min-width:0;}
+.pcard .name{font-size:10px;font-weight:900;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pcard .score{font-size:14px;font-weight:950;color:var(--gold);}
+.timerwrap{ flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:2px;}
+.timerring{width:54px;height:54px;position:relative;}
+.timerring svg{width:100%;height:100%;transform:rotate(-90deg);}
+.timerring .bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:5;}
+.timerring .fg{fill:none;stroke:var(--green);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .2s linear;}
+.timerring .num{position:absolute;inset:0;display:grid;place-items:center;font-size:16px;font-weight:950;}
+.timerlbl{font-size:7px;font-weight:900;letter-spacing:1px;color:var(--muted2);}
+
+/* score pills */
+.pillrow{display:flex;justify-content:center;align-items:center;gap:8px;padding:6px 12px;flex:0 0 auto;}
+.pill{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line);font-size:11px;font-weight:900;}
+.dot{width:12px;height:12px;border-radius:50%;flex:0 0 auto;}
+.dot.q{background:radial-gradient(circle at 30% 30%,#e9695c,#a52318);}
+.dot.b{background:radial-gradient(circle at 30% 30%,#3a3a3a,#0a0a0a);}
+.dot.w{background:radial-gradient(circle at 30% 30%,#fffdf6,#cfc2a3);}
+
+/* power bar */
+.powerwrap{
+  position:absolute; left:50%; top:8px; transform:translateX(-50%);
+  display:flex; align-items:center; gap:6px; padding:5px 10px;
+  border-radius:999px; background:rgba(5,12,8,.75); border:1px solid var(--line2);
+  font-size:8px; font-weight:900; letter-spacing:1px; color:var(--gold);
+  opacity:0; transition:opacity .15s ease; pointer-events:none; z-index:5;
+}
+.powerwrap.show{opacity:1;}
+.powerbar{width:70px;height:6px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden;}
+.powerbar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--green2),var(--gold));border-radius:4px;}
+
+/* ===== BOARD ===== */
+.boardarea{flex:1 1 auto; display:flex; align-items:center; justify-content:center; min-height:0; position:relative; padding:2px 8px;}
+.boardwrap{position:relative; width:min(96vw, 82vh, 660px); aspect-ratio:1/1;}
+canvas{width:100%;height:100%;display:block;touch-action:none;}
+.hint{
+  position:absolute; left:50%; bottom:-26px; transform:translateX(-50%);
+  font-size:10px; color:var(--muted); text-align:center; white-space:nowrap;
+}
+
+/* ===== BOTTOM PLAYERS (3/4p) ===== */
+.prow2{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:2px 12px; flex:0 0 auto;}
+
+/* ===== BOTTOM NAV ===== */
+.bottomnav{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
+  padding:8px 12px calc(10px + env(safe-area-inset-bottom));
+  flex:0 0 auto;
+}
+.navbtn{
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:9px 4px; border-radius:14px; background:rgba(255,255,255,.04);
+  border:1px solid var(--line); font-size:8.5px; font-weight:900; letter-spacing:.5px; color:var(--muted);
+}
+.navbtn .ic{font-size:15px;}
+.navbtn.primary{background:rgba(199,255,85,.10);border-color:var(--line2);color:var(--green);}
+
+/* ===== MODALS ===== */
+.overlay{
+  position:fixed; inset:0; background:rgba(3,8,5,.72); backdrop-filter:blur(6px);
+  display:flex; align-items:center; justify-content:center; z-index:100; padding:20px;
+}
+.modal{
+  width:min(420px,100%); max-height:85vh; overflow-y:auto;
+  background:linear-gradient(165deg,#0d1f14,#0a1610);
+  border:1px solid var(--line2); border-radius:24px; padding:22px;
+  box-shadow:0 30px 80px rgba(0,0,0,.55);
+}
+.modal h2{font-size:20px;margin-bottom:4px;letter-spacing:-.5px;}
+.modal .sub{font-size:11px;color:var(--muted);margin-bottom:16px;}
+.modal .row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.chip{
+  padding:9px 14px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.04); font-size:11px; font-weight:800;
+}
+.chip.on{background:var(--green);color:#13220e;border-color:var(--green);}
+.slotrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-top:1px solid var(--line);}
+.slotrow:first-of-type{border-top:0;}
+.slotrow .lbl{font-size:12px;font-weight:800;}
+.slotsel{display:flex;gap:5px;flex-wrap:wrap;}
+.bigbtn{
+  width:100%; margin-top:16px; padding:14px; border-radius:14px; font-size:12px;
+  font-weight:950; letter-spacing:.5px; text-align:center;
+  background:linear-gradient(135deg,#dcff78,#91df3d); color:#14240e;
+}
+.ghostbtn{
+  width:100%; margin-top:8px; padding:12px; border-radius:14px; font-size:11px;
+  font-weight:900; text-align:center; background:rgba(255,255,255,.05); border:1px solid var(--line);
+}
+.twobtn{display:flex;gap:10px;margin-top:16px;}
+.twobtn button{flex:1;padding:13px;border-radius:14px;font-size:11px;font-weight:900;}
+.twobtn .cancel{background:rgba(255,255,255,.05);border:1px solid var(--line);}
+.twobtn .danger{background:linear-gradient(135deg,#ff8a6a,#e0492c);color:#2a0d05;}
+.rules p{font-size:12px;line-height:1.7;color:#c3d2c9;margin-bottom:8px;}
+.rules b{color:var(--green);}
+.winner-name{font-size:26px;font-weight:950;color:var(--gold);margin:10px 0 2px;}
+.winner-score{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line);}
+.toggle-row:first-child{border-top:0;}
+.switch{width:42px;height:24px;border-radius:999px;background:rgba(255,255,255,.1);position:relative;border:1px solid var(--line);}
+.switch.on{background:var(--green2);}
+.switch i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;display:block;}
+.switch.on i{left:20px;}
+.toast{
+  position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);
+  padding:11px 16px;border-radius:12px;background:#102119;border:1px solid var(--line);
+  font-size:11px;opacity:0;pointer-events:none;transition:.25s ease;z-index:200;
+}
+.toast.show{opacity:1;transform:translate(-50%,0);}
 </style>
 </head>
-
 <body>
 
-<main class="carrom-page">
+<!-- Reserved space for an ad banner (kept empty on purpose) -->
+<div id="adSlotTop" style="height:50px;flex:0 0 auto;"></div>
 
-  <!-- =====================================================
-       PRE-GAME SCREEN
-       ===================================================== -->
+<!-- TOP BAR -->
+<div class="topbar">
+  <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
+  <div class="mode-pill" id="modePill">2 PLAYER</div>
+  <button class="icon-btn" id="soundBtn" aria-label="Sound"></button>
+  <button class="icon-btn" id="pauseBtn" aria-label="Pause"></button>
+</div>
 
-  <header class="carrom-header">
-
-    <a
-      class="back-btn"
-      href="index.html">
-      ← Back
-    </a>
-
-    <div class="xi-balance">
-      <span class="xi-icon">XI</span>
-      <strong>0</strong>
+<!-- TOP PLAYERS -->
+<div class="prow">
+  <div class="pcard" id="pcard0">
+    <div class="av" id="av0">P1</div>
+    <div class="meta"><div class="name" id="name0">Player One</div><div class="score" id="score0">0</div></div>
+  </div>
+  <div class="timerwrap">
+    <div class="timerring">
+      <svg viewBox="0 0 60 60"><circle class="bg" cx="30" cy="30" r="26"></circle><circle class="fg" id="timerFg" cx="30" cy="30" r="26" stroke-dasharray="163" stroke-dashoffset="0"></circle></svg>
+      <div class="num" id="timerNum">20</div>
     </div>
+    <div class="timerlbl">TIME LEFT</div>
+  </div>
+  <div class="pcard" id="pcard1">
+    <div class="meta" style="text-align:right;"><div class="name" id="name1">Player Two</div><div class="score" id="score1">0</div></div>
+    <div class="av" id="av1">P2</div>
+  </div>
+</div>
 
-  </header>
+<!-- SCORE PILLS -->
+<div class="pillrow">
+  <div class="pill"><span class="dot q"></span><span id="qCount">×1</span></div>
+  <div class="pill"><span class="dot b"></span><span id="bCount">×9</span></div>
+  <div class="pill"><span class="dot w"></span><span id="wCount">×9</span></div>
+</div>
 
+<!-- BOARD -->
+<div class="boardarea">
+  <div class="boardwrap" id="boardWrap">
+    <div class="powerwrap" id="powerWrap">POWER<div class="powerbar"><i id="powerBar"></i></div></div>
+    <canvas id="board"></canvas>
+    <div class="hint">👆 Drag the outer rail to place · pull striker back to shoot</div>
+  </div>
+</div>
 
-  <section class="carrom-title">
+<!-- BOTTOM PLAYERS (3/4p) -->
+<div class="prow2 hidden" id="prow2">
+  <div class="pcard" id="pcard2"><div class="av" id="av2">P3</div><div class="meta"><div class="name" id="name2">Player Three</div><div class="score" id="score2">0</div></div></div>
+  <div class="pcard hidden" id="pcard3"><div class="meta" style="text-align:right;"><div class="name" id="name3">Player Four</div><div class="score" id="score3">0</div></div><div class="av" id="av3">P4</div></div>
+</div>
 
-    <span class="eyebrow">
-      PRECISION BOARD GAME
-    </span>
+<!-- BOTTOM NAV -->
+<div class="bottomnav">
+  <button class="navbtn" id="navMenu"><span class="ic">☰</span>MENU</button>
+  <button class="navbtn" id="navRules"><span class="ic">📖</span>RULES</button>
+  <button class="navbtn primary" id="navRestart"><span class="ic">↻</span>RESTART</button>
+  <button class="navbtn" id="navUndo"><span class="ic">↩</span>UNDO</button>
+</div>
 
-    <h1>
-      PLAY<br>
-      <span>CARROM.</span>
-    </h1>
-
-    <p>
-      Choose how you want to play.
-      Challenge AI, play with friends locally,
-      or compete online.
-    </p>
-
-  </section>
-
-
-  <section class="board-preview">
-
-    <div class="pocket p1"></div>
-    <div class="pocket p2"></div>
-    <div class="pocket p3"></div>
-    <div class="pocket p4"></div>
-
-    <div class="coins">
-      <span class="coin-piece black"></span>
-      <span class="coin-piece white"></span>
-      <span class="coin-piece queen"></span>
-      <span class="coin-piece white"></span>
-      <span class="coin-piece black"></span>
+<!-- SETUP MODAL -->
+<div class="overlay" id="setupOverlay">
+  <div class="modal">
+    <h2>Carrom</h2>
+    <div class="sub">Set up your match</div>
+    <div class="row" id="countRow">
+      <button class="chip on" data-count="2">2 Players</button>
+      <button class="chip" data-count="3">3 Players</button>
+      <button class="chip" data-count="4">4 Players</button>
     </div>
+    <div id="slotsContainer"></div>
+    <button class="bigbtn" id="startBtn">START MATCH</button>
+    <button class="ghostbtn" id="setupRulesBtn">View Rules</button>
+  </div>
+</div>
 
-  </section>
-
-
-  <section class="mode-section">
-
-    <h2>Choose your mode</h2>
-
-
-    <!-- AI -->
-
-    <button
-      class="mode-card"
-      onclick="toggleOptions('aiOptions')">
-
-      <div class="mode-icon">🤖</div>
-
-      <strong>
-        Play with AI
-      </strong>
-
-      <small>
-        Challenge computer opponents
-      </small>
-
-    </button>
-
-
-    <div
-      id="aiOptions"
-      class="options">
-
-      <div class="options-title">
-        AI OPPONENTS
-      </div>
-
-      <div class="option-grid">
-
-        <button
-          class="option-btn">
-          1 AI
-        </button>
-
-        <button
-          class="option-btn">
-          2 AI
-        </button>
-
-        <button
-          class="option-btn">
-          3 AI
-        </button>
-
-      </div>
-
+<!-- MENU MODAL -->
+<div class="overlay hidden" id="menuOverlay">
+  <div class="modal">
+    <h2>Menu</h2>
+    <div class="sub">Game options</div>
+    <button class="ghostbtn" id="menuRules">📖 Rules</button>
+    <button class="ghostbtn" id="menuRestart">↻ Restart Game</button>
+    <button class="ghostbtn" id="menuExit">← Exit to MAXGAME</button>
+    <div class="toggle-row" style="margin-top:10px;">
+      <span style="font-size:12px;font-weight:800;">Sound</span>
+      <div class="switch on" id="soundSwitch"><i></i></div>
     </div>
-
-
-    <!-- LOCAL -->
-
-    <button
-      class="mode-card"
-      onclick="toggleOptions('localOptions')">
-
-      <div class="mode-icon">👥</div>
-
-      <strong>
-        Local Multiplayer
-      </strong>
-
-      <small>
-        Play together on the same device
-      </small>
-
-    </button>
-
-
-    <div
-      id="localOptions"
-      class="options">
-
-      <div class="options-title">
-        PLAYERS
-      </div>
-
-      <div class="option-grid">
-
-        <button
-          class="option-btn">
-          2 Players
-        </button>
-
-        <button
-          class="option-btn">
-          3 Players
-        </button>
-
-        <button
-          class="option-btn">
-          4 Players
-        </button>
-
-      </div>
-
+    <div class="toggle-row">
+      <span style="font-size:12px;font-weight:800;">Aim trajectory</span>
+      <div class="switch on" id="trajSwitch"><i></i></div>
     </div>
+    <button class="ghostbtn" id="menuClose">Close</button>
+  </div>
+</div>
 
+<!-- PAUSE MODAL -->
+<div class="overlay hidden" id="pauseOverlay">
+  <div class="modal">
+    <h2>Paused</h2>
+    <div class="sub">Game is paused</div>
+    <button class="bigbtn" id="resumeBtn">RESUME</button>
+    <button class="ghostbtn" id="pauseRestart">↻ Restart Game</button>
+    <button class="ghostbtn" id="pauseExit">← Exit to MAXGAME</button>
+  </div>
+</div>
 
-    <!-- ONLINE -->
-
-    <button
-      class="mode-card"
-      onclick="toggleOptions('onlineOptions')">
-
-      <div class="mode-icon">🌐</div>
-
-      <strong>
-        Online Multiplayer
-      </strong>
-
-      <small>
-        Play with players around the world
-      </small>
-
-    </button>
-
-
-    <div
-      id="onlineOptions"
-      class="options">
-
-      <div class="options-title">
-        ONLINE
-      </div>
-
-      <div class="option-grid">
-
-        <button class="option-btn">
-          Quick Match
-        </button>
-
-        <button class="option-btn">
-          Create Room
-        </button>
-
-        <button class="option-btn">
-          Join Room
-        </button>
-
-      </div>
-
+<!-- RULES MODAL -->
+<div class="overlay hidden" id="rulesOverlay">
+  <div class="modal">
+    <h2>Rules</h2>
+    <div class="sub">How to play Carrom</div>
+    <div class="rules">
+      <p><b>Scoring</b> — Black = 10 pts · White = 20 pts · Queen = 50 pts. First to <b>180 points</b> wins — this applies the same way in 2, 3, or 4 player matches.</p>
+      <p><b>Placing the striker</b> — Drag the rail track around the edge of the board (outside the wood frame) to slide your striker along your baseline.</p>
+      <p><b>Shooting</b> — Press and pull back on the striker itself, aim using the arrow, then release to shoot. Longer pull = more power.</p>
+      <p><b>Turns</b> — Each player has 20 seconds per turn. Turns rotate in order after every shot.</p>
+      <p><b>Pockets</b> — Get a coin into any corner pocket to score its points.</p>
+      <p><b>Extra turn</b> — Pocketing any coin earns you another shot right away. Miss, and the turn passes to the next player.</p>
+      <p><b>Queen</b> — Worth 50, but it must be <b>covered</b>: pot a black or white coin on the very next shot after potting the Queen (same shot counts too). Fail to cover it and the Queen returns to the center.</p>
+      <p><b>Foul</b> — If your striker itself falls into a pocket, that turn earns no points, you lose 10 points, and the striker returns to your baseline.</p>
+      <p><b>AI</b> — Easy plays loose and reacts fast. Medium is measured and reasonably accurate. Hard takes its time and aims precisely, even on long shots.</p>
     </div>
+    <button class="bigbtn" id="rulesClose">Got it</button>
+  </div>
+</div>
 
-
-    <div class="online-note">
-
-      <strong>
-        ONLINE MULTIPLAYER
-      </strong>
-
-      <span>
-        Multiplayer infrastructure will be connected
-        after the complete game UI is ready.
-      </span>
-
+<!-- RESTART CONFIRM -->
+<div class="overlay hidden" id="restartOverlay">
+  <div class="modal">
+    <h2>Restart Game?</h2>
+    <div class="sub">Your current match will be lost.</div>
+    <div class="twobtn">
+      <button class="cancel" id="restartCancel">CANCEL</button>
+      <button class="danger" id="restartConfirm">RESTART</button>
     </div>
+  </div>
+</div>
 
-  </section>
+<!-- EXIT CONFIRM -->
+<div class="overlay hidden" id="exitOverlay">
+  <div class="modal">
+    <h2>Exit Game?</h2>
+    <div class="sub">Your current progress will be lost.</div>
+    <div class="twobtn">
+      <button class="cancel" id="exitCancel">CANCEL</button>
+      <button class="danger" id="exitConfirm">EXIT</button>
+    </div>
+  </div>
+</div>
 
-</main>
+<!-- WINNER MODAL -->
+<div class="overlay hidden" id="winOverlay">
+  <div class="modal" style="text-align:center;">
+    <div style="font-size:11px;font-weight:900;letter-spacing:2px;color:var(--green);">🏆 WINNER</div>
+    <div class="winner-name" id="winnerName">Player One</div>
+    <div class="winner-score" id="winnerScore">180 points</div>
+    <button class="bigbtn" id="winRestart">PLAY AGAIN</button>
+    <button class="ghostbtn" id="winExit">← Exit to MAXGAME</button>
+  </div>
+</div>
 
+<div class="toast" id="toast"></div>
 
 <script>
+"use strict";
 
-/* =========================================================
-   MAXGAME CARROM MODE SYSTEM
-   ========================================================= */
+/* =====================================================
+   CONFIG
+===================================================== */
+const BOARD = 800;
 
-let selectedMode = null;
-let selectedPlayers = null;
-let selectedDifficulty = null;
+// wooden frame occupies this inset area; the band OUTSIDE it
+// (0..FRAME_MIN and FRAME_MAX..BOARD) is reserved for the rail track
+const FRAME_MIN = 60, FRAME_MAX = 740;
 
+// playable physics surface, inset within the frame
+const FIELD_MIN = 130, FIELD_MAX = 670;
 
-/* =========================================================
-   OPEN / CLOSE OPTIONS
-   ========================================================= */
+const R_COIN = 15, R_STRIKER = 19;
+const CENTER = { x: 400, y: 400 };
+const POCKETS = [
+  { x: 168, y: 168 }, { x: 632, y: 168 },
+  { x: 168, y: 632 }, { x: 632, y: 632 }
+];
+const POCKET_VIS_R = 27, POCKET_CAPTURE_R = 30;
 
-function toggleOptions(id){
+const MAX_PULL = 150, MIN_PULL = 10;
+const MAX_SPEED = 950;
+const FRICTION_DECEL = 700;
+const REST_WALL = 0.66, REST_COIN = 0.82;
+const EPS_STOP = 5;
+const PHYSICS_SUBSTEPS = 3;
+const TURN_SECONDS = 20;
+const CAPTURE_DURATION = 0.16;
+const WIN_SCORE = 180;
+const FOUL_PENALTY = 10;
+const QUEEN_VALUE = 50;
 
-  const box = document.getElementById(id);
+const BASELINES = {
+  bottom: { axis: "x", fixed: 630, min: 300, max: 500, get:(v)=>({x:v,y:630}) },
+  top:    { axis: "x", fixed: 170, min: 300, max: 500, get:(v)=>({x:v,y:170}) },
+  left:   { axis: "y", fixed: 170, min: 300, max: 500, get:(v)=>({x:170,y:v}) },
+  right:  { axis: "y", fixed: 630, min: 300, max: 500, get:(v)=>({x:630,y:v}) }
+};
+// where the OUTER rail track is drawn, outside the wooden frame
+const RAIL_FIXED = { bottom: 770, top: 30, left: 30, right: 770 };
+const RAIL_HALF_THICK = 15;
 
-  document
-    .querySelectorAll(".options")
-    .forEach(option => {
+const SIDES_BY_COUNT = {
+  2: ["bottom", "top"],
+  3: ["bottom", "right", "top"],
+  4: ["bottom", "right", "top", "left"]
+};
 
-      if(option !== box){
-        option.classList.remove("show");
-      }
-
-    });
-
-  box.classList.toggle("show");
+// posNoise is a FIXED lateral miss distance (board units) applied at the
+// target, not an angle — so long shots don't get proportionally worse
+// than short ones the way angular error does. thinkMs/aimMs set the pace.
+const DIFF_PARAMS = {
+  easy:   { posNoise: 46, powerNoise: 0.22, placeMode:"random", placeNoise:0,  thinkMs:220, aimMs:380 },
+  medium: { posNoise: 17, powerNoise: 0.10, placeMode:"aimed",  placeNoise:40, thinkMs:380, aimMs:550 },
+  hard:   { posNoise: 5,  powerNoise: 0.04, placeMode:"aimed",  placeNoise:8,  thinkMs:550, aimMs:750 }
+};
+// The old version guessed power from distance alone, disconnected from the
+// engine's real friction/speed constants — so it routinely fell short and
+// the striker died out before ever reaching the coin. This version works
+// backwards from actual physics: v_initial^2 = v_final^2 + 2*a*d, solved so
+// the striker still has MIN_IMPACT_SPEED left when it arrives at the target,
+// guaranteeing a real hit at any distance instead of a guess.
+const MIN_IMPACT_SPEED = 380;
+function calcAIPower(dist, noise){
+  const neededSpeed = Math.sqrt(MIN_IMPACT_SPEED*MIN_IMPACT_SPEED + 2*FRICTION_DECEL*dist);
+  const base = clamp(neededSpeed / MAX_SPEED, 0.4, 1.0);
+  const p = base + (Math.random()-0.5)*2*noise;
+  return clamp(p, 0.4, 1.0);
 }
 
+/* =====================================================
+   ICONS (SVG, not emoji — avoids the system emoji-font look)
+===================================================== */
+const ICON_SOUND_ON = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19.3 5.7a9 9 0 0 1 0 12.6"/></svg>';
+const ICON_SOUND_OFF = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><line x1="16.5" y1="9" x2="22" y2="14.5"/><line x1="22" y1="9" x2="16.5" y2="14.5"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><rect x="5" y="4" width="4.5" height="16" rx="1.4"/><rect x="14.5" y="4" width="4.5" height="16" rx="1.4"/></svg>';
 
-/* =========================================================
-   AI DIFFICULTY
-   ========================================================= */
+/* =====================================================
+   GAME STATE
+===================================================== */
+let gameState = {
+  mode: "SETUP",
+  playerCount: 2,
+  currentPlayer: 0,
+  timer: TURN_SECONDS,
+  paused: false,
+  gameOver: false,
+  soundOn: true,
+  trajOn: true
+};
+let players = [];
+let coins = [];
+let striker = null;
+let shotPoints = 0, shotFoul = false, shotTaken = false, queenPottedThisShot = false;
+let queenState = "onboard"; // onboard | pendingCover | awarded
+let queenPendingPlayer = null;
+let input = { mode: null, pull: { x: 0, y: 0 } };
+let aiTimeouts = [];
 
-function showDifficulty(aiCount){
+/* =====================================================
+   CANVAS
+===================================================== */
+const canvas = document.getElementById("board");
+const ctx = canvas.getContext("2d");
+const boardWrap = document.getElementById("boardWrap");
 
-  const oldPanel =
-    document.getElementById("difficultyOptions");
+function resizeCanvas() {
+  const size = boardWrap.clientWidth;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = size + "px";
+  canvas.style.height = size + "px";
+  const scale = (size / BOARD) * dpr;
+  ctx.setTransform(scale, 0, 0, scale, 0, 0);
+}
+window.addEventListener("resize", resizeCanvas);
+window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 100));
 
-  if(oldPanel){
-    oldPanel.remove();
-  }
-
-  selectedMode = "ai";
-
-  selectedPlayers = aiCount + 1;
-
-  selectedDifficulty = null;
-
-  const panel =
-    document.createElement("div");
-
-  panel.id = "difficultyOptions";
-  panel.className = "options show";
-
-  panel.innerHTML = `
-
-    <div class="options-title">
-      CHOOSE AI DIFFICULTY
-    </div>
-
-    <div class="option-grid">
-
-      <button
-        class="option-btn difficulty-btn"
-        data-difficulty="easy">
-        Easy
-      </button>
-
-      <button
-        class="option-btn difficulty-btn"
-        data-difficulty="medium">
-        Medium
-      </button>
-
-      <button
-        class="option-btn difficulty-btn"
-        data-difficulty="hard">
-        Hard
-      </button>
-
-    </div>
-  `;
-
-  document
-    .getElementById("aiOptions")
-    .after(panel);
-
-
-  panel
-    .querySelectorAll(".difficulty-btn")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          panel
-            .querySelectorAll(".difficulty-btn")
-            .forEach(btn => {
-
-              btn.style.background = "";
-              btn.style.color = "";
-
-            });
-
-
-          button.style.background =
-            "#b8ff3d";
-
-          button.style.color =
-            "#07120d";
-
-
-          selectedDifficulty =
-            button.dataset.difficulty;
-
-
-          createStartButton();
-
-        }
-      );
-
-    });
+function toBoard(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const s = BOARD / rect.width;
+  return { x: (clientX - rect.left) * s, y: (clientY - rect.top) * s };
 }
 
+/* =====================================================
+   UTIL
+===================================================== */
+function len(v){ return Math.hypot(v.x, v.y); }
+function norm(v){ const l=len(v)||1; return {x:v.x/l, y:v.y/l}; }
+function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>t.classList.remove("show"), 1700);
+}
+function beep(freq, dur, type){
+  if(!gameState.soundOn) return;
+  try{
+    const actx = beep._ctx || (beep._ctx = new (window.AudioContext||window.webkitAudioContext)());
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = type||"sine"; o.frequency.value = freq;
+    g.gain.value = 0.06;
+    o.connect(g); g.connect(actx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
+    o.stop(actx.currentTime + dur);
+  }catch(e){}
+}
 
-/* =========================================================
-   AI BUTTONS
-   ========================================================= */
+/* =====================================================
+   COIN SYSTEM
+===================================================== */
+function createCoins(){
+  const list = [];
+  list.push({ id:"queen", color:"queen", value:50, x:CENTER.x, y:CENTER.y, r:R_COIN, vx:0, vy:0, active:true, capturing:false, pocketed:false });
 
-document
-  .querySelectorAll("#aiOptions .option-btn")
-  .forEach((button,index) => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        showDifficulty(index + 1);
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   LOCAL BUTTONS
-   ========================================================= */
-
-document
-  .querySelectorAll("#localOptions .option-btn")
-  .forEach((button,index) => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        selectedMode = "local";
-
-        selectedPlayers = index + 2;
-
-        selectedDifficulty = null;
-
-
-        document
-          .querySelectorAll(
-            "#localOptions .option-btn"
-          )
-          .forEach(btn => {
-
-            btn.style.background = "";
-            btn.style.color = "";
-
-          });
-
-
-        button.style.background =
-          "#b8ff3d";
-
-        button.style.color =
-          "#07120d";
-
-
-        createStartButton();
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   START BUTTON
-   ========================================================= */
-
-function createStartButton(){
-
-  const oldButton =
-    document.getElementById(
-      "startCarromButton"
-    );
-
-  if(oldButton){
-    oldButton.remove();
+  const ring1 = 6, r1 = 33;
+  for(let i=0;i<ring1;i++){
+    const ang = (Math.PI*2/ring1)*i - Math.PI/2;
+    const color = i%2===0 ? "black" : "white";
+    list.push({ id:"c1_"+i, color, value: color==="black"?10:20, x:CENTER.x+Math.cos(ang)*r1, y:CENTER.y+Math.sin(ang)*r1, r:R_COIN, vx:0, vy:0, active:true, capturing:false, pocketed:false });
   }
+  const ring2 = 12, r2 = 64;
+  for(let i=0;i<ring2;i++){
+    const ang = (Math.PI*2/ring2)*i - Math.PI/2 + (Math.PI/ring2);
+    const color = i%2===0 ? "white" : "black";
+    list.push({ id:"c2_"+i, color, value: color==="black"?10:20, x:CENTER.x+Math.cos(ang)*r2, y:CENTER.y+Math.sin(ang)*r2, r:R_COIN, vx:0, vy:0, active:true, capturing:false, pocketed:false });
+  }
+  return list;
+}
 
+function remainingCounts(){
+  let q=0,b=0,w=0;
+  coins.forEach(c=>{ if(c.active && !c.pocketed){ if(c.color==="queen") q++; else if(c.color==="black") b++; else w++; } });
+  return {q,b,w};
+}
 
-  const button =
-    document.createElement("button");
+/* =====================================================
+   STRIKER SYSTEM
+===================================================== */
+function defaultStrikerPos(side){
+  const bl = BASELINES[side];
+  const mid = (bl.min+bl.max)/2;
+  return bl.get(mid);
+}
+function placeStrikerAt(side, value){
+  const bl = BASELINES[side];
+  const v = clamp(value, bl.min, bl.max);
+  const p = bl.get(v);
+  striker.x = p.x; striker.y = p.y;
+}
+function resetStriker(){
+  const side = players[gameState.currentPlayer].side;
+  const p = defaultStrikerPos(side);
+  striker = { x:p.x, y:p.y, r:R_STRIKER, vx:0, vy:0, active:true, capturing:false, pocketed:false, color:"striker" };
+}
 
-  button.id =
-    "startCarromButton";
+/* =====================================================
+   PLAYER SYSTEM
+===================================================== */
+function isHumanTurn(){
+  return !players[gameState.currentPlayer].isAI;
+}
+function buildPlayers(count, config){
+  const sides = SIDES_BY_COUNT[count];
+  const names = ["Player One","Player Two","Player Three","Player Four"];
+  const arr = [];
+  for(let i=0;i<count;i++){
+    const cfg = config[i] || { isAI:false, difficulty:"easy" };
+    arr.push({
+      id:i, name: cfg.isAI ? "AI · "+cap(cfg.difficulty) : names[i],
+      isAI: cfg.isAI, difficulty: cfg.difficulty || "easy",
+      side: sides[i], score:0
+    });
+  }
+  return arr;
+}
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
-  button.className =
-    "option-btn";
+/* =====================================================
+   AI
+===================================================== */
+function nearestPocket(pos){
+  let best=Infinity, bp=null;
+  POCKETS.forEach(pk=>{ const d=Math.hypot(pos.x-pk.x,pos.y-pk.y); if(d<best){best=d;bp=pk;} });
+  return { dist:best, pocket:bp };
+}
+// Choose which coin to target and the exact point on it the striker
+// should aim at, based on difficulty. Hard mode calculates the real
+// contact point needed to send the coin toward its nearest pocket.
+function pickAIShot(diff, activeCoins){
+  if(!activeCoins.length) return null;
+  const candidates = activeCoins.map(c=>{
+    const np = nearestPocket(c);
+    return { coin:c, pocket:np.pocket, dist:np.dist };
+  });
+  let target;
+  if(diff==="easy"){
+    target = candidates[Math.floor(Math.random()*candidates.length)];
+  } else if(diff==="medium"){
+    candidates.sort((a,b)=>a.dist-b.dist);
+    const poolSize = Math.max(2, Math.ceil(candidates.length*0.5));
+    const pool = candidates.slice(0, poolSize);
+    target = pool[Math.floor(Math.random()*pool.length)];
+  } else {
+    candidates.sort((a,b)=>(-a.dist + a.coin.value*0.4) < (-b.dist + b.coin.value*0.4) ? 1 : -1);
+    target = candidates[0];
+  }
+  const dirToPocket = norm({ x: target.pocket.x-target.coin.x, y: target.pocket.y-target.coin.y });
+  const contactR = R_COIN + R_STRIKER + 2;
+  const aimPoint = diff==="easy"
+    ? { x: target.coin.x, y: target.coin.y }
+    : { x: target.coin.x - dirToPocket.x*contactR, y: target.coin.y - dirToPocket.y*contactR };
+  return { coin: target.coin, aimPoint };
+}
 
+function scheduleAITurn(){
+  clearAITimeouts();
+  const p = players[gameState.currentPlayer];
+  const params = DIFF_PARAMS[p.difficulty] || DIFF_PARAMS.easy;
+  const bl = BASELINES[p.side];
 
-  button.style.cssText = `
-    width:100%;
-    margin-top:14px;
-    padding:16px;
-    border:0;
-    border-radius:15px;
-    background:#b8ff3d;
-    color:#07120d;
-    font-size:14px;
-    font-weight:1000;
-    cursor:pointer;
-    box-shadow:0 10px 30px rgba(184,255,61,.15);
-  `;
+  const t1 = setTimeout(()=>{
+    if(gameState.mode!=="AI_THINKING" || gameState.paused) return;
+    try{
+      const active = coins.filter(c=>c.active && !c.pocketed && !c.capturing);
+      const shot = pickAIShot(p.difficulty, active);
+      const aimPoint = shot ? shot.aimPoint : CENTER;
 
+      let placeVal;
+      if(params.placeMode==="random" || !shot){
+        placeVal = bl.min + Math.random()*(bl.max-bl.min);
+      } else {
+        const proj = bl.axis==="x" ? aimPoint.x : aimPoint.y;
+        placeVal = clamp(proj + (Math.random()-0.5)*2*params.placeNoise, bl.min, bl.max);
+      }
+      placeStrikerAt(p.side, placeVal);
 
-  let label =
-    "START CARROM";
+      // apply a FIXED lateral jitter at the target point (board units),
+      // not an angle — so long shots don't miss proportionally more
+      // than short ones the way angular error would
+      const rawDx = aimPoint.x-striker.x, rawDy = aimPoint.y-striker.y;
+      const rawDist = Math.hypot(rawDx,rawDy) || 1;
+      const dirUnit = { x: rawDx/rawDist, y: rawDy/rawDist };
+      const perp = { x: -dirUnit.y, y: dirUnit.x };
+      const jitter = (Math.random()-0.5)*2*params.posNoise;
+      const jittered = { x: aimPoint.x + perp.x*jitter, y: aimPoint.y + perp.y*jitter };
 
-
-  if(selectedMode === "ai"){
-
-    label =
-      `START — ${selectedPlayers} PLAYERS`;
-
-    if(selectedDifficulty){
-
-      label +=
-        ` • ${selectedDifficulty.toUpperCase()}`;
-
+      const dx = jittered.x-striker.x, dy = jittered.y-striker.y;
+      const dist = Math.hypot(dx,dy);
+      const ang = Math.atan2(dy,dx);
+      const power = calcAIPower(dist, params.powerNoise);
+      input.pull = { x: -Math.cos(ang)*MAX_PULL*power, y: -Math.sin(ang)*MAX_PULL*power };
+      input.mode = "aim-preview";
+    }catch(e){
+      input.pull = { x:0, y:-MAX_PULL*0.6 }; input.mode="aim-preview";
     }
 
-  }
+    const t2 = setTimeout(()=>{
+      if(gameState.mode!=="AI_THINKING" || gameState.paused) return;
+      const pull = input.pull;
+      input.mode = null;
+      doShoot(pull);
+    }, params.aimMs);
+    aiTimeouts.push(t2);
+  }, params.thinkMs);
+  aiTimeouts.push(t1);
+}
+function clearAITimeouts(){ aiTimeouts.forEach(clearTimeout); aiTimeouts=[]; }
 
-
-  if(selectedMode === "local"){
-
-    label =
-      `START — ${selectedPlayers} PLAYERS`;
-
-  }
-
-
-  button.textContent =
-    label;
-
-
-  if(
-    selectedMode === "ai" &&
-    !selectedDifficulty
-  ){
-
-    button.disabled = true;
-
-    button.style.opacity = ".45";
-
-    button.style.cursor =
-      "not-allowed";
-
-  }
-
-
-  document
-    .querySelector(".mode-section")
-    .appendChild(button);
-
-
-  button.addEventListener(
-    "click",
-    startCarrom
-  );
-
+/* =====================================================
+   TIMER
+===================================================== */
+function resetTimer(){ gameState.timer = TURN_SECONDS; updateTimerUI(); }
+function updateTimerUI(){
+  const fg = document.getElementById("timerFg");
+  const num = document.getElementById("timerNum");
+  const circumference = 163;
+  const frac = clamp(gameState.timer/TURN_SECONDS,0,1);
+  fg.setAttribute("stroke-dashoffset", (circumference*(1-frac)).toFixed(1));
+  num.textContent = Math.ceil(gameState.timer);
+  fg.style.stroke = frac<0.25 ? "#ff6a5a" : "";
 }
 
+/* =====================================================
+   INPUT (POINTER)
+===================================================== */
+canvas.addEventListener("pointerdown", onPointerDown);
+canvas.addEventListener("pointermove", onPointerMove);
+canvas.addEventListener("pointerup", onPointerUp);
+canvas.addEventListener("pointercancel", onPointerUp);
 
-/* =========================================================
-   START CARROM
-   ========================================================= */
+function currentBaseline(){ return BASELINES[players[gameState.currentPlayer].side]; }
 
-function startCarrom(){
+function onRailHit(p, side){
+  const railY = RAIL_FIXED[side];
+  const bl = BASELINES[side];
+  if(bl.axis==="x"){
+    return Math.abs(p.y-railY) < (RAIL_HALF_THICK+18) && p.x > bl.min-35 && p.x < bl.max+35;
+  } else {
+    return Math.abs(p.x-railY) < (RAIL_HALF_THICK+18) && p.y > bl.min-35 && p.y < bl.max+35;
+  }
+}
 
-  if(!selectedMode){
+function onPointerDown(e){
+  if(gameState.mode!=="READY" || gameState.paused || !isHumanTurn()) return;
+  const p = toBoard(e.clientX, e.clientY);
+  const dStriker = Math.hypot(p.x-striker.x, p.y-striker.y);
+  if(dStriker < R_STRIKER+14){
+    input.mode = "aim";
+    input.pull = {x:0,y:0};
+    canvas.setPointerCapture(e.pointerId);
+    return;
+  }
+  const side = players[gameState.currentPlayer].side;
+  if(onRailHit(p, side)){
+    input.mode = "place";
+    canvas.setPointerCapture(e.pointerId);
+    movePlaceStriker(p);
+  }
+}
+function onPointerMove(e){
+  if(!input.mode || gameState.paused) return;
+  const p = toBoard(e.clientX, e.clientY);
+  if(input.mode==="place"){ movePlaceStriker(p); }
+  else if(input.mode==="aim"){
+    let pull = { x: p.x-striker.x, y: p.y-striker.y };
+    const l = len(pull);
+    if(l>MAX_PULL){ pull.x = pull.x/l*MAX_PULL; pull.y = pull.y/l*MAX_PULL; }
+    input.pull = pull;
+    updatePowerUI(l);
+  }
+}
+function onPointerUp(e){
+  if(input.mode==="aim"){
+    const pull = input.pull;
+    input.mode = null;
+    hidePowerUI();
+    if(len(pull) > MIN_PULL){ doShoot(pull); }
+  } else {
+    input.mode = null;
+  }
+}
+function movePlaceStriker(p){
+  const bl = currentBaseline();
+  const v = bl.axis==="x" ? clamp(p.x, bl.min, bl.max) : clamp(p.y, bl.min, bl.max);
+  placeStrikerAt(players[gameState.currentPlayer].side, v);
+}
+function updatePowerUI(l){
+  const wrap = document.getElementById("powerWrap");
+  const bar = document.getElementById("powerBar");
+  wrap.classList.add("show");
+  bar.style.width = clamp(l/MAX_PULL*100,0,100)+"%";
+}
+function hidePowerUI(){ document.getElementById("powerWrap").classList.remove("show"); }
+
+/* =====================================================
+   SHOOTING
+===================================================== */
+function doShoot(pull){
+  const l = clamp(len(pull), 0, MAX_PULL);
+  if(l < 1){ return; }
+  const dir = norm({x:-pull.x, y:-pull.y});
+  const power = l/MAX_PULL;
+  striker.vx = dir.x*power*MAX_SPEED;
+  striker.vy = dir.y*power*MAX_SPEED;
+  shotPoints = 0; shotFoul = false; shotTaken = true; queenPottedThisShot = false;
+  gameState.mode = "PHYSICS_RUNNING";
+  beep(220,0.08,"triangle");
+}
+
+/* =====================================================
+   PHYSICS
+===================================================== */
+function allBodies(){
+  const arr = coins.filter(c=>c.active && !c.pocketed);
+  if(striker.active && !striker.pocketed) arr.push(striker);
+  return arr;
+}
+function updatePhysics(dt){
+  const bodies = allBodies();
+
+  bodies.forEach(b=>{
+    if(b.capturing) return;
+    b.x += b.vx*dt; b.y += b.vy*dt;
+    const speed = Math.hypot(b.vx,b.vy);
+    if(speed>0){
+      const dec = FRICTION_DECEL*dt;
+      const ns = Math.max(0, speed-dec);
+      const f = ns/speed;
+      b.vx*=f; b.vy*=f;
+      if(ns<EPS_STOP){ b.vx=0; b.vy=0; }
+    }
+  });
+
+  bodies.forEach(b=>{
+    if(b.capturing) return;
+    if(b.x-b.r < FIELD_MIN){ b.x=FIELD_MIN+b.r; b.vx=Math.abs(b.vx)*REST_WALL; }
+    if(b.x+b.r > FIELD_MAX){ b.x=FIELD_MAX-b.r; b.vx=-Math.abs(b.vx)*REST_WALL; }
+    if(b.y-b.r < FIELD_MIN){ b.y=FIELD_MIN+b.r; b.vy=Math.abs(b.vy)*REST_WALL; }
+    if(b.y+b.r > FIELD_MAX){ b.y=FIELD_MAX-b.r; b.vy=-Math.abs(b.vy)*REST_WALL; }
+  });
+
+  for(let i=0;i<bodies.length;i++){
+    for(let j=i+1;j<bodies.length;j++){
+      const a=bodies[i], b=bodies[j];
+      if(a.capturing||b.capturing) continue;
+      const dx=b.x-a.x, dy=b.y-a.y;
+      const dist=Math.hypot(dx,dy)||0.0001;
+      const minD=a.r+b.r;
+      if(dist<minD){
+        const nx=dx/dist, ny=dy/dist;
+        const overlap=(minD-dist)/2;
+        a.x-=nx*overlap; a.y-=ny*overlap;
+        b.x+=nx*overlap; b.y+=ny*overlap;
+        const ma = a.color==="striker"?1.3:1, mb = b.color==="striker"?1.3:1;
+        const rvx=b.vx-a.vx, rvy=b.vy-a.vy;
+        const velAlong = rvx*nx+rvy*ny;
+        if(velAlong<0){
+          const jimp = -(1+REST_COIN)*velAlong / (1/ma+1/mb);
+          const ix=jimp*nx, iy=jimp*ny;
+          a.vx -= ix/ma; a.vy -= iy/ma;
+          b.vx += ix/mb; b.vy += iy/mb;
+          beep(340,0.05,"square");
+        }
+      }
+    }
+  }
+
+  bodies.forEach(b=>{
+    if(b.capturing || b.pocketed) return;
+    for(const pk of POCKETS){
+      const d = Math.hypot(b.x-pk.x, b.y-pk.y);
+      if(d < POCKET_CAPTURE_R){
+        b.capturing = true;
+        b.captureStart = performance.now();
+        b.captureFrom = { x:b.x, y:b.y };
+        b.capturePocket = pk;
+        b.vx=0; b.vy=0;
+        beep(180,0.18,"sine");
+        break;
+      }
+    }
+  });
+
+  bodies.forEach(b=>{
+    if(!b.capturing) return;
+    const t = (performance.now()-b.captureStart)/1000/CAPTURE_DURATION;
+    if(t>=1){
+      b.pocketed = true; b.active=false; b.capturing=false;
+      if(b.color==="striker"){ shotFoul = true; }
+      else if(b.color==="queen"){ queenPottedThisShot = true; }
+      else { shotPoints += b.value; }
+    } else {
+      b.x = b.captureFrom.x + (b.capturePocket.x-b.captureFrom.x)*t;
+      b.y = b.captureFrom.y + (b.capturePocket.y-b.captureFrom.y)*t;
+    }
+  });
+}
+function allStopped(){
+  const bodies = allBodies();
+  for(const b of bodies){
+    if(b.capturing) return false;
+    if(Math.hypot(b.vx,b.vy) > EPS_STOP) return false;
+  }
+  return true;
+}
+
+/* =====================================================
+   TURN RESOLUTION
+===================================================== */
+function respawnQueen(){
+  const q = coins.find(c=>c.id==="queen");
+  if(q){ q.active=true; q.pocketed=false; q.capturing=false; q.x=CENTER.x; q.y=CENTER.y; q.vx=0; q.vy=0; }
+}
+function resolveTurnEnd(){
+  const player = players[gameState.currentPlayer];
+  let potted = false;
+
+  if(!shotFoul){
+    player.score += shotPoints;
+    if(shotPoints>0) potted = true;
+    const plainPot = shotPoints>0 && !queenPottedThisShot && queenState!=="pendingCover";
+
+    // resolve a queen that was left pending cover from the previous shot
+    if(queenState==="pendingCover"){
+      if(shotPoints>0){
+        players[queenPendingPlayer].score += QUEEN_VALUE;
+        toast("Queen covered! +50");
+      } else {
+        respawnQueen();
+        toast("Queen not covered — back on the board");
+      }
+      queenState = "onboard";
+      queenPendingPlayer = null;
+    }
+
+    // queen potted just now — either covered in the same stroke, or pending
+    if(queenPottedThisShot){
+      if(shotPoints>0){
+        player.score += QUEEN_VALUE;
+        toast("Queen covered! +50");
+      } else {
+        queenState = "pendingCover";
+        queenPendingPlayer = gameState.currentPlayer;
+        toast("Queen potted — cover it with a black or white next!");
+      }
+      potted = true;
+    }
+    if(plainPot && isHumanTurn()){ toast("Nice shot — go again!"); }
+  } else {
+    toast("Striker pocketed — turn forfeited");
+    striker.pocketed = false;
+    player.score = Math.max(0, player.score - FOUL_PENALTY);
+    // a pending queen isn't covered by a foul
+    if(queenState==="pendingCover"){
+      respawnQueen();
+      queenState = "onboard";
+      queenPendingPlayer = null;
+      toast("Foul — Queen returned to the board");
+    }
+  }
+
+  updateScoresUI();
+  updatePillsUI();
+
+  // board fully cleared -> highest score wins, regardless of player count.
+  // if the queen is still pending cover with nothing left to cover it,
+  // it counts for whoever pocketed it.
+  const {q,b,w} = remainingCounts();
+  if(q===0 && b===0 && w===0){
+    if(queenState==="pendingCover"){
+      players[queenPendingPlayer].score += QUEEN_VALUE;
+      queenState = "awarded";
+      updateScoresUI();
+    }
+    const winner = players.reduce((best,p)=> p.score>best.score ? p : best, players[0]);
+    endGame(winner);
     return;
   }
 
-  if(
-    selectedMode === "ai" &&
-    !selectedDifficulty
-  ){
+  // first to 180 wins — identical for 2, 3 and 4 player matches
+  if(player.score >= WIN_SCORE){
+    endGame(player);
     return;
   }
 
-
-  localStorage.setItem(
-    "maxgame_carrom_mode",
-    selectedMode
-  );
-
-
-  localStorage.setItem(
-    "maxgame_carrom_players",
-    String(selectedPlayers)
-  );
-
-
-  if(selectedDifficulty){
-
-    localStorage.setItem(
-      "maxgame_carrom_difficulty",
-      selectedDifficulty
-    );
-
-  }else{
-
-    localStorage.removeItem(
-      "maxgame_carrom_difficulty"
-    );
-
+  // real carrom rule: potting a coin earns another turn for the same player
+  if(potted && !shotFoul){
+    resetStriker();
+    resetTimer();
+    updateActivePlayerUI();
+    const p = players[gameState.currentPlayer];
+    if(p.isAI){
+      gameState.mode = "AI_THINKING";
+      scheduleAITurn();
+    } else {
+      gameState.mode = "READY";
+    }
+    return;
   }
 
-
-  showGameReady();
-
+  nextPlayer();
+}
+function nextPlayer(){
+  gameState.currentPlayer = (gameState.currentPlayer+1) % gameState.playerCount;
+  resetStriker();
+  resetTimer();
+  updateActivePlayerUI();
+  const p = players[gameState.currentPlayer];
+  if(p.isAI){
+    gameState.mode = "AI_THINKING";
+    scheduleAITurn();
+  } else {
+    gameState.mode = "READY";
+  }
+}
+function forceEndTurn(){
+  shotPoints=0; shotFoul=false;
+  toast("Time's up!");
+  nextPlayer();
+}
+function endGame(winner){
+  gameState.mode = "GAME_OVER";
+  gameState.gameOver = true;
+  document.getElementById("winnerName").textContent = winner.name;
+  document.getElementById("winnerScore").textContent = winner.score + " points";
+  document.getElementById("winOverlay").classList.remove("hidden");
+  beep(520,0.3,"triangle");
 }
 
+/* =====================================================
+   MENU / MODALS
+===================================================== */
+function show(id){ document.getElementById(id).classList.remove("hidden"); }
+function hide(id){ document.getElementById(id).classList.add("hidden"); }
 
-/* =========================================================
-   READY SCREEN
-   ========================================================= */
+document.getElementById("navMenu").onclick = ()=> show("menuOverlay");
+document.getElementById("menuClose").onclick = ()=> hide("menuOverlay");
+document.getElementById("navRules").onclick = ()=> show("rulesOverlay");
+document.getElementById("setupRulesBtn").onclick = ()=> show("rulesOverlay");
+document.getElementById("menuRules").onclick = ()=>{ hide("menuOverlay"); show("rulesOverlay"); };
+document.getElementById("rulesClose").onclick = ()=> hide("rulesOverlay");
 
-function showGameReady(){
+document.getElementById("navRestart").onclick = ()=> show("restartOverlay");
+document.getElementById("menuRestart").onclick = ()=>{ hide("menuOverlay"); show("restartOverlay"); };
+document.getElementById("restartCancel").onclick = ()=> hide("restartOverlay");
+document.getElementById("restartConfirm").onclick = ()=>{ hide("restartOverlay"); restartGame(); };
+document.getElementById("pauseRestart").onclick = ()=>{ hide("pauseOverlay"); show("restartOverlay"); };
+document.getElementById("winRestart").onclick = ()=>{ hide("winOverlay"); restartGame(); };
 
-  const page =
-    document.querySelector(".carrom-page");
+document.getElementById("backBtn").onclick = ()=> show("exitOverlay");
+document.getElementById("menuExit").onclick = ()=>{ hide("menuOverlay"); show("exitOverlay"); };
+document.getElementById("pauseExit").onclick = ()=>{ hide("pauseOverlay"); show("exitOverlay"); };
+document.getElementById("winExit").onclick = ()=> doExit();
+document.getElementById("exitCancel").onclick = ()=> hide("exitOverlay");
+document.getElementById("exitConfirm").onclick = ()=> doExit();
+function doExit(){ window.location.href = "index.html"; }
 
+document.getElementById("navUndo").onclick = ()=> toast("Undo isn't available yet");
 
-  const modeText =
-    selectedMode === "ai"
-      ? "AI GAME"
-      : "LOCAL MULTIPLAYER";
+document.getElementById("pauseBtn").onclick = ()=>{
+  if(gameState.gameOver) return;
+  gameState.paused = true;
+  show("pauseOverlay");
+};
+document.getElementById("resumeBtn").onclick = ()=>{
+  gameState.paused = false;
+  hide("pauseOverlay");
+};
 
-
-  const difficultyText =
-    selectedDifficulty
-      ? `
-        <div>
-          Difficulty:
-          <strong>
-            ${selectedDifficulty.toUpperCase()}
-          </strong>
-        </div>
-      `
-      : "";
-
-
-  page.innerHTML = `
-
-    <header class="carrom-header">
-
-      <button
-        class="back-btn"
-        id="backToModes"
-        type="button">
-        ← Back
-      </button>
-
-      <div class="xi-balance">
-        <span class="xi-icon">XI</span>
-        <strong>0</strong>
-      </div>
-
-    </header>
-
-
-    <section
-      style="
-        min-height:70vh;
-        display:grid;
-        place-items:center;
-        text-align:center;
-      ">
-
-      <div>
-
-        <div
-          style="
-            width:90px;
-            height:90px;
-            margin:auto;
-            display:grid;
-            place-items:center;
-            border-radius:28px;
-            background:rgba(184,255,61,.10);
-            border:1px solid rgba(184,255,61,.20);
-            font-size:44px;
-          ">
-          🎯
-        </div>
-
-
-        <div
-          style="
-            margin-top:22px;
-            color:#b8ff3d;
-            font-size:10px;
-            font-weight:900;
-            letter-spacing:1.5px;
-          ">
-          ${modeText}
-        </div>
-
-
-        <h1
-          style="
-            margin-top:8px;
-            font-size:40px;
-            line-height:1;
-          ">
-          CARROM READY
-        </h1>
-
-
-        <div
-          style="
-            margin-top:18px;
-            color:#9aa89f;
-            line-height:2;
-            font-size:14px;
-          ">
-
-          <div>
-            Players:
-            <strong>
-              ${selectedPlayers}
-            </strong>
-          </div>
-
-          ${difficultyText}
-
-        </div>
-
-
-        <button
-          id="launchGame"
-          style="
-            margin-top:25px;
-            width:100%;
-            max-width:280px;
-            padding:16px 22px;
-            border:0;
-            border-radius:15px;
-            background:#b8ff3d;
-            color:#07120d;
-            font-size:14px;
-            font-weight:900;
-            cursor:pointer;
-          ">
-          START GAME →
-        </button>
-
-      </div>
-
-    </section>
-  `;
-
-
-  document
-    .getElementById("backToModes")
-    .addEventListener(
-      "click",
-      () => location.reload()
-    );
-
-
-  document
-    .getElementById("launchGame")
-    .addEventListener(
-      "click",
-      launchRealCarrom
-    );
-
+document.getElementById("soundBtn").onclick = toggleSound;
+document.getElementById("soundSwitch").onclick = toggleSound;
+function toggleSound(){
+  gameState.soundOn = !gameState.soundOn;
+  document.getElementById("soundBtn").innerHTML = gameState.soundOn ? ICON_SOUND_ON : ICON_SOUND_OFF;
+  document.getElementById("soundSwitch").classList.toggle("on", gameState.soundOn);
 }
-
-
-/* =========================================================
-   REAL CARROM
-   ========================================================= */
-
-function launchRealCarrom(){
-
-  const page =
-    document.querySelector(".carrom-page");
-
-
-  const players =
-    Number(
-      localStorage.getItem(
-        "maxgame_carrom_players"
-      )
-    ) || 2;
-
-
-  const mode =
-    localStorage.getItem(
-      "maxgame_carrom_mode"
-    ) || "local";
-
-
-  const difficulty =
-    localStorage.getItem(
-      "maxgame_carrom_difficulty"
-    ) || "easy";
-
-
-  page.innerHTML = `
-
-    <div class="game-screen">
-
-
-      <!-- GAME HEADER -->
-
-      <div
-        class="game-top"
-        id="playerHeader">
-
-
-        <div
-          class="player-card active"
-          id="playerOneCard">
-
-          <div class="player-inner">
-
-            <div class="player-avatar">
-              P1
-            </div>
-
-            <div class="player-info">
-
-              <div class="player-name">
-                PLAYER ONE
-              </div>
-
-              <div class="player-score">
-                <span id="playerScore">
-                  0
-                </span>
-              </div>
-
-              <div class="player-sub">
-                YOU
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- TIMER -->
-
-        <div
-          class="timer-ring"
-          id="timerRing">
-
-          <div class="timer-content">
-
-            <span class="timer-label">
-              TIME LEFT
-            </span>
-
-            <span
-              class="timer-number"
-              id="gameTimer">
-              20
-            </span>
-
-            <span class="timer-sec">
-              SEC
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div
-          class="player-card"
-          id="playerTwoCard">
-
-          <div class="player-inner">
-
-            <div class="player-avatar">
-              ${mode === "ai" ? "AI" : "P2"}
-            </div>
-
-            <div class="player-info">
-
-              <div class="player-name">
-                ${mode === "ai" ? "AI PLAYER" : "PLAYER TWO"}
-              </div>
-
-              <div class="player-score">
-                <span id="aiScore">
-                  0
-                </span>
-              </div>
-
-              <div class="player-sub">
-                ${mode === "ai" ? difficulty.toUpperCase() : "LOCAL"}
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-      </div>
-
-
-      <!-- CONTROLS -->
-
-      <div class="game-controls">
-
-        <button
-          id="exitGame"
-          class="game-control-btn"
-          type="button">
-          ← EXIT
-        </button>
-
-        <button
-          id="pauseGame"
-          class="game-control-btn"
-          type="button">
-          ⏸ PAUSE
-        </button>
-
-        <button
-          id="rulesButton"
-          class="game-control-btn"
-          type="button">
-          📖 RULES
-        </button>
-
-      </div>
-
-
-      <!-- SCORE LEGEND -->
-
-      <div class="score-legend">
-
-        <div class="legend-item">
-
-          <span
-            class="legend-coin"
-            style="background:#d94b58;">
-          </span>
-
-          50 × Queen
-
-        </div>
-
-
-        <div class="legend-item">
-
-          <span
-            class="legend-coin"
-            style="background:#171717;">
-          </span>
-
-          10 × Black
-
-        </div>
-
-
-        <div class="legend-item">
-
-          <span
-            class="legend-coin"
-            style="background:#f4ead7;">
-          </span>
-
-          20 × White
-
-        </div>
-
-      </div>
-
-
-      <!-- BOARD -->
-
-      <div class="game-board-wrap">
-
-        <div class="board-frame">
-
-          <canvas
-            id="carromCanvas">
-          </canvas>
-
-        </div>
-
-      </div>
-
-
-      <!-- TURN -->
-
-      <div class="turn-panel">
-
-        <div class="turn-label">
-          CURRENT TURN
-        </div>
-
-        <div
-          class="turn-player"
-          id="turnPlayer">
-          PLAYER ONE
-        </div>
-
-      </div>
-
-
-      <!-- POWER -->
-
-      <div class="power-bar">
-
-        <div
-          id="powerFill"
-          class="power-fill">
-        </div>
-
-      </div>
-
-
-      <div class="game-hint">
-        Pull the striker backwards and release to shoot
-      </div>
-
-
-      <!-- RULES -->
-
-      <div
-        id="rulesPanel"
-        class="rules-panel">
-
-        <h3>
-          📖 CARROM RULES
-        </h3>
-
-
-        <div class="rule-row">
-          <span>Black coin</span>
-          <strong>10 points</strong>
-        </div>
-
-
-        <div class="rule-row">
-          <span>White coin</span>
-          <strong>20 points</strong>
-        </div>
-
-
-        <div class="rule-row">
-          <span>Queen</span>
-          <strong>50 points</strong>
-        </div>
-
-
-        <div class="rule-row">
-          <span>Winning score</span>
-          <strong>180 points</strong>
-        </div>
-
-
-        <div class="rule-row">
-          <span>Turn timer</span>
-          <strong>20 seconds</strong>
-        </div>
-
-
-        <div class="rule-row">
-          <span>Power</span>
-          <strong>Pull farther = stronger shot</strong>
-        </div>
-
-      </div>
-
-
-      <!-- BOTTOM BAR -->
-
-      <div class="bottom-game-bar">
-
-        <button
-          id="menuGame"
-          class="bottom-game-btn"
-          type="button">
-
-          <span>☰</span>
-          <span>MENU</span>
-
-        </button>
-
-
-        <button
-          id="bottomRules"
-          class="bottom-game-btn"
-          type="button">
-
-          <span>📖</span>
-          <span>RULES</span>
-
-        </button>
-
-
-        <button
-          id="restartGame"
-          class="bottom-game-btn restart"
-          type="button">
-
-          <span>⟳</span>
-          <span>RESTART</span>
-
-        </button>
-
-
-        <button
-          id="undoGame"
-          class="bottom-game-btn"
-          type="button">
-
-          <span>↶</span>
-          <span>UNDO</span>
-
-        </button>
-
-
-        <button
-          id="chatGame"
-          class="bottom-game-btn"
-          type="button">
-
-          <span>💬</span>
-          <span>CHAT</span>
-
-        </button>
-
-      </div>
-
-
-    </div>
-
-
-    <!-- PAUSE -->
-
-    <div
-      id="pauseOverlay"
-      class="pause-overlay">
-
-      <div class="pause-card">
-
-        <div class="pause-icon">
-          ⏸
-        </div>
-
-        <h2>
-          GAME PAUSED
-        </h2>
-
-        <p>
-          Take your time. Your board is waiting.
-        </p>
-
-        <button
-          id="resumeGame"
-          class="resume-btn">
-          RESUME GAME
-        </button>
-
-      </div>
-
-    </div>
-
-  `;
-
-
-  /* =======================================================
-     PLAYER HEADER FOR 3 / 4 PLAYERS
-     ======================================================= */
-
-  const header =
-    document.getElementById(
-      "playerHeader"
-    );
-
-
-  if(players >= 3){
-
-    const playerThree =
-      document.createElement("div");
-
-    playerThree.className =
-      "player-card";
-
-    playerThree.id =
-      "playerThreeCard";
-
-    playerThree.innerHTML = `
-
-      <div class="player-inner">
-
-        <div class="player-avatar">
-          P3
-        </div>
-
-        <div class="player-info">
-
-          <div class="player-name">
-            PLAYER THREE
-          </div>
-
-          <div class="player-score">
-            <span id="playerThreeScore">
-              0
-            </span>
-          </div>
-
-          <div class="player-sub">
-            LOCAL
-          </div>
-
-        </div>
-
-      </div>
-
-    `;
-
-
-    header.insertBefore(
-      playerThree,
-      header.querySelector(
-        "#timerRing"
-      )
-    );
-
-  }
-
-
-  if(players >= 4){
-
-    const playerFour =
-      document.createElement("div");
-
-    playerFour.className =
-      "player-card";
-
-    playerFour.id =
-      "playerFourCard";
-
-    playerFour.innerHTML = `
-
-      <div class="player-inner">
-
-        <div class="player-avatar">
-          P4
-        </div>
-
-        <div class="player-info">
-
-          <div class="player-name">
-            PLAYER FOUR
-          </div>
-
-          <div class="player-score">
-            <span id="playerFourScore">
-              0
-            </span>
-          </div>
-
-          <div class="player-sub">
-            LOCAL
-          </div>
-
-        </div>
-
-      </div>
-
-    `;
-
-
-    header.appendChild(
-      playerFour
-    );
-
-  }
-
-
-  /* =======================================================
-     BUTTONS
-     ======================================================= */
-
-  const rulesPanel =
-    document.getElementById(
-      "rulesPanel"
-    );
-
-
-  function toggleRules(){
-
-    rulesPanel.classList.toggle(
-      "show"
-    );
-
-  }
-
-
-  document
-    .getElementById("rulesButton")
-    .addEventListener(
-      "click",
-      toggleRules
-    );
-
-
-  document
-    .getElementById("bottomRules")
-    .addEventListener(
-      "click",
-      toggleRules
-    );
-
-
-  document
-    .getElementById("exitGame")
-    .addEventListener(
-      "click",
-      () => {
-        location.reload();
-      }
-    );
-
-
-  document
-    .getElementById("menuGame")
-    .addEventListener(
-      "click",
-      () => {
-        location.reload();
-      }
-    );
-
-
-  document
-    .getElementById("restartGame")
-    .addEventListener(
-      "click",
-      () => {
-        launchRealCarrom();
-      }
-    );
-
-
-  document
-    .getElementById("undoGame")
-    .addEventListener(
-      "click",
-      () => {
-
-        resetStriker();
-
-      }
-    );
-
-
-  document
-    .getElementById("chatGame")
-    .addEventListener(
-      "click",
-      () => {
-
-        alert(
-          "Chat will be connected with multiplayer."
-        );
-
-      }
-    );
-
-
-  /* =======================================================
-     PAUSE
-     ======================================================= */
-
-  let paused = false;
-
-
-  const pauseOverlay =
-    document.getElementById(
-      "pauseOverlay"
-    );
-
-
-  document
-    .getElementById("pauseGame")
-    .addEventListener(
-      "click",
-      () => {
-
-        paused = true;
-
-        pauseOverlay.classList.add(
-          "show"
-        );
-
-      }
-    );
-
-
-  document
-    .getElementById("resumeGame")
-    .addEventListener(
-      "click",
-      () => {
-
-        paused = false;
-
-        pauseOverlay.classList.remove(
-          "show"
-        );
-
-      }
-    );
-
-
-  /* =======================================================
-     CANVAS
-     ======================================================= */
-
-  const canvas =
-    document.getElementById(
-      "carromCanvas"
-    );
-
-  const ctx =
-    canvas.getContext("2d");
-
-
-  const size = 700;
-
-  canvas.width = size;
-  canvas.height = size;
-
-
-  const board = {
-    x:35,
-    y:35,
-    w:630,
-    h:630
+document.getElementById("trajSwitch").onclick = ()=>{
+  gameState.trajOn = !gameState.trajOn;
+  document.getElementById("trajSwitch").classList.toggle("on", gameState.trajOn);
+};
+document.getElementById("soundBtn").innerHTML = ICON_SOUND_ON;
+document.getElementById("pauseBtn").innerHTML = ICON_PAUSE;
+
+/* =====================================================
+   SETUP MODAL
+===================================================== */
+let setupCount = 2;
+let setupConfig = [ {isAI:false}, {isAI:true,difficulty:"easy"}, {isAI:true,difficulty:"easy"}, {isAI:true,difficulty:"easy"} ];
+
+document.querySelectorAll("#countRow .chip").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll("#countRow .chip").forEach(b=>b.classList.remove("on"));
+    btn.classList.add("on");
+    setupCount = parseInt(btn.dataset.count,10);
+    renderSlots();
   };
+});
 
-
-  const pockets = [
-
-    [board.x,board.y],
-
-    [
-      board.x + board.w,
-      board.y
-    ],
-
-    [
-      board.x,
-      board.y + board.h
-    ],
-
-    [
-      board.x + board.w,
-      board.y + board.h
-    ]
-
-  ];
-
-
-  let score = 0;
-  let aiScore = 0;
-
-  let timeLeft = 20;
-
-  let aiming = false;
-  let dragging = false;
-
-  let mouseX =
-    size / 2;
-
-  let mouseY =
-    board.y +
-    board.h -
-    85;
-
-
-  let striker = {
-
-    x:size / 2,
-
-    y:
-      board.y +
-      board.h -
-      85,
-
-    r:24,
-
-    vx:0,
-
-    vy:0,
-
-    moving:false
-
-  };
-
-
-  const pieces = [];
-
-
-  /* =======================================================
-     PIECES
-     ======================================================= */
-
-  function addPiece(
-    x,
-    y,
-    type
-  ){
-
-    pieces.push({
-
-      x:x,
-
-      y:y,
-
-      r:16,
-
-      type:type,
-
-      vx:0,
-
-      vy:0,
-
-      moving:false,
-
-      pocketed:false
-
-    });
-
+function renderSlots(){
+  const c = document.getElementById("slotsContainer");
+  c.innerHTML = "";
+  const names = ["Player One","Player Two","Player Three","Player Four"];
+  for(let i=0;i<setupCount;i++){
+    const row = document.createElement("div");
+    row.className = "slotrow";
+    if(i===0){
+      row.innerHTML = `<div class="lbl">${names[0]} (You)</div><div class="slotsel"><span class="chip on">Human</span></div>`;
+      c.appendChild(row);
+      continue;
+    }
+    const cfg = setupConfig[i];
+    const diffs = ["easy","medium","hard"];
+    row.innerHTML = `<div class="lbl">${names[i]}</div><div class="slotsel">
+      <button class="chip ${!cfg.isAI?'on':''}" data-i="${i}" data-type="human">Human</button>
+      ${diffs.map(d=>`<button class="chip ${cfg.isAI && cfg.difficulty===d?'on':''}" data-i="${i}" data-type="ai" data-diff="${d}">AI ${cap(d)}</button>`).join("")}
+    </div>`;
+    c.appendChild(row);
   }
-
-
-  /* =======================================================
-     CENTER FORMATION
-     ======================================================= */
-
-  addPiece(
-    350,
-    350,
-    "queen"
-  );
-
-
-  const formation = [
-
-    [350,315,"white"],
-
-    [350,385,"white"],
-
-    [315,350,"black"],
-
-    [385,350,"black"],
-
-    [325,325,"black"],
-
-    [375,325,"white"],
-
-    [325,375,"white"],
-
-    [375,375,"black"],
-
-    [340,340,"white"],
-
-    [360,340,"black"],
-
-    [340,360,"black"],
-
-    [360,360,"white"]
-
-  ];
-
-
-  formation.forEach(
-    p => addPiece(...p)
-  );
-
-
-  /* =======================================================
-     BOARD DRAWING
-     ======================================================= */
-
-  function drawBoard(){
-
-    ctx.clearRect(
-      0,
-      0,
-      size,
-      size
-    );
-
-
-    /* Outer wood */
-
-    const wood =
-      ctx.createLinearGradient(
-        0,
-        0,
-        size,
-        size
-      );
-
-    wood.addColorStop(
-      0,
-      "#542a12"
-    );
-
-    wood.addColorStop(
-      .25,
-      "#a8652d"
-    );
-
-    wood.addColorStop(
-      .5,
-      "#c0833c"
-    );
-
-    wood.addColorStop(
-      .75,
-      "#75401c"
-    );
-
-    wood.addColorStop(
-      1,
-      "#32170a"
-    );
-
-
-    ctx.fillStyle =
-      wood;
-
-    ctx.fillRect(
-      0,
-      0,
-      size,
-      size
-    );
-
-
-    /* Inner wood frame */
-
-    ctx.fillStyle =
-      "#bd7d39";
-
-    ctx.fillRect(
-      board.x,
-      board.y,
-      board.w,
-      board.h
-    );
-
-
-    /* Playing surface */
-
-    const surface =
-      ctx.createRadialGradient(
-        size/2,
-        size/2,
-        20,
-        size/2,
-        size/2,
-        500
-      );
-
-    surface.addColorStop(
-      0,
-      "#f0c77e"
-    );
-
-    surface.addColorStop(
-      .55,
-      "#e5b86c"
-    );
-
-    surface.addColorStop(
-      1,
-      "#dca75b"
-    );
-
-
-    ctx.fillStyle =
-      surface;
-
-    ctx.fillRect(
-      board.x + 28,
-      board.y + 28,
-      board.w - 56,
-      board.h - 56
-    );
-
-
-    /* Inner border */
-
-    ctx.strokeStyle =
-      "#7d3b1e";
-
-    ctx.lineWidth = 5;
-
-    ctx.strokeRect(
-      board.x + 70,
-      board.y + 70,
-      board.w - 140,
-      board.h - 140
-    );
-
-
-    /* Diagonal lines */
-
-    ctx.strokeStyle =
-      "rgba(94,45,23,.75)";
-
-    ctx.lineWidth = 2;
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      board.x + 145,
-      board.y + 145
-    );
-
-    ctx.lineTo(
-      board.x + board.w - 145,
-      board.y + board.h - 145
-    );
-
-    ctx.moveTo(
-      board.x + board.w - 145,
-      board.y + 145
-    );
-
-    ctx.lineTo(
-      board.x + 145,
-      board.y + board.h - 145
-    );
-
-    ctx.stroke();
-
-
-    /* Baselines */
-
-    ctx.strokeStyle =
-      "#8c3f20";
-
-    ctx.lineWidth = 4;
-
-
-    function baseline(x1,y1,x2,y2){
-
-      ctx.beginPath();
-
-      ctx.moveTo(
-        x1,
-        y1
-      );
-
-      ctx.lineTo(
-        x2,
-        y2
-      );
-
-      ctx.stroke();
-
-
-      ctx.fillStyle =
-        "#d64a37";
-
-
-      ctx.beginPath();
-
-      ctx.arc(
-        x1,
-        y1,
-        11,
-        0,
-        Math.PI*2
-      );
-
-      ctx.fill();
-
-
-      ctx.beginPath();
-
-      ctx.arc(
-        x2,
-        y2,
-        11,
-        0,
-        Math.PI*2
-      );
-
-      ctx.fill();
-
-    }
-
-
-    baseline(
-      board.x + 180,
-      board.y + 125,
-      board.x + board.w - 180,
-      board.y + 125
-    );
-
-
-    baseline(
-      board.x + 180,
-      board.y + board.h - 125,
-      board.x + board.w - 180,
-      board.y + board.h - 125
-    );
-
-
-    baseline(
-      board.x + 125,
-      board.y + 180,
-      board.x + 125,
-      board.y + board.h - 180
-    );
-
-
-    baseline(
-      board.x + board.w - 125,
-      board.y + 180,
-      board.x + board.w - 125,
-      board.y + board.h - 180
-    );
-
-
-    /* Center circle */
-
-    ctx.beginPath();
-
-    ctx.arc(
-      size/2,
-      size/2,
-      58,
-      0,
-      Math.PI*2
-    );
-
-    ctx.strokeStyle =
-      "#8d4221";
-
-    ctx.lineWidth = 3;
-
-    ctx.stroke();
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-      size/2,
-      size/2,
-      7,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fillStyle =
-      "#d94b58";
-
-    ctx.fill();
-
-
-    /* Pockets */
-
-    pockets.forEach(
-      ([x,y]) => {
-
-        const gradient =
-          ctx.createRadialGradient(
-            x - 7,
-            y - 7,
-            3,
-            x,
-            y,
-            35
-          );
-
-        gradient.addColorStop(
-          0,
-          "#050403"
-        );
-
-        gradient.addColorStop(
-          1,
-          "#1c110b"
-        );
-
-
-        ctx.beginPath();
-
-        ctx.arc(
-          x,
-          y,
-          32,
-          0,
-          Math.PI*2
-        );
-
-        ctx.fillStyle =
-          gradient;
-
-        ctx.fill();
-
-      }
-    );
-
-
-    /* Coins */
-
-    pieces.forEach(
-      piece => {
-
-        if(piece.pocketed){
-          return;
-        }
-
-
-        const gradient =
-          ctx.createRadialGradient(
-            piece.x - 5,
-            piece.y - 5,
-            2,
-            piece.x,
-            piece.y,
-            piece.r
-          );
-
-
-        if(piece.type === "black"){
-
-          gradient.addColorStop(
-            0,
-            "#686868"
-          );
-
-          gradient.addColorStop(
-            .35,
-            "#272727"
-          );
-
-          gradient.addColorStop(
-            1,
-            "#090909"
-          );
-
-        }
-
-
-        if(piece.type === "white"){
-
-          gradient.addColorStop(
-            0,
-            "#ffffff"
-          );
-
-          gradient.addColorStop(
-            .4,
-            "#f4ead7"
-          );
-
-          gradient.addColorStop(
-            1,
-            "#cfc2a8"
-          );
-
-        }
-
-
-        if(piece.type === "queen"){
-
-          gradient.addColorStop(
-            0,
-            "#ff858b"
-          );
-
-          gradient.addColorStop(
-            .4,
-            "#df4652"
-          );
-
-          gradient.addColorStop(
-            1,
-            "#941f2d"
-          );
-
-        }
-
-
-        ctx.beginPath();
-
-        ctx.arc(
-          piece.x,
-          piece.y,
-          piece.r,
-          0,
-          Math.PI*2
-        );
-
-        ctx.fillStyle =
-          gradient;
-
-        ctx.fill();
-
-
-        ctx.strokeStyle =
-          "rgba(0,0,0,.42)";
-
-        ctx.lineWidth = 2;
-
-        ctx.stroke();
-
-      }
-    );
-
-
-    /* Striker shadow */
-
-    ctx.beginPath();
-
-    ctx.arc(
-      striker.x + 2,
-      striker.y + 3,
-      striker.r + 2,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fillStyle =
-      "rgba(0,0,0,.25)";
-
-    ctx.fill();
-
-
-    /* Striker */
-
-    const strikerGradient =
-      ctx.createRadialGradient(
-        striker.x - 7,
-        striker.y - 7,
-        3,
-        striker.x,
-        striker.y,
-        striker.r
-      );
-
-
-    strikerGradient.addColorStop(
-      0,
-      "#ffffff"
-    );
-
-    strikerGradient.addColorStop(
-      .5,
-      "#f1e6d3"
-    );
-
-    strikerGradient.addColorStop(
-      1,
-      "#b99b6c"
-    );
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-      striker.x,
-      striker.y,
-      striker.r,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fillStyle =
-      strikerGradient;
-
-    ctx.fill();
-
-
-    ctx.strokeStyle =
-      "#78431f";
-
-    ctx.lineWidth = 4;
-
-    ctx.stroke();
-
-
-    /* Aim line */
-
-    if(
-      aiming &&
-      !striker.moving
-    ){
-
-      ctx.beginPath();
-
-      ctx.moveTo(
-        striker.x,
-        striker.y
-      );
-
-      ctx.lineTo(
-        mouseX,
-        mouseY
-      );
-
-      ctx.strokeStyle =
-        "rgba(255,255,255,.75)";
-
-      ctx.lineWidth = 3;
-
-      ctx.setLineDash([
-        9,
-        8
-      ]);
-
-      ctx.stroke();
-
-      ctx.setLineDash([]);
-
-
-      /* Aim arrow */
-
-      const angle =
-        Math.atan2(
-          striker.y - mouseY,
-          striker.x - mouseX
-        );
-
-
-      const arrowLength = 18;
-
-
-      ctx.beginPath();
-
-      ctx.moveTo(
-        striker.x,
-        striker.y
-      );
-
-      ctx.lineTo(
-        striker.x +
-        Math.cos(angle) *
-        arrowLength,
-
-        striker.y +
-        Math.sin(angle) *
-        arrowLength
-      );
-
-      ctx.strokeStyle =
-        "#e5a52f";
-
-      ctx.lineWidth = 6;
-
-      ctx.stroke();
-
-    }
-
-  }
-
-
-  /* =======================================================
-     PHYSICS
-     ======================================================= */
-
-  function updatePhysics(){
-
-    if(paused){
-      return;
-    }
-
-
-    let somethingMoving =
-      false;
-
-
-    pieces.forEach(
-      piece => {
-
-        if(piece.pocketed){
-          return;
-        }
-
-
-        piece.x += piece.vx;
-        piece.y += piece.vy;
-
-
-        piece.vx *= .985;
-        piece.vy *= .985;
-
-
-        if(
-          Math.abs(piece.vx) > .05 ||
-          Math.abs(piece.vy) > .05
-        ){
-
-          somethingMoving = true;
-
-        }
-
-
-        const left =
-          board.x +
-          28 +
-          piece.r;
-
-        const right =
-          board.x +
-          board.w -
-          28 -
-          piece.r;
-
-        const top =
-          board.y +
-          28 +
-          piece.r;
-
-        const bottom =
-          board.y +
-          board.h -
-          28 -
-          piece.r;
-
-
-        if(piece.x < left){
-
-          piece.x = left;
-
-          piece.vx *= -.85;
-
-        }
-
-
-        if(piece.x > right){
-
-          piece.x = right;
-
-          piece.vx *= -.85;
-
-        }
-
-
-        if(piece.y < top){
-
-          piece.y = top;
-
-          piece.vy *= -.85;
-
-        }
-
-
-        if(piece.y > bottom){
-
-          piece.y = bottom;
-
-          piece.vy *= -.85;
-
-        }
-
-
-        /* Pocket */
-
-        pockets.forEach(
-          ([px,py]) => {
-
-            const dx =
-              piece.x - px;
-
-            const dy =
-              piece.y - py;
-
-            const distance =
-              Math.sqrt(
-                dx*dx +
-                dy*dy
-              );
-
-
-            if(
-              distance < 30
-            ){
-
-              if(piece.pocketed){
-                return;
-              }
-
-
-              piece.pocketed =
-                true;
-
-
-              if(
-                piece.type === "black"
-              ){
-
-                score += 10;
-
-              }
-
-
-              if(
-                piece.type === "white"
-              ){
-
-                score += 20;
-
-              }
-
-
-              if(
-                piece.type === "queen"
-              ){
-
-                score += 50;
-
-              }
-
-
-              const scoreElement =
-                document.getElementById(
-                  "playerScore"
-                );
-
-
-              if(scoreElement){
-
-                scoreElement.textContent =
-                  score;
-
-              }
-
-
-              if(score >= 180){
-
-                document.getElementById(
-                  "turnPlayer"
-                ).textContent =
-                  "PLAYER ONE WINS!";
-
-              }
-
-            }
-
-          }
-        );
-
-      }
-    );
-
-
-    /* Striker */
-
-    striker.x += striker.vx;
-    striker.y += striker.vy;
-
-
-    striker.vx *= .985;
-    striker.vy *= .985;
-
-
-    if(
-      Math.abs(striker.vx) > .05 ||
-      Math.abs(striker.vy) > .05
-    ){
-
-      somethingMoving = true;
-
-    }
-
-
-    const left =
-      board.x +
-      28 +
-      striker.r;
-
-    const right =
-      board.x +
-      board.w -
-      28 -
-      striker.r;
-
-    const top =
-      board.y +
-      28 +
-      striker.r;
-
-    const bottom =
-      board.y +
-      board.h -
-      28 -
-      striker.r;
-
-
-    if(striker.x < left){
-
-      striker.x = left;
-
-      striker.vx *= -.85;
-
-    }
-
-
-    if(striker.x > right){
-
-      striker.x = right;
-
-      striker.vx *= -.85;
-
-    }
-
-
-    if(striker.y < top){
-
-      striker.y = top;
-
-      striker.vy *= -.85;
-
-    }
-
-
-    if(striker.y > bottom){
-
-      striker.y = bottom;
-
-      striker.vy *= -.85;
-
-    }
-
-
-    if(
-      !somethingMoving &&
-      striker.moving
-    ){
-
-      striker.moving = false;
-
-      resetStriker();
-
-    }
-
-  }
-
-
-  /* =======================================================
-     RESET STRIKER
-     ======================================================= */
-
-  function resetStriker(){
-
-    striker.x =
-      size / 2;
-
-    striker.y =
-      board.y +
-      board.h -
-      85;
-
-
-    striker.vx = 0;
-    striker.vy = 0;
-
-    aiming = false;
-
-    dragging = false;
-
-    timeLeft = 20;
-
-
-    const timer =
-      document.getElementById(
-        "gameTimer"
-      );
-
-
-    if(timer){
-      timer.textContent = "20";
-    }
-
-
-    const power =
-      document.getElementById(
-        "powerFill"
-      );
-
-
-    if(power){
-      power.style.width =
-        "0%";
-    }
-
-  }
-
-
-  /* =======================================================
-     SHOOT
-     ======================================================= */
-
-  function shoot(){
-
-    const dx =
-      striker.x -
-      mouseX;
-
-    const dy =
-      striker.y -
-      mouseY;
-
-
-    const distance =
-      Math.sqrt(
-        dx*dx +
-        dy*dy
-      );
-
-
-    if(distance < 15){
-      return;
-    }
-
-
-    const power =
-      Math.min(
-        distance / 8,
-        18
-      );
-
-
-    striker.vx =
-      (dx / distance) *
-      power;
-
-
-    striker.vy =
-      (dy / distance) *
-      power;
-
-
-    striker.moving =
-      true;
-
-
-    aiming =
-      false;
-
-
-    const powerFill =
-      document.getElementById(
-        "powerFill"
-      );
-
-
-    if(powerFill){
-
-      powerFill.style.width =
-        "0%";
-
-    }
-
-  }
-
-
-  /* =======================================================
-     POINTER
-     ======================================================= */
-
-  function pointerPosition(e){
-
-    const rect =
-      canvas.getBoundingClientRect();
-
-
-    return {
-
-      x:
-        (e.clientX -
-        rect.left)
-        * size /
-        rect.width,
-
-      y:
-        (e.clientY -
-        rect.top)
-        * size /
-        rect.height
-
+  c.querySelectorAll("button[data-i]").forEach(b=>{
+    b.onclick = ()=>{
+      const i = parseInt(b.dataset.i,10);
+      if(b.dataset.type==="human"){ setupConfig[i] = {isAI:false}; }
+      else { setupConfig[i] = {isAI:true, difficulty:b.dataset.diff}; }
+      renderSlots();
     };
+  });
+}
+renderSlots();
 
+document.getElementById("startBtn").onclick = ()=>{
+  hide("setupOverlay");
+  startGame(setupCount, setupConfig.slice(0,setupCount));
+};
+
+/* =====================================================
+   GAME INIT / UI SYNC
+===================================================== */
+function startGame(count, config){
+  gameState.playerCount = count;
+  gameState.currentPlayer = 0;
+  gameState.gameOver = false;
+  gameState.paused = false;
+  queenState = "onboard";
+  queenPendingPlayer = null;
+  shotPoints = 0; shotFoul = false; queenPottedThisShot = false;
+  players = buildPlayers(count, config);
+  coins = createCoins();
+  resetStriker();
+  resetTimer();
+
+  document.getElementById("modePill").textContent =
+    count+" PLAYER" + (players.some(p=>p.isAI) ? " · AI" : "");
+
+  setupUIForPlayers();
+  updateActivePlayerUI();
+  updateScoresUI();
+  updatePillsUI();
+
+  gameState.mode = players[0].isAI ? "AI_THINKING" : "READY";
+  if(players[0].isAI) scheduleAITurn();
+
+  if(!loopStarted){ loopStarted = true; requestAnimationFrame(loop); }
+  resizeCanvas();
+}
+function restartGame(){
+  clearAITimeouts();
+  hide("winOverlay");
+  const cfg = players.map(p=>({isAI:p.isAI, difficulty:p.difficulty}));
+  startGame(gameState.playerCount, cfg);
+}
+function setupUIForPlayers(){
+  const prow2 = document.getElementById("prow2");
+  const pcard3 = document.getElementById("pcard3");
+  prow2.classList.toggle("hidden", gameState.playerCount < 3);
+  pcard3.classList.toggle("hidden", gameState.playerCount < 4);
+  for(let i=0;i<4;i++){
+    if(i<gameState.playerCount){
+      const p = players[i];
+      const card = document.getElementById("pcard"+i);
+      document.getElementById("name"+i).textContent = p.name;
+      document.getElementById("av"+i).textContent = p.isAI ? "AI" : "P"+(i+1);
+      card.classList.toggle("ai", p.isAI);
+    }
   }
-
-
-  canvas.addEventListener(
-    "pointerdown",
-    e => {
-
-      if(
-        striker.moving ||
-        paused
-      ){
-        return;
-      }
-
-
-      const p =
-        pointerPosition(e);
-
-
-      const dx =
-        p.x -
-        striker.x;
-
-      const dy =
-        p.y -
-        striker.y;
-
-
-      const distance =
-        Math.sqrt(
-          dx*dx +
-          dy*dy
-        );
-
-
-      if(distance < 55){
-
-        dragging = true;
-
-        aiming = true;
-
-        canvas.setPointerCapture(
-          e.pointerId
-        );
-
-      }
-
-    }
-  );
-
-
-  canvas.addEventListener(
-    "pointermove",
-    e => {
-
-      if(!dragging){
-        return;
-      }
-
-
-      const p =
-        pointerPosition(e);
-
-
-      mouseX =
-        p.x;
-
-      mouseY =
-        p.y;
-
-
-      const dx =
-        striker.x -
-        mouseX;
-
-      const dy =
-        striker.y -
-        mouseY;
-
-
-      const distance =
-        Math.sqrt(
-          dx*dx +
-          dy*dy
-        );
-
-
-      const power =
-        Math.min(
-          distance / 3,
-          100
-        );
-
-
-      const fill =
-        document.getElementById(
-          "powerFill"
-        );
-
-
-      if(fill){
-
-        fill.style.width =
-          power + "%";
-
-      }
-
-    }
-  );
-
-
-  canvas.addEventListener(
-    "pointerup",
-    e => {
-
-      if(!dragging){
-        return;
-      }
-
-
-      dragging =
-        false;
-
-
-      shoot();
-
-    }
-  );
-
-
-  canvas.addEventListener(
-    "pointercancel",
-    () => {
-
-      dragging =
-        false;
-
-    }
-  );
-
-
-  /* =======================================================
-     20 SECOND TIMER
-     ======================================================= */
-
-  setInterval(
-    () => {
-
-      if(
-        striker.moving ||
-        paused
-      ){
-        return;
-      }
-
-
-      timeLeft--;
-
-
-      const timer =
-        document.getElementById(
-          "gameTimer"
-        );
-
-
-      if(timer){
-
-        timer.textContent =
-          Math.max(
-            timeLeft,
-            0
-          );
-
-      }
-
-
-      /* Timer ring */
-
-      const ring =
-        document.getElementById(
-          "timerRing"
-        );
-
-
-      if(ring){
-
-        const percentage =
-          Math.max(
-            timeLeft / 20,
-            0
-          );
-
-
-        const angle =
-          percentage *
-          360;
-
-
-        ring.style.background =
-          `
-          conic-gradient(
-            #b8ff3d 0deg,
-            #b8ff3d ${angle}deg,
-            #142b1d ${angle}deg,
-            #142b1d 360deg
-          )
-          `;
-
-      }
-
-
-      if(timeLeft <= 0){
-
-        resetStriker();
-
-      }
-
-    },
-    1000
-  );
-
-
-  /* =======================================================
-     GAME LOOP
-     ======================================================= */
-
-  function gameLoop(){
-
-    updatePhysics();
-
-    drawBoard();
-
-    requestAnimationFrame(
-      gameLoop
-    );
-
+}
+function updateActivePlayerUI(){
+  for(let i=0;i<4;i++){
+    document.getElementById("pcard"+i).classList.toggle("active", i===gameState.currentPlayer);
   }
-
-
-  gameLoop();
-
+}
+function updateScoresUI(){
+  players.forEach((p,i)=>{ document.getElementById("score"+i).textContent = p.score; });
+}
+function updatePillsUI(){
+  const {q,b,w} = remainingCounts();
+  document.getElementById("qCount").textContent = "×"+q;
+  document.getElementById("bCount").textContent = "×"+b;
+  document.getElementById("wCount").textContent = "×"+w;
 }
 
-</script>
+/* =====================================================
+   BOARD RENDERING
+===================================================== */
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function drawBoard(){
+  ctx.clearRect(0,0,BOARD,BOARD);
 
+  // wooden frame — inset, leaving the outer band free for the rail
+  roundRect(FRAME_MIN, FRAME_MIN, FRAME_MAX-FRAME_MIN, FRAME_MAX-FRAME_MIN, 30);
+  const gradF = ctx.createLinearGradient(FRAME_MIN,FRAME_MIN,FRAME_MAX,FRAME_MAX);
+  gradF.addColorStop(0,"#c78b45"); gradF.addColorStop(.5,"#8b5527"); gradF.addColorStop(1,"#4c2b16");
+  ctx.fillStyle = gradF; ctx.fill();
+  ctx.shadowColor="rgba(0,0,0,.45)"; ctx.shadowBlur=26; ctx.shadowOffsetY=14;
+  ctx.fill();
+  ctx.shadowColor="transparent"; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+
+  roundRect(FRAME_MIN+12, FRAME_MIN+12, (FRAME_MAX-FRAME_MIN)-24, (FRAME_MAX-FRAME_MIN)-24, 22);
+  ctx.strokeStyle = "rgba(255,255,255,.16)"; ctx.lineWidth=2; ctx.stroke();
+
+  // play surface
+  roundRect(FIELD_MIN-12, FIELD_MIN-12, (FIELD_MAX-FIELD_MIN)+24, (FIELD_MAX-FIELD_MIN)+24, 12);
+  const gradP = ctx.createLinearGradient(FIELD_MIN,FIELD_MIN,FIELD_MAX,FIELD_MAX);
+  gradP.addColorStop(0,"#e9c088"); gradP.addColorStop(1,"#d3a565");
+  ctx.fillStyle = gradP; ctx.fill();
+  ctx.strokeStyle="rgba(76,39,18,.5)"; ctx.lineWidth=2; ctx.stroke();
+
+  drawMarkings();
+  drawBaselineTracks();
+  drawPockets();
+  drawStrikerZone();
+  drawOuterRail();
+}
+// permanent striker "home track" on every side of the board — always
+// visible, not just the active player's, so the board looks complete
+function drawBaselineTracks(){
+  Object.keys(BASELINES).forEach(side=>{
+    const bl = BASELINES[side];
+    ctx.save();
+    if(bl.axis==="x"){
+      roundRect(bl.min, bl.fixed-9, bl.max-bl.min, 18, 9);
+    } else {
+      roundRect(bl.fixed-9, bl.min, 18, bl.max-bl.min, 9);
+    }
+    ctx.fillStyle = "rgba(76,39,18,.22)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(76,39,18,.55)"; ctx.lineWidth=1.5; ctx.stroke();
+    const p1 = bl.get(bl.min), p2 = bl.get(bl.max);
+    [p1,p2].forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,4.5,0,Math.PI*2); ctx.fillStyle="#b23a2c"; ctx.fill(); });
+    ctx.restore();
+  });
+}
+function drawMarkings(){
+  ctx.strokeStyle = "rgba(76,39,18,.55)"; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.arc(CENTER.x,CENTER.y,82,0,Math.PI*2); ctx.stroke();
+
+  const off = 128;
+  const corners = [[FIELD_MIN+off,FIELD_MIN+off],[FIELD_MAX-off,FIELD_MIN+off],[FIELD_MIN+off,FIELD_MAX-off],[FIELD_MAX-off,FIELD_MAX-off]];
+  corners.forEach(([cx,cy])=>{
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    const ang = Math.atan2(CENTER.y-cy, CENTER.x-cx);
+    ctx.lineTo(CENTER.x-Math.cos(ang)*82, CENTER.y-Math.sin(ang)*82);
+    ctx.stroke();
+  });
+  POCKETS.forEach(pk=>{
+    const ang = Math.atan2(CENTER.y-pk.y, CENTER.x-pk.x);
+    const d1=50, d2=86;
+    const p1={x:pk.x+Math.cos(ang)*d1,y:pk.y+Math.sin(ang)*d1};
+    const p2={x:pk.x+Math.cos(ang)*d2,y:pk.y+Math.sin(ang)*d2};
+    ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+    [p1,p2].forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,4.5,0,Math.PI*2); ctx.fillStyle="#b23a2c"; ctx.fill(); });
+  });
+}
+function drawPockets(){
+  POCKETS.forEach(pk=>{
+    const g = ctx.createRadialGradient(pk.x,pk.y,2,pk.x,pk.y,POCKET_VIS_R);
+    g.addColorStop(0,"#000"); g.addColorStop(.7,"#1c0d06"); g.addColorStop(1,"#3a2010");
+    ctx.beginPath(); ctx.arc(pk.x,pk.y,POCKET_VIS_R,0,Math.PI*2);
+    ctx.fillStyle=g; ctx.fill();
+    ctx.strokeStyle="rgba(0,0,0,.6)"; ctx.lineWidth=3; ctx.stroke();
+  });
+}
+// large dashed shooting-zone circle around the active player's baseline
+function drawStrikerZone(){
+  if(gameState.mode==="GAME_OVER") return;
+  const side = players[gameState.currentPlayer].side;
+  const mid = defaultStrikerPos(side);
+  ctx.save();
+  ctx.setLineDash([5,7]);
+  ctx.strokeStyle = "rgba(76,39,18,.4)"; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.arc(mid.x, mid.y, 108, 0, Math.PI*2); ctx.stroke();
+  ctx.restore();
+}
+// rail track drawn OUTSIDE the wooden frame, in the margin band
+function drawOuterRail(){
+  if(gameState.mode==="GAME_OVER") return;
+  const side = players[gameState.currentPlayer].side;
+  const bl = BASELINES[side];
+  const railFixed = RAIL_FIXED[side];
+  ctx.save();
+
+  if(bl.axis==="x"){
+    roundRect(bl.min-24, railFixed-RAIL_HALF_THICK, (bl.max-bl.min)+48, RAIL_HALF_THICK*2, RAIL_HALF_THICK);
+  } else {
+    roundRect(railFixed-RAIL_HALF_THICK, bl.min-24, RAIL_HALF_THICK*2, (bl.max-bl.min)+48, RAIL_HALF_THICK);
+  }
+  const trackGrad = ctx.createLinearGradient(0,0,BOARD,BOARD);
+  trackGrad.addColorStop(0,"#6b4226"); trackGrad.addColorStop(1,"#3e2412");
+  ctx.fillStyle = trackGrad; ctx.fill();
+  ctx.strokeStyle = "rgba(199,255,85,.35)"; ctx.lineWidth=1.5; ctx.stroke();
+
+  const p1 = bl.axis==="x" ? {x:bl.min,y:railFixed} : {x:railFixed,y:bl.min};
+  const p2 = bl.axis==="x" ? {x:bl.max,y:railFixed} : {x:railFixed,y:bl.max};
+  [p1,p2].forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fillStyle="#c0392b"; ctx.fill(); });
+
+  // draggable handle, positioned to match the striker's current coordinate
+  const handleVal = bl.axis==="x" ? striker.x : striker.y;
+  const handlePos = bl.axis==="x" ? {x:handleVal,y:railFixed} : {x:railFixed,y:handleVal};
+  ctx.beginPath(); ctx.arc(handlePos.x, handlePos.y, 13, 0, Math.PI*2);
+  const hg = ctx.createRadialGradient(handlePos.x-4,handlePos.y-4,2,handlePos.x,handlePos.y,13);
+  hg.addColorStop(0,"#fff7e0"); hg.addColorStop(1,"#d9b46a");
+  ctx.fillStyle = hg; ctx.fill();
+  ctx.strokeStyle="rgba(0,0,0,.35)"; ctx.lineWidth=2; ctx.stroke();
+
+  ctx.restore();
+}
+
+/* =====================================================
+   COIN / STRIKER RENDERING
+===================================================== */
+function drawCoin(c){
+  ctx.save();
+  ctx.beginPath(); ctx.arc(c.x,c.y+3,c.r,0,Math.PI*2);
+  ctx.fillStyle="rgba(0,0,0,.28)"; ctx.fill();
+
+  const g = ctx.createRadialGradient(c.x-c.r*0.35,c.y-c.r*0.35,c.r*0.15,c.x,c.y,c.r);
+  if(c.color==="black"){ g.addColorStop(0,"#3a3a3a"); g.addColorStop(1,"#0a0a0a"); }
+  else if(c.color==="white"){ g.addColorStop(0,"#fffdf6"); g.addColorStop(1,"#cfc2a3"); }
+  else { g.addColorStop(0,"#f0827a"); g.addColorStop(1,"#9c2016"); }
+
+  ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
+  ctx.fillStyle=g; ctx.fill();
+  ctx.strokeStyle="rgba(0,0,0,.25)"; ctx.lineWidth=1; ctx.stroke();
+
+  if(c.color==="queen"){
+    ctx.beginPath(); ctx.arc(c.x,c.y,c.r*0.45,0,Math.PI*2);
+    ctx.strokeStyle="rgba(255,255,255,.55)"; ctx.lineWidth=1.5; ctx.stroke();
+  }
+  ctx.restore();
+}
+function drawStriker(){
+  if(!striker.active || striker.pocketed) return;
+  const c = striker;
+  ctx.save();
+  ctx.beginPath(); ctx.arc(c.x,c.y+3,c.r,0,Math.PI*2);
+  ctx.fillStyle="rgba(0,0,0,.3)"; ctx.fill();
+
+  const g = ctx.createRadialGradient(c.x-c.r*0.3,c.y-c.r*0.3,c.r*0.2,c.x,c.y,c.r);
+  g.addColorStop(0,"#ffffff"); g.addColorStop(1,"#d9cca9");
+  ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
+  ctx.fillStyle=g; ctx.fill();
+  ctx.strokeStyle="#b23a2c"; ctx.lineWidth=2; ctx.stroke();
+  ctx.beginPath(); ctx.arc(c.x,c.y,c.r*0.55,0,Math.PI*2);
+  ctx.strokeStyle="rgba(178,58,44,.6)"; ctx.lineWidth=1; ctx.stroke();
+  ctx.restore();
+}
+function drawAimArrow(){
+  const showAim = (input.mode==="aim" || input.mode==="aim-preview") && len(input.pull) > 4;
+  if(!showAim) return;
+  const dir = norm({x:-input.pull.x,y:-input.pull.y});
+  const power = clamp(len(input.pull)/MAX_PULL,0,1);
+  const arrowLen = 50 + power*110;
+  const sx=striker.x, sy=striker.y;
+  const ex = sx+dir.x*arrowLen, ey = sy+dir.y*arrowLen;
+
+  if(gameState.trajOn){
+    ctx.save();
+    ctx.setLineDash([4,7]);
+    ctx.strokeStyle="rgba(255,255,255,.55)"; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(sx+dir.x*220, sy+dir.y*220); ctx.stroke();
+    ctx.restore();
+  }
+  ctx.save();
+  const grad = ctx.createLinearGradient(sx,sy,ex,ey);
+  grad.addColorStop(0,"#ffd86a"); grad.addColorStop(1,"#ff6a3d");
+  ctx.strokeStyle = grad; ctx.lineWidth=7; ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.stroke();
+
+  const headLen=20;
+  const ang = Math.atan2(ey-sy, ex-sx);
+  ctx.beginPath();
+  ctx.moveTo(ex,ey);
+  ctx.lineTo(ex-headLen*Math.cos(ang-0.4), ey-headLen*Math.sin(ang-0.4));
+  ctx.lineTo(ex-headLen*Math.cos(ang+0.4), ey-headLen*Math.sin(ang+0.4));
+  ctx.closePath();
+  ctx.fillStyle="#ff6a3d"; ctx.fill();
+  ctx.restore();
+
+  if(input.mode==="aim") updatePowerUI(len(input.pull));
+}
+
+/* =====================================================
+   GAME LOOP
+===================================================== */
+let lastTs = 0, loopStarted = false;
+function loop(ts){
+  const dt = Math.min((ts-lastTs)/1000 || 0, 0.033);
+  lastTs = ts;
+
+  if(!gameState.paused && !gameState.gameOver){
+    if(gameState.mode==="PHYSICS_RUNNING"){
+      const sub = dt/PHYSICS_SUBSTEPS;
+      for(let s=0;s<PHYSICS_SUBSTEPS;s++) updatePhysics(sub);
+      if(allStopped()){
+        gameState.mode = "TURN_END";
+        resolveTurnEnd();
+      }
+    } else if(gameState.mode==="READY" && isHumanTurn()){
+      gameState.timer -= dt;
+      if(gameState.timer<=0){ gameState.timer=0; forceEndTurn(); }
+      updateTimerUI();
+    }
+  }
+
+  drawBoard();
+  coins.forEach(c=>{ if(c.active || c.capturing) drawCoin(c); });
+  drawStriker();
+  drawAimArrow();
+
+  requestAnimationFrame(loop);
+}
+
+/* =====================================================
+   INIT
+===================================================== */
+resizeCanvas();
+</script>
 </body>
-  </html>
+</html>
+
