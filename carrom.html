@@ -26,6 +26,7 @@ body{
     var(--bg);
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
   display:flex; flex-direction:column; height:100dvh;
+  padding-bottom:calc(10px + env(safe-area-inset-bottom));
 }
 button{font:inherit;cursor:pointer;border:0;background:none;color:inherit;}
 button:active{transform:scale(.96);}
@@ -59,6 +60,11 @@ svg{display:block;}
   border-color:var(--line2); background:rgba(199,255,85,.08);
   box-shadow:0 0 0 1px rgba(199,255,85,.15), 0 0 18px rgba(199,255,85,.10);
 }
+@keyframes thinkPulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(126,168,255,.55); }
+  50%{ box-shadow:0 0 0 9px rgba(126,168,255,0); }
+}
+.pcard.thinking .av{ animation:thinkPulse 1s ease-in-out infinite; }
 .pcard .av{
   width:30px;height:30px;border-radius:50%;flex:0 0 auto;
   display:grid;place-items:center;font-size:12px;font-weight:900;
@@ -109,18 +115,6 @@ canvas{width:100%;height:100%;display:block;touch-action:none;}
 .prow2{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:2px 12px; flex:0 0 auto;}
 
 /* ===== BOTTOM NAV ===== */
-.bottomnav{
-  display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
-  padding:8px 12px calc(10px + env(safe-area-inset-bottom));
-  flex:0 0 auto;
-}
-.navbtn{
-  display:flex; flex-direction:column; align-items:center; gap:3px;
-  padding:9px 4px; border-radius:14px; background:rgba(255,255,255,.04);
-  border:1px solid var(--line); font-size:8.5px; font-weight:900; letter-spacing:.5px; color:var(--muted);
-}
-.navbtn .ic{font-size:15px;}
-.navbtn.primary{background:rgba(199,255,85,.10);border-color:var(--line2);color:var(--green);}
 
 /* ===== MODALS ===== */
 .overlay{
@@ -187,6 +181,7 @@ canvas{width:100%;height:100%;display:block;touch-action:none;}
   <div class="mode-pill" id="modePill">2 PLAYER</div>
   <button class="icon-btn" id="soundBtn" aria-label="Sound"></button>
   <button class="icon-btn" id="pauseBtn" aria-label="Pause"></button>
+  <button class="icon-btn" id="menuBtn" aria-label="Menu"></button>
 </div>
 
 <!-- TOP PLAYERS -->
@@ -230,14 +225,6 @@ canvas{width:100%;height:100%;display:block;touch-action:none;}
   <div class="pcard hidden" id="pcard3"><div class="meta" style="text-align:right;"><div class="name" id="name3">Player Four</div><div class="score" id="score3">0</div></div><div class="av" id="av3">P4</div></div>
 </div>
 
-<!-- BOTTOM NAV -->
-<div class="bottomnav">
-  <button class="navbtn" id="navMenu"><span class="ic">☰</span>MENU</button>
-  <button class="navbtn" id="navRules"><span class="ic">📖</span>RULES</button>
-  <button class="navbtn primary" id="navRestart"><span class="ic">↻</span>RESTART</button>
-  <button class="navbtn" id="navUndo"><span class="ic">↩</span>UNDO</button>
-</div>
-
 <!-- SETUP MODAL -->
 <div class="overlay" id="setupOverlay">
   <div class="modal">
@@ -260,11 +247,16 @@ canvas{width:100%;height:100%;display:block;touch-action:none;}
     <h2>Menu</h2>
     <div class="sub">Game options</div>
     <button class="ghostbtn" id="menuRules">📖 Rules</button>
+    <button class="ghostbtn" id="menuUndo">↩ Undo Last Shot</button>
     <button class="ghostbtn" id="menuRestart">↻ Restart Game</button>
     <button class="ghostbtn" id="menuExit">← Exit to MAXGAME</button>
     <div class="toggle-row" style="margin-top:10px;">
-      <span style="font-size:12px;font-weight:800;">Sound</span>
+      <span style="font-size:12px;font-weight:800;">Sound Effects</span>
       <div class="switch on" id="soundSwitch"><i></i></div>
+    </div>
+    <div class="toggle-row">
+      <span style="font-size:12px;font-weight:800;">Music</span>
+      <div class="switch on" id="musicSwitch"><i></i></div>
     </div>
     <div class="toggle-row">
       <span style="font-size:12px;font-weight:800;">Aim trajectory</span>
@@ -421,6 +413,7 @@ function calcAIPower(dist, noise){
 const ICON_SOUND_ON = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19.3 5.7a9 9 0 0 1 0 12.6"/></svg>';
 const ICON_SOUND_OFF = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><line x1="16.5" y1="9" x2="22" y2="14.5"/><line x1="22" y1="9" x2="16.5" y2="14.5"/></svg>';
 const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><rect x="5" y="4" width="4.5" height="16" rx="1.4"/><rect x="14.5" y="4" width="4.5" height="16" rx="1.4"/></svg>';
+const ICON_MENU_DOTS = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="5" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="12" cy="19" r="2.1"/></svg>';
 
 /* =====================================================
    GAME STATE
@@ -433,6 +426,7 @@ let gameState = {
   paused: false,
   gameOver: false,
   soundOn: true,
+  musicOn: true,
   trajOn: true
 };
 let players = [];
@@ -443,6 +437,7 @@ let queenState = "onboard"; // onboard | pendingCover | awarded
 let queenPendingPlayer = null;
 let input = { mode: null, pull: { x: 0, y: 0 } };
 let aiTimeouts = [];
+let lastSnapshot = null;
 
 /* =====================================================
    CANVAS
@@ -482,10 +477,15 @@ function toast(msg){
   clearTimeout(toast._t);
   toast._t = setTimeout(()=>t.classList.remove("show"), 1700);
 }
+let sharedAudioCtx = null;
+function getAudioCtx(){
+  if(!sharedAudioCtx){ sharedAudioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
+  return sharedAudioCtx;
+}
 function beep(freq, dur, type){
   if(!gameState.soundOn) return;
   try{
-    const actx = beep._ctx || (beep._ctx = new (window.AudioContext||window.webkitAudioContext)());
+    const actx = getAudioCtx();
     const o = actx.createOscillator(), g = actx.createGain();
     o.type = type||"sine"; o.frequency.value = freq;
     g.gain.value = 0.06;
@@ -494,6 +494,64 @@ function beep(freq, dur, type){
     g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
     o.stop(actx.currentTime + dur);
   }catch(e){}
+}
+// a slightly richer "thwack" for the striker shot, scaled with power
+function shootSound(power){
+  beep(130 + power*70, 0.1, "triangle");
+  beep(55, 0.07, "square");
+}
+
+/* ---- Generated ambient background music (no audio file needed) ---- */
+let musicNodes = null, musicTimer = null;
+function startMusic(){
+  if(!gameState.musicOn || musicNodes) return;
+  try{
+    const actx = getAudioCtx();
+    const master = actx.createGain();
+    master.gain.value = 0.05;
+    master.connect(actx.destination);
+
+    const pad = actx.createOscillator();
+    pad.type = "sine"; pad.frequency.value = 98;
+    const padGain = actx.createGain(); padGain.gain.value = 0.4;
+    pad.connect(padGain); padGain.connect(master);
+    pad.start();
+
+    const pad2 = actx.createOscillator();
+    pad2.type = "sine"; pad2.frequency.value = 147;
+    const pad2Gain = actx.createGain(); pad2Gain.gain.value = 0.22;
+    pad2.connect(pad2Gain); pad2Gain.connect(master);
+    pad2.start();
+
+    musicNodes = { master, pad, pad2 };
+
+    const scale = [261.6,293.7,329.6,392.0,440.0];
+    const pluck = ()=>{
+      if(!musicNodes || !gameState.musicOn) return;
+      const f = scale[Math.floor(Math.random()*scale.length)];
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type="sine"; o.frequency.value=f;
+      g.gain.value=0.0001;
+      o.connect(g); g.connect(master);
+      const t = actx.currentTime;
+      g.gain.exponentialRampToValueAtTime(0.09, t+0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+1.4);
+      o.start(t); o.stop(t+1.5);
+      musicTimer = setTimeout(pluck, 1800+Math.random()*1600);
+    };
+    musicTimer = setTimeout(pluck, 900);
+  }catch(e){}
+}
+function stopMusic(){
+  clearTimeout(musicTimer); musicTimer=null;
+  if(musicNodes){
+    try{ musicNodes.pad.stop(); musicNodes.pad2.stop(); musicNodes.master.disconnect(); }catch(e){}
+    musicNodes = null;
+  }
+}
+function setMusicOn(on){
+  gameState.musicOn = on;
+  if(on) startMusic(); else stopMusic();
 }
 
 /* =====================================================
@@ -608,9 +666,11 @@ function scheduleAITurn(){
   const p = players[gameState.currentPlayer];
   const params = DIFF_PARAMS[p.difficulty] || DIFF_PARAMS.easy;
   const bl = BASELINES[p.side];
+  setThinkingIndicator(true);
 
   const t1 = setTimeout(()=>{
     if(gameState.mode!=="AI_THINKING" || gameState.paused) return;
+    setThinkingIndicator(false);
     try{
       const active = coins.filter(c=>c.active && !c.pocketed && !c.capturing);
       const shot = pickAIShot(p.difficulty, active);
@@ -749,13 +809,14 @@ function hidePowerUI(){ document.getElementById("powerWrap").classList.remove("s
 function doShoot(pull){
   const l = clamp(len(pull), 0, MAX_PULL);
   if(l < 1){ return; }
+  takeSnapshot();
   const dir = norm({x:-pull.x, y:-pull.y});
   const power = l/MAX_PULL;
   striker.vx = dir.x*power*MAX_SPEED;
   striker.vy = dir.y*power*MAX_SPEED;
   shotPoints = 0; shotFoul = false; shotTaken = true; queenPottedThisShot = false;
   gameState.mode = "PHYSICS_RUNNING";
-  beep(220,0.08,"triangle");
+  shootSound(power);
 }
 
 /* =====================================================
@@ -856,6 +917,45 @@ function allStopped(){
 }
 
 /* =====================================================
+   UNDO (single level — snapshot taken right before each shot)
+===================================================== */
+function takeSnapshot(){
+  lastSnapshot = {
+    currentPlayer: gameState.currentPlayer,
+    scores: players.map(p=>p.score),
+    coins: coins.map(c=>({ x:c.x, y:c.y, active:c.active, pocketed:c.pocketed })),
+    strikerPos: { x:striker.x, y:striker.y },
+    queenState, queenPendingPlayer,
+    timer: gameState.timer
+  };
+}
+function restoreSnapshot(){
+  if(!lastSnapshot) return false;
+  const s = lastSnapshot;
+  gameState.currentPlayer = s.currentPlayer;
+  players.forEach((p,i)=>{ p.score = s.scores[i]; });
+  coins.forEach((c,i)=>{
+    const sc = s.coins[i];
+    c.x=sc.x; c.y=sc.y; c.vx=0; c.vy=0;
+    c.active=sc.active; c.pocketed=sc.pocketed; c.capturing=false;
+  });
+  resetStriker();
+  striker.x = s.strikerPos.x; striker.y = s.strikerPos.y;
+  queenState = s.queenState; queenPendingPlayer = s.queenPendingPlayer;
+  gameState.timer = s.timer;
+  shotPoints=0; shotFoul=false; queenPottedThisShot=false;
+  updateTimerUI(); updateActivePlayerUI(); updateScoresUI(); updatePillsUI();
+
+  const p = players[gameState.currentPlayer];
+  setThinkingIndicator(false);
+  gameState.mode = p.isAI ? "AI_THINKING" : "READY";
+  if(p.isAI) scheduleAITurn();
+
+  lastSnapshot = null;
+  return true;
+}
+
+/* =====================================================
    TURN RESOLUTION
 ===================================================== */
 function respawnQueen(){
@@ -865,11 +965,15 @@ function respawnQueen(){
 function resolveTurnEnd(){
   const player = players[gameState.currentPlayer];
   let potted = false;
+  // consume this flag immediately so a foul or timeout later can never
+  // let it leak forward into an unrelated future turn
+  const queenJustPotted = queenPottedThisShot;
+  queenPottedThisShot = false;
 
   if(!shotFoul){
     player.score += shotPoints;
     if(shotPoints>0) potted = true;
-    const plainPot = shotPoints>0 && !queenPottedThisShot && queenState!=="pendingCover";
+    const plainPot = shotPoints>0 && !queenJustPotted && queenState!=="pendingCover";
 
     // resolve a queen that was left pending cover from the previous shot
     if(queenState==="pendingCover"){
@@ -885,7 +989,7 @@ function resolveTurnEnd(){
     }
 
     // queen potted just now — either covered in the same stroke, or pending
-    if(queenPottedThisShot){
+    if(queenJustPotted){
       if(shotPoints>0){
         player.score += QUEEN_VALUE;
         toast("Queen covered! +50");
@@ -901,8 +1005,9 @@ function resolveTurnEnd(){
     toast("Striker pocketed — turn forfeited");
     striker.pocketed = false;
     player.score = Math.max(0, player.score - FOUL_PENALTY);
-    // a pending queen isn't covered by a foul
-    if(queenState==="pendingCover"){
+    // a foul voids any queen gained this same stroke, and fails to cover
+    // any queen that was already pending
+    if(queenState==="pendingCover" || queenJustPotted){
       respawnQueen();
       queenState = "onboard";
       queenPendingPlayer = null;
@@ -965,8 +1070,15 @@ function nextPlayer(){
   }
 }
 function forceEndTurn(){
-  shotPoints=0; shotFoul=false;
+  shotPoints=0; shotFoul=false; queenPottedThisShot=false;
   toast("Time's up!");
+  if(queenState==="pendingCover"){
+    respawnQueen();
+    queenState = "onboard";
+    queenPendingPlayer = null;
+    updatePillsUI();
+    toast("Time's up — Queen not covered, back on the board");
+  }
   nextPlayer();
 }
 function endGame(winner){
@@ -984,14 +1096,12 @@ function endGame(winner){
 function show(id){ document.getElementById(id).classList.remove("hidden"); }
 function hide(id){ document.getElementById(id).classList.add("hidden"); }
 
-document.getElementById("navMenu").onclick = ()=> show("menuOverlay");
+document.getElementById("menuBtn").onclick = ()=> show("menuOverlay");
 document.getElementById("menuClose").onclick = ()=> hide("menuOverlay");
-document.getElementById("navRules").onclick = ()=> show("rulesOverlay");
 document.getElementById("setupRulesBtn").onclick = ()=> show("rulesOverlay");
 document.getElementById("menuRules").onclick = ()=>{ hide("menuOverlay"); show("rulesOverlay"); };
 document.getElementById("rulesClose").onclick = ()=> hide("rulesOverlay");
 
-document.getElementById("navRestart").onclick = ()=> show("restartOverlay");
 document.getElementById("menuRestart").onclick = ()=>{ hide("menuOverlay"); show("restartOverlay"); };
 document.getElementById("restartCancel").onclick = ()=> hide("restartOverlay");
 document.getElementById("restartConfirm").onclick = ()=>{ hide("restartOverlay"); restartGame(); };
@@ -1006,7 +1116,14 @@ document.getElementById("exitCancel").onclick = ()=> hide("exitOverlay");
 document.getElementById("exitConfirm").onclick = ()=> doExit();
 function doExit(){ window.location.href = "index.html"; }
 
-document.getElementById("navUndo").onclick = ()=> toast("Undo isn't available yet");
+document.getElementById("menuUndo").onclick = ()=>{
+  hide("menuOverlay");
+  if(gameState.paused || gameState.gameOver){ toast("Can't undo right now"); return; }
+  if(gameState.mode!=="READY" && gameState.mode!=="AI_THINKING"){ toast("Wait for the shot to finish first"); return; }
+  clearAITimeouts();
+  if(restoreSnapshot()){ toast("Last shot undone"); }
+  else { toast("Nothing to undo yet"); }
+};
 
 document.getElementById("pauseBtn").onclick = ()=>{
   if(gameState.gameOver) return;
@@ -1016,6 +1133,10 @@ document.getElementById("pauseBtn").onclick = ()=>{
 document.getElementById("resumeBtn").onclick = ()=>{
   gameState.paused = false;
   hide("pauseOverlay");
+  // an AI turn interrupted mid-thought never resumes on its own — restart it
+  if(gameState.mode==="AI_THINKING"){
+    scheduleAITurn();
+  }
 };
 
 document.getElementById("soundBtn").onclick = toggleSound;
@@ -1025,12 +1146,17 @@ function toggleSound(){
   document.getElementById("soundBtn").innerHTML = gameState.soundOn ? ICON_SOUND_ON : ICON_SOUND_OFF;
   document.getElementById("soundSwitch").classList.toggle("on", gameState.soundOn);
 }
+document.getElementById("musicSwitch").onclick = ()=>{
+  setMusicOn(!gameState.musicOn);
+  document.getElementById("musicSwitch").classList.toggle("on", gameState.musicOn);
+};
 document.getElementById("trajSwitch").onclick = ()=>{
   gameState.trajOn = !gameState.trajOn;
   document.getElementById("trajSwitch").classList.toggle("on", gameState.trajOn);
 };
 document.getElementById("soundBtn").innerHTML = ICON_SOUND_ON;
 document.getElementById("pauseBtn").innerHTML = ICON_PAUSE;
+document.getElementById("menuBtn").innerHTML = ICON_MENU_DOTS;
 
 /* =====================================================
    SETUP MODAL
@@ -1094,10 +1220,12 @@ function startGame(count, config){
   queenState = "onboard";
   queenPendingPlayer = null;
   shotPoints = 0; shotFoul = false; queenPottedThisShot = false;
+  lastSnapshot = null;
   players = buildPlayers(count, config);
   coins = createCoins();
   resetStriker();
   resetTimer();
+  startMusic();
 
   document.getElementById("modePill").textContent =
     count+" PLAYER" + (players.some(p=>p.isAI) ? " · AI" : "");
@@ -1137,6 +1265,11 @@ function setupUIForPlayers(){
 function updateActivePlayerUI(){
   for(let i=0;i<4;i++){
     document.getElementById("pcard"+i).classList.toggle("active", i===gameState.currentPlayer);
+  }
+}
+function setThinkingIndicator(on){
+  for(let i=0;i<4;i++){
+    document.getElementById("pcard"+i).classList.toggle("thinking", on && i===gameState.currentPlayer);
   }
 }
 function updateScoresUI(){
@@ -1395,4 +1528,3 @@ resizeCanvas();
 </script>
 </body>
 </html>
-
