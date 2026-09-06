@@ -1,0 +1,1298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#050b08">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Ludo — MAXGAME</title>
+<style>
+:root{
+  --bg:#050b08; --panel:#0b1812; --panel2:#0e2118;
+  --green:#c7ff55; --green2:#8ee33d;
+  --gold:#ffd86a; --white:#f6faf7; --text:#e8f0eb;
+  --muted:#8b9c93; --muted2:#64756d;
+  --line:rgba(255,255,255,.09); --line2:rgba(199,255,85,.18);
+  --p-red:#e0463f; --p-green:#3fae55; --p-yellow:#e8c93a; --p-blue:#3f7fe0;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;}
+body{
+  color:var(--text);
+  background:
+    radial-gradient(circle at 50% -15%, rgba(99,174,75,.20), transparent 32%),
+    radial-gradient(circle at 100% 90%, rgba(110,157,54,.08), transparent 30%),
+    var(--bg);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  display:flex; flex-direction:column; height:100dvh;
+  padding-bottom:calc(10px + env(safe-area-inset-bottom));
+}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit;}
+button:active{transform:scale(.96);}
+.hidden{display:none!important;}
+svg{display:block;}
+
+/* Reserved space for an ad banner */
+#adSlotTop{height:50px;flex:0 0 auto;}
+
+/* ===== TOP BAR ===== */
+.topbar{ display:flex; align-items:center; gap:8px; padding:10px 12px; flex:0 0 auto; }
+.icon-btn{
+  width:38px;height:38px;border-radius:12px;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.05);border:1px solid var(--line);
+  color:var(--text);
+}
+.mode-pill{
+  flex:1; height:38px; display:flex; align-items:center; justify-content:center;
+  gap:6px; border-radius:12px; background:rgba(255,255,255,.05);
+  border:1px solid var(--line); font-size:11px; font-weight:800;
+  letter-spacing:.5px; color:var(--muted);
+}
+
+/* ===== PLAYER CORNER CARDS (positioned over the board's 4 yards) ===== */
+.corner-card{
+  position:absolute; z-index:6; width:82px;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:7px 6px; border-radius:14px;
+  background:rgba(6,14,9,.85); border:1px solid var(--line);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  transition:.25s ease;
+}
+.corner-card.tl{ top:8px; left:8px; }
+.corner-card.tr{ top:8px; right:8px; }
+.corner-card.br{ bottom:8px; right:8px; }
+.corner-card.bl{ bottom:8px; left:8px; }
+.corner-card.active{
+  border-color:var(--line2); background:rgba(199,255,85,.14);
+  box-shadow:0 0 0 1px rgba(199,255,85,.2), 0 0 18px rgba(199,255,85,.15);
+}
+@keyframes thinkPulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(126,168,255,.55); }
+  50%{ box-shadow:0 0 0 9px rgba(126,168,255,0); }
+}
+.corner-card.thinking .av{ animation:thinkPulse 1s ease-in-out infinite; }
+.corner-card .cc-top{ display:flex; align-items:center; gap:6px; width:100%; min-width:0; }
+.corner-card .av{
+  width:24px;height:24px;border-radius:50%;flex:0 0 auto;
+  display:grid;place-items:center;font-size:10px;font-weight:900;
+  color:#fff; box-shadow:inset 0 2px 3px rgba(255,255,255,.35), 0 2px 4px rgba(0,0,0,.3);
+}
+.corner-card .meta{min-width:0;}
+.corner-card .name{font-size:8.5px;font-weight:900;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:48px;}
+.corner-card .score{font-size:11px;font-weight:950;color:var(--gold);}
+.corner-card.ai .name:after{content:" · AI";color:var(--muted2);font-weight:700;}
+
+/* ===== BOARD ===== */
+.boardarea{flex:1 1 auto; display:flex; align-items:center; justify-content:center; min-height:0; position:relative; padding:2px 10px;}
+.boardwrap{position:relative; width:min(92vw, 66vh, 560px); aspect-ratio:1/1;}
+canvas{width:100%;height:100%;display:block;touch-action:none;}
+
+/* ===== PER-PLAYER DICE ===== */
+.pdice{
+  width:46px;height:46px;border-radius:12px;flex:0 0 auto;
+  background:linear-gradient(155deg,#fdfaf1,#e7ddc4);
+  display:grid; place-items:center; position:relative;
+  box-shadow:0 4px 10px rgba(0,0,0,.35), inset 0 1px 1px rgba(255,255,255,.75);
+  border:1px solid rgba(0,0,0,.18);
+  opacity:.32; pointer-events:none;
+  transition:.2s ease, transform .1s ease;
+}
+.pdice.ready{
+  opacity:1; pointer-events:auto;
+  box-shadow:0 4px 14px rgba(199,255,85,.4), 0 0 0 2px rgba(199,255,85,.55), inset 0 1px 1px rgba(255,255,255,.75);
+}
+.pdice:active{ transform:scale(.88); }
+.pdice-grid{ width:68%; height:68%; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); }
+.pdice-grid .pip{ width:5.6px;height:5.6px;border-radius:50%; background:#22201a; margin:auto; opacity:0; }
+.statusbar{
+  text-align:center; font-size:10.5px; font-weight:800; letter-spacing:.4px;
+  color:var(--muted); padding:2px 12px 6px; flex:0 0 auto;
+}
+.statusbar.active{ color:var(--green); }
+
+/* ===== MODALS (shared with Carrom style) ===== */
+.overlay{
+  position:fixed; inset:0; background:rgba(3,8,5,.72); backdrop-filter:blur(6px);
+  display:flex; align-items:center; justify-content:center; z-index:100; padding:20px;
+}
+.modal{
+  width:min(420px,100%); max-height:85vh; overflow-y:auto;
+  background:linear-gradient(165deg,#0d1f14,#0a1610);
+  border:1px solid var(--line2); border-radius:24px; padding:22px;
+  box-shadow:0 30px 80px rgba(0,0,0,.55);
+}
+.modal h2{font-size:20px;margin-bottom:4px;letter-spacing:-.5px;}
+.modal .sub{font-size:11px;color:var(--muted);margin-bottom:16px;}
+.modal .row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.chip{
+  padding:9px 14px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.04); font-size:11px; font-weight:800;
+}
+.chip.on{background:var(--green);color:#13220e;border-color:var(--green);}
+.slotrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-top:1px solid var(--line);}
+.slotrow:first-of-type{border-top:0;}
+.slotrow .lbl{font-size:12px;font-weight:800;display:flex;align-items:center;gap:7px;}
+.swatch{width:14px;height:14px;border-radius:50%;flex:0 0 auto;}
+.slotsel{display:flex;gap:5px;flex-wrap:wrap;}
+.bigbtn{
+  width:100%; margin-top:16px; padding:14px; border-radius:14px; font-size:12px;
+  font-weight:950; letter-spacing:.5px; text-align:center;
+  background:linear-gradient(135deg,#dcff78,#91df3d); color:#14240e;
+}
+.ghostbtn{
+  width:100%; margin-top:8px; padding:12px; border-radius:14px; font-size:11px;
+  font-weight:900; text-align:center; background:rgba(255,255,255,.05); border:1px solid var(--line);
+}
+.twobtn{display:flex;gap:10px;margin-top:16px;}
+.twobtn button{flex:1;padding:13px;border-radius:14px;font-size:11px;font-weight:900;}
+.twobtn .cancel{background:rgba(255,255,255,.05);border:1px solid var(--line);}
+.twobtn .danger{background:linear-gradient(135deg,#ff8a6a,#e0492c);color:#2a0d05;}
+.rules p{font-size:12px;line-height:1.7;color:#c3d2c9;margin-bottom:8px;}
+.rules b{color:var(--green);}
+.winner-name{font-size:26px;font-weight:950;color:var(--gold);margin:10px 0 2px;}
+.winner-score{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line);}
+.toggle-row:first-child{border-top:0;}
+.switch{width:42px;height:24px;border-radius:999px;background:rgba(255,255,255,.1);position:relative;border:1px solid var(--line);}
+.switch.on{background:var(--green2);}
+.switch i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;display:block;}
+.switch.on i{left:20px;}
+.toast{
+  position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);
+  padding:11px 16px;border-radius:12px;background:#102119;border:1px solid var(--line);
+  font-size:11px;opacity:0;pointer-events:none;transition:.25s ease;z-index:200; text-align:center; max-width:80%;
+}
+.toast.show{opacity:1;transform:translate(-50%,0);}
+</style>
+</head>
+<body>
+
+<div id="adSlotTop"></div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
+  <div class="mode-pill" id="modePill">2 PLAYER</div>
+  <button class="icon-btn" id="soundBtn" aria-label="Sound"></button>
+  <button class="icon-btn" id="pauseBtn" aria-label="Pause"></button>
+  <button class="icon-btn" id="menuBtn" aria-label="Menu"></button>
+</div>
+
+<div class="statusbar" id="statusHint">Tap the die to roll</div>
+
+<!-- BOARD -->
+<div class="boardarea">
+  <div class="boardwrap" id="boardWrap">
+    <canvas id="board"></canvas>
+
+    <div class="corner-card tl" id="pcard0">
+      <div class="cc-top"><div class="av" id="av0">R</div><div class="meta"><div class="name" id="name0">Red</div><div class="score" id="score0">0/4</div></div></div>
+      <button class="pdice" id="pdice0"><div class="pdice-grid" id="pdiceGrid0"></div></button>
+    </div>
+    <div class="corner-card tr" id="pcard1">
+      <div class="cc-top"><div class="av" id="av1">G</div><div class="meta"><div class="name" id="name1">Green</div><div class="score" id="score1">0/4</div></div></div>
+      <button class="pdice" id="pdice1"><div class="pdice-grid" id="pdiceGrid1"></div></button>
+    </div>
+    <div class="corner-card br" id="pcard2">
+      <div class="cc-top"><div class="av" id="av2">Y</div><div class="meta"><div class="name" id="name2">Yellow</div><div class="score" id="score2">0/4</div></div></div>
+      <button class="pdice" id="pdice2"><div class="pdice-grid" id="pdiceGrid2"></div></button>
+    </div>
+    <div class="corner-card bl" id="pcard3">
+      <div class="cc-top"><div class="av" id="av3">B</div><div class="meta"><div class="name" id="name3">Blue</div><div class="score" id="score3">0/4</div></div></div>
+      <button class="pdice" id="pdice3"><div class="pdice-grid" id="pdiceGrid3"></div></button>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP MODAL -->
+<div class="overlay" id="setupOverlay">
+  <div class="modal">
+    <h2>Ludo</h2>
+    <div class="sub">Set up your match</div>
+    <div class="row" id="countRow">
+      <button class="chip on" data-count="2">2 Players</button>
+      <button class="chip" data-count="3">3 Players</button>
+      <button class="chip" data-count="4">4 Players</button>
+    </div>
+    <div id="slotsContainer"></div>
+    <button class="bigbtn" id="startBtn">START MATCH</button>
+    <button class="ghostbtn" id="setupRulesBtn">View Rules</button>
+  </div>
+</div>
+
+<!-- MENU MODAL -->
+<div class="overlay hidden" id="menuOverlay">
+  <div class="modal">
+    <h2>Menu</h2>
+    <div class="sub">Game options</div>
+    <button class="ghostbtn" id="menuRules">📖 Rules</button>
+    <button class="ghostbtn" id="menuUndo">↩ Undo Last Move</button>
+    <button class="ghostbtn" id="menuRestart">↻ Restart Game</button>
+    <button class="ghostbtn" id="menuExit">← Exit to MAXGAME</button>
+    <div class="toggle-row" style="margin-top:10px;">
+      <span style="font-size:12px;font-weight:800;">Sound Effects</span>
+      <div class="switch on" id="soundSwitch"><i></i></div>
+    </div>
+    <div class="toggle-row">
+      <span style="font-size:12px;font-weight:800;">Music</span>
+      <div class="switch on" id="musicSwitch"><i></i></div>
+    </div>
+    <button class="ghostbtn" id="menuClose">Close</button>
+  </div>
+</div>
+
+<!-- PAUSE MODAL -->
+<div class="overlay hidden" id="pauseOverlay">
+  <div class="modal">
+    <h2>Paused</h2>
+    <div class="sub">Game is paused</div>
+    <button class="bigbtn" id="resumeBtn">RESUME</button>
+    <button class="ghostbtn" id="pauseRestart">↻ Restart Game</button>
+    <button class="ghostbtn" id="pauseExit">← Exit to MAXGAME</button>
+  </div>
+</div>
+
+<!-- RULES MODAL -->
+<div class="overlay hidden" id="rulesOverlay">
+  <div class="modal">
+    <h2>Rules</h2>
+    <div class="sub">How to play Ludo</div>
+    <div class="rules">
+      <p><b>Goal</b> — Get all 4 of your tokens from your yard, around the board, and into your home triangle before anyone else.</p>
+      <p><b>Starting</b> — Roll a <b>6</b> to bring a token out of the yard onto your start square.</p>
+      <p><b>Moving</b> — Tap the die to roll, then tap the token you want to move (if you have more than one legal option).</p>
+      <p><b>Capturing</b> — Land exactly on an opponent's token to send it back to their yard. This can't happen on a star/safe cell.</p>
+      <p><b>Safe cells</b> — Marked with a star. Tokens there can't be captured.</p>
+      <p><b>Extra turn</b> — Rolling a 6, capturing a token, or getting a token home all earn you another roll. Three 6's in a row forfeits the turn.</p>
+      <p><b>Home stretch</b> — You need the exact number to enter your home triangle — overshooting means that token can't move this turn.</p>
+    </div>
+    <button class="bigbtn" id="rulesClose">Got it</button>
+  </div>
+</div>
+
+<!-- RESTART CONFIRM -->
+<div class="overlay hidden" id="restartOverlay">
+  <div class="modal">
+    <h2>Restart Game?</h2>
+    <div class="sub">Your current match will be lost.</div>
+    <div class="twobtn">
+      <button class="cancel" id="restartCancel">CANCEL</button>
+      <button class="danger" id="restartConfirm">RESTART</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXIT CONFIRM -->
+<div class="overlay hidden" id="exitOverlay">
+  <div class="modal">
+    <h2>Exit Game?</h2>
+    <div class="sub">Your current progress will be lost.</div>
+    <div class="twobtn">
+      <button class="cancel" id="exitCancel">CANCEL</button>
+      <button class="danger" id="exitConfirm">EXIT</button>
+    </div>
+  </div>
+</div>
+
+<!-- WINNER MODAL -->
+<div class="overlay hidden" id="winOverlay">
+  <div class="modal" style="text-align:center;">
+    <div style="font-size:11px;font-weight:900;letter-spacing:2px;color:var(--green);">🏆 WINNER</div>
+    <div class="winner-name" id="winnerName">Red</div>
+    <div class="winner-score" id="winnerScore">All 4 tokens home</div>
+    <button class="bigbtn" id="winRestart">PLAY AGAIN</button>
+    <button class="ghostbtn" id="winExit">← Exit to MAXGAME</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* =====================================================
+   CONFIG — board data (verified against a reference
+   15x15 Ludo path implementation, not hand-guessed)
+===================================================== */
+const GRID = 15;
+const GRID_PX = 750;
+const CELL = GRID_PX / GRID;
+const FRAME_MARGIN = 26;
+const BOARD_PX = GRID_PX + FRAME_MARGIN*2;
+
+// the 52 shared-path cells, in clockwise travel order, as [row,col]
+const PATH_CELLS = [
+  [6,1],[6,2],[6,3],[6,4],[6,5],
+  [5,6],[4,6],[3,6],[2,6],[1,6],[0,6],
+  [0,7],
+  [0,8],
+  [1,8],[2,8],[3,8],[4,8],[5,8],
+  [6,9],[6,10],[6,11],[6,12],[6,13],[6,14],
+  [7,14],
+  [8,14],
+  [8,13],[8,12],[8,11],[8,10],[8,9],
+  [9,8],[10,8],[11,8],[12,8],[13,8],[14,8],
+  [14,7],
+  [14,6],
+  [13,6],[12,6],[11,6],[10,6],[9,6],
+  [8,5],[8,4],[8,3],[8,2],[8,1],[8,0],
+  [7,0],
+  [6,0]
+];
+const START_INDEX = { red:0, green:13, yellow:26, blue:39 };
+const SAFE_INDICES = new Set([0,13,26,39, 8,21,34,47]);
+
+const HOME_STRETCH = {
+  red:    [[7,1],[7,2],[7,3],[7,4],[7,5]],
+  green:  [[1,7],[2,7],[3,7],[4,7],[5,7]],
+  yellow: [[7,13],[7,12],[7,11],[7,10],[7,9]],
+  blue:   [[13,7],[12,7],[11,7],[10,7],[9,7]]
+};
+const YARD_SLOTS = {
+  red:    [[1,1],[1,4],[4,1],[4,4]],
+  green:  [[1,10],[1,13],[4,10],[4,13]],
+  yellow: [[10,10],[10,13],[13,10],[13,13]],
+  blue:   [[10,1],[10,4],[13,1],[13,4]]
+};
+const YARD_BLOCK = { red:[0,0], green:[0,9], yellow:[9,9], blue:[9,0] };
+const HOME_ENTRY_DIR = { red:[1,0], green:[0,1], yellow:[-1,0], blue:[0,-1] }; // unused placeholder
+const PLAYER_COLORS = { red:"#e0463f", green:"#3fae55", yellow:"#e8c93a", blue:"#3f7fe0" };
+const COLOR_ORDER = ["red","green","yellow","blue"];
+
+const DIFF_PARAMS = {
+  easy:   { thinkMs:350, mistakeChance:0.55 },
+  medium: { thinkMs:600, mistakeChance:0.22 },
+  hard:   { thinkMs:900, mistakeChance:0.05 }
+};
+
+const ICON_SOUND_ON = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19.3 5.7a9 9 0 0 1 0 12.6"/></svg>';
+const ICON_SOUND_OFF = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><line x1="16.5" y1="9" x2="22" y2="14.5"/><line x1="22" y1="9" x2="16.5" y2="14.5"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><rect x="5" y="4" width="4.5" height="16" rx="1.4"/><rect x="14.5" y="4" width="4.5" height="16" rx="1.4"/></svg>';
+const ICON_MENU_DOTS = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="5" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="12" cy="19" r="2.1"/></svg>';
+
+/* =====================================================
+   GAME STATE
+===================================================== */
+let gameState = {
+  mode: "SETUP", // SETUP | ROLL_READY | MOVE_SELECT | ANIMATING | AI_THINKING | GAME_OVER
+  playerCount: 2,
+  currentPlayer: 0,
+  diceValue: 1,
+  consecutiveSixes: 0,
+  paused: false,
+  gameOver: false,
+  soundOn: true,
+  musicOn: true
+};
+let players = []; // {color, name, isAI, difficulty, tokensHome}
+let tokens = [];  // {color, idx, relativePos(-1..56)}
+let animQueue = null; // {token, cells:[{x,y}], step, elapsed}
+let lastSnapshot = null;
+let aiTimeouts = [];
+
+/* =====================================================
+   CANVAS
+===================================================== */
+const canvas = document.getElementById("board");
+const ctx = canvas.getContext("2d");
+const boardWrap = document.getElementById("boardWrap");
+function resizeCanvas(){
+  const size = boardWrap.clientWidth;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = size*dpr; canvas.height = size*dpr;
+  canvas.style.width = size+"px"; canvas.style.height = size+"px";
+  const scale = (size/BOARD_PX)*dpr;
+  ctx.setTransform(scale,0,0,scale,0,0);
+}
+window.addEventListener("resize", resizeCanvas);
+window.addEventListener("orientationchange", ()=> setTimeout(resizeCanvas,100));
+function toBoard(clientX, clientY){
+  const rect = canvas.getBoundingClientRect();
+  const s = BOARD_PX/rect.width;
+  return { x:(clientX-rect.left)*s, y:(clientY-rect.top)*s };
+}
+
+/* =====================================================
+   UTIL
+===================================================== */
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function cellCenter(row,col){ return { x: col*CELL+CELL/2, y: row*CELL+CELL/2 }; }
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>t.classList.remove("show"), 1700);
+}
+let sharedAudioCtx = null;
+function getAudioCtx(){
+  if(!sharedAudioCtx){ sharedAudioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
+  return sharedAudioCtx;
+}
+function beep(freq,dur,type){
+  if(!gameState.soundOn) return;
+  try{
+    const actx = getAudioCtx();
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = type||"sine"; o.frequency.value = freq;
+    g.gain.value = 0.06;
+    o.connect(g); g.connect(actx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime+dur);
+    o.stop(actx.currentTime+dur);
+  }catch(e){}
+}
+let musicNodes=null, musicTimer=null;
+function startMusic(){
+  if(!gameState.musicOn || musicNodes) return;
+  try{
+    const actx = getAudioCtx();
+    const master = actx.createGain(); master.gain.value=0.05; master.connect(actx.destination);
+    const pad = actx.createOscillator(); pad.type="sine"; pad.frequency.value=98;
+    const padGain = actx.createGain(); padGain.gain.value=0.4;
+    pad.connect(padGain); padGain.connect(master); pad.start();
+    const pad2 = actx.createOscillator(); pad2.type="sine"; pad2.frequency.value=147;
+    const pad2Gain = actx.createGain(); pad2Gain.gain.value=0.22;
+    pad2.connect(pad2Gain); pad2Gain.connect(master); pad2.start();
+    musicNodes = { master, pad, pad2 };
+    const scale=[261.6,293.7,329.6,392.0,440.0];
+    const pluck = ()=>{
+      if(!musicNodes||!gameState.musicOn) return;
+      const f = scale[Math.floor(Math.random()*scale.length)];
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type="sine"; o.frequency.value=f; g.gain.value=0.0001;
+      o.connect(g); g.connect(master);
+      const t = actx.currentTime;
+      g.gain.exponentialRampToValueAtTime(0.09,t+0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+1.4);
+      o.start(t); o.stop(t+1.5);
+      musicTimer = setTimeout(pluck, 1800+Math.random()*1600);
+    };
+    musicTimer = setTimeout(pluck, 900);
+  }catch(e){}
+}
+function stopMusic(){
+  clearTimeout(musicTimer); musicTimer=null;
+  if(musicNodes){ try{ musicNodes.pad.stop(); musicNodes.pad2.stop(); musicNodes.master.disconnect(); }catch(e){} musicNodes=null; }
+}
+function setMusicOn(on){ gameState.musicOn=on; if(on) startMusic(); else stopMusic(); }
+
+/* =====================================================
+   TOKEN / PATH HELPERS
+===================================================== */
+function createTokens(colors){
+  const list = [];
+  colors.forEach(color=>{
+    for(let i=0;i<4;i++){ list.push({ color, idx:i, relativePos:-1 }); }
+  });
+  return list;
+}
+function tokenAbsIndex(token){
+  if(token.relativePos<0 || token.relativePos>50) return null;
+  return (START_INDEX[token.color] + token.relativePos) % 52;
+}
+function tokenGridCell(token){
+  if(token.relativePos===-1){
+    const slot = YARD_SLOTS[token.color][token.idx];
+    return { row:slot[0], col:slot[1] };
+  }
+  if(token.relativePos>=0 && token.relativePos<=50){
+    const abs = tokenAbsIndex(token);
+    const c = PATH_CELLS[abs];
+    return { row:c[0], col:c[1] };
+  }
+  if(token.relativePos>=51 && token.relativePos<=55){
+    const c = HOME_STRETCH[token.color][token.relativePos-51];
+    return { row:c[0], col:c[1] };
+  }
+  // relativePos 56 -> finished, sits in center home triangle
+  return null;
+}
+function tokensAt(row,col,excludeColor,excludeIdx){
+  return tokens.filter(t=>{
+    if(t===excludeColor) return false;
+    if(t.relativePos<0 || t.relativePos>50) return false; // only shared path can be captured
+    const g = tokenGridCell(t);
+    return g && g.row===row && g.col===col;
+  });
+}
+function isSafeCell(absIndex){ return SAFE_INDICES.has(absIndex); }
+
+/* =====================================================
+   PLAYER SYSTEM
+===================================================== */
+function buildPlayers(count, config){
+  const names = { red:"Red", green:"Green", yellow:"Yellow", blue:"Blue" };
+  const colors = COLOR_ORDER.slice(0,count);
+  return colors.map((color,i)=>{
+    const cfg = config[i] || { isAI:false, difficulty:"easy" };
+    return {
+      color, name: cfg.isAI ? names[color]+" · AI" : names[color],
+      isAI: cfg.isAI, difficulty: cfg.difficulty||"easy",
+      tokensHome: 0
+    };
+  });
+}
+function isHumanTurn(){ return !players[gameState.currentPlayer].isAI; }
+function currentColor(){ return players[gameState.currentPlayer].color; }
+
+/* =====================================================
+   MOVE CALCULATION
+===================================================== */
+function legalMoves(color, dice){
+  const myTokens = tokens.filter(t=>t.color===color);
+  const moves = [];
+  myTokens.forEach(t=>{
+    if(t.relativePos===-1){
+      if(dice===6) moves.push({ token:t, newPos:0 });
+      return;
+    }
+    if(t.relativePos===56) return; // already home
+    const newPos = t.relativePos + dice;
+    if(newPos>56) return; // overshoot, illegal
+    moves.push({ token:t, newPos });
+  });
+  return moves;
+}
+function buildCellSequence(token, newPos){
+  const cells = [];
+  for(let p=token.relativePos+1; p<=newPos; p++){
+    if(p>=0 && p<=50){
+      const abs=(START_INDEX[token.color]+p)%52;
+      cells.push(cellCenter(PATH_CELLS[abs][0], PATH_CELLS[abs][1]));
+    } else if(p>=51 && p<=55){
+      const c = HOME_STRETCH[token.color][p-51];
+      cells.push(cellCenter(c[0],c[1]));
+    } else if(p===56){
+      const homeXY = homeCenterFor(token.color);
+      cells.push(homeXY);
+    }
+  }
+  return cells;
+}
+function homeCenterFor(color){
+  const c = cellCenter(7,7);
+  const off = 12;
+  if(color==="red") return {x:c.x-off,y:c.y};
+  if(color==="green") return {x:c.x,y:c.y-off};
+  if(color==="yellow") return {x:c.x+off,y:c.y};
+  return {x:c.x,y:c.y+off};
+}
+
+/* =====================================================
+   TURN FLOW
+===================================================== */
+function rollDice(){
+  if((gameState.mode!=="ROLL_READY" && gameState.mode!=="AI_THINKING") || gameState.paused) return;
+  const val = 1+Math.floor(Math.random()*6);
+  animateDiceRoll(val, ()=>{
+    gameState.diceValue = val;
+    beep(300,0.08,"square");
+    if(val===6){
+      gameState.consecutiveSixes++;
+      if(gameState.consecutiveSixes>=3){
+        toast("Three 6's in a row — turn forfeited!");
+        gameState.consecutiveSixes=0;
+        setTimeout(()=>advanceTurn(false), 700);
+        return;
+      }
+    } else {
+      gameState.consecutiveSixes=0;
+    }
+    const moves = legalMoves(currentColor(), val);
+    if(moves.length===0){
+      toast("No legal moves");
+      setTimeout(()=>advanceTurn(val===6), 700);
+      return;
+    }
+    if(moves.length===1 || !isHumanTurn()){
+      const chosen = isHumanTurn() ? moves[0] : aiChooseMove(moves);
+      performMove(chosen);
+    } else {
+      gameState.mode = "MOVE_SELECT";
+      updateDiceHint();
+      toast("Choose a token to move");
+    }
+  });
+}
+function performMove(move){
+  takeSnapshot();
+  gameState.mode = "ANIMATING";
+  const seq = buildCellSequence(move.token, move.newPos);
+  animQueue = { token: move.token, cells: seq, step: 0, elapsed: 0, finalPos: move.newPos };
+  updateDiceHint();
+}
+function updateAnimation(dt){
+  if(!animQueue) return;
+  animQueue.elapsed += dt;
+  const STEP_MS = 150;
+  if(animQueue.elapsed >= STEP_MS){
+    animQueue.elapsed = 0;
+    animQueue.step++;
+    beep(500,0.03,"triangle");
+    if(animQueue.step >= animQueue.cells.length){
+      const token = animQueue.token;
+      const finalPos = animQueue.finalPos;
+      animQueue = null;
+      token.relativePos = finalPos;
+      resolveMoveEffects(token);
+      return;
+    }
+  }
+}
+function resolveMoveEffects(token){
+  let bonusTurn = gameState.diceValue===6;
+  let gotHome = false, captured = false;
+
+  if(token.relativePos===56){
+    gotHome = true;
+    bonusTurn = true;
+    const p = players.find(pl=>pl.color===token.color);
+    p.tokensHome++;
+    updateScoresUI();
+    beep(700,0.2,"triangle");
+    toast(playerName(token.color)+" got a token home!");
+    if(p.tokensHome>=4){
+      endGame(p);
+      return;
+    }
+  } else if(token.relativePos>=0 && token.relativePos<=50){
+    const abs = tokenAbsIndex(token);
+    const cell = PATH_CELLS[abs];
+    if(!isSafeCell(abs)){
+      const victims = tokens.filter(t=> t!==token && t.color!==token.color &&
+        t.relativePos>=0 && t.relativePos<=50 && tokenAbsIndex(t)===abs);
+      if(victims.length){
+        victims.forEach(v=>{ v.relativePos=-1; });
+        captured = true;
+        bonusTurn = true;
+        beep(160,0.15,"sawtooth");
+        toast(playerName(token.color)+" captured a token!");
+      }
+    }
+  }
+
+  updatePillHighlights();
+  advanceTurn(bonusTurn);
+}
+function playerName(color){
+  const p = players.find(pl=>pl.color===color);
+  return p ? p.name.replace(" · AI","") : color;
+}
+function advanceTurn(bonus){
+  if(gameState.gameOver) return;
+  if(bonus){
+    gameState.mode = players[gameState.currentPlayer].isAI ? "AI_THINKING" : "ROLL_READY";
+    updateDiceHint();
+    if(players[gameState.currentPlayer].isAI) scheduleAITurn();
+    return;
+  }
+  gameState.consecutiveSixes = 0;
+  gameState.currentPlayer = (gameState.currentPlayer+1) % gameState.playerCount;
+  updateActivePlayerUI();
+  const p = players[gameState.currentPlayer];
+  if(p.isAI){
+    gameState.mode = "AI_THINKING";
+    scheduleAITurn();
+  } else {
+    gameState.mode = "ROLL_READY";
+  }
+  updateDiceHint();
+}
+
+/* =====================================================
+   AI
+===================================================== */
+function isVulnerable(color, absIndex){
+  if(isSafeCell(absIndex)) return false;
+  for(const opp of tokens){
+    if(opp.color===color) continue;
+    if(opp.relativePos<0 || opp.relativePos>50) continue;
+    const oppAbs = tokenAbsIndex(opp);
+    const dist = (absIndex - oppAbs + 52) % 52;
+    if(dist>=1 && dist<=6) return true;
+  }
+  return false;
+}
+function scoreMove(move){
+  const t = move.token;
+  const color = t.color;
+
+  if(move.newPos===56) return 100; // finishing a token is nearly always best
+
+  let score = 0;
+  if(t.relativePos===-1) score += 22; // getting a new token into play has real value
+
+  if(move.newPos>=0 && move.newPos<=50){
+    const abs = (START_INDEX[color]+move.newPos)%52;
+
+    const victims = tokens.filter(o=> o!==t && o.color!==color &&
+      o.relativePos>=0 && o.relativePos<=50 && tokenAbsIndex(o)===abs);
+    if(victims.length){
+      score += 70 + victims.length*15;
+      score += Math.max(...victims.map(v=>v.relativePos))*0.4; // punishing a far-advanced token is extra valuable
+    }
+
+    if(isSafeCell(abs)){
+      score += 18;
+    } else if(isVulnerable(color, abs)){
+      score -= victims.length ? 8 : 26; // risky landing spot — worth it only if it just captured something
+    }
+
+    const curAbs = (t.relativePos>=0 && t.relativePos<=50) ? tokenAbsIndex(t) : null;
+    if(curAbs!==null && isVulnerable(color,curAbs) && !isVulnerable(color,abs)){
+      score += 14; // escaping a token that was about to be captured
+    }
+  } else {
+    score += 12; // already safe in the private home stretch
+  }
+
+  score += move.newPos*0.5; // general progress toward home
+  return score;
+}
+const AI_NOISE = { easy:14, medium:6, hard:2 };
+function aiChooseMove(moves){
+  const p = players[gameState.currentPlayer];
+  const params = DIFF_PARAMS[p.difficulty]||DIFF_PARAMS.easy;
+  if(Math.random() < params.mistakeChance){
+    return moves[Math.floor(Math.random()*moves.length)];
+  }
+  const noise = AI_NOISE[p.difficulty] ?? 8;
+  let best = moves[0], bestScore = -Infinity;
+  moves.forEach(m=>{
+    const s = scoreMove(m) + (Math.random()*noise);
+    if(s>bestScore){ bestScore=s; best=m; }
+  });
+  return best;
+}
+function scheduleAITurn(){
+  clearAITimeouts();
+  const p = players[gameState.currentPlayer];
+  const params = DIFF_PARAMS[p.difficulty]||DIFF_PARAMS.easy;
+  setThinkingIndicator(true);
+  const t1 = setTimeout(()=>{
+    if(gameState.mode!=="AI_THINKING" || gameState.paused) return;
+    setThinkingIndicator(false);
+    rollDice();
+  }, params.thinkMs);
+  aiTimeouts.push(t1);
+}
+function clearAITimeouts(){ aiTimeouts.forEach(clearTimeout); aiTimeouts=[]; }
+function setThinkingIndicator(on){
+  for(let i=0;i<4;i++){
+    const card = document.getElementById("pcard"+i);
+    if(card) card.classList.toggle("thinking", on && i===gameState.currentPlayer);
+  }
+}
+
+/* =====================================================
+   UNDO
+===================================================== */
+function takeSnapshot(){
+  lastSnapshot = {
+    currentPlayer: gameState.currentPlayer,
+    diceValue: gameState.diceValue,
+    consecutiveSixes: gameState.consecutiveSixes,
+    tokens: tokens.map(t=>({ relativePos:t.relativePos })),
+    tokensHome: players.map(p=>p.tokensHome)
+  };
+}
+function restoreSnapshot(){
+  if(!lastSnapshot) return false;
+  const s = lastSnapshot;
+  gameState.currentPlayer = s.currentPlayer;
+  gameState.diceValue = s.diceValue;
+  gameState.consecutiveSixes = s.consecutiveSixes;
+  tokens.forEach((t,i)=>{ t.relativePos = s.tokens[i].relativePos; });
+  players.forEach((p,i)=>{ p.tokensHome = s.tokensHome[i]; });
+  animQueue = null;
+  updateScoresUI(); updateActivePlayerUI(); setThinkingIndicator(false);
+  const p = players[gameState.currentPlayer];
+  gameState.mode = p.isAI ? "AI_THINKING" : "ROLL_READY";
+  if(p.isAI) scheduleAITurn();
+  updateDiceHint();
+  lastSnapshot = null;
+  return true;
+}
+
+/* =====================================================
+   INPUT
+===================================================== */
+for(let i=0;i<4;i++){
+  document.getElementById("pdice"+i).onclick = ()=>{
+    if(gameState.mode!=="ROLL_READY" || !isHumanTurn() || gameState.paused) return;
+    if(i!==gameState.currentPlayer) return;
+    rollDice();
+  };
+}
+canvas.addEventListener("pointerdown", (e)=>{
+  if(gameState.mode!=="MOVE_SELECT" || !isHumanTurn() || gameState.paused) return;
+  const p = toBoard(e.clientX, e.clientY);
+  const col = Math.floor((p.x-FRAME_MARGIN)/CELL), row = Math.floor((p.y-FRAME_MARGIN)/CELL);
+  const moves = legalMoves(currentColor(), gameState.diceValue);
+  for(const mv of moves){
+    const g = tokenGridCell(mv.token);
+    if(g && g.row===row && g.col===col){ performMove(mv); return; }
+  }
+});
+
+/* =====================================================
+   MENU / MODALS
+===================================================== */
+function show(id){ document.getElementById(id).classList.remove("hidden"); }
+function hide(id){ document.getElementById(id).classList.add("hidden"); }
+
+document.getElementById("menuBtn").onclick = ()=> show("menuOverlay");
+document.getElementById("menuClose").onclick = ()=> hide("menuOverlay");
+document.getElementById("setupRulesBtn").onclick = ()=> show("rulesOverlay");
+document.getElementById("menuRules").onclick = ()=>{ hide("menuOverlay"); show("rulesOverlay"); };
+document.getElementById("rulesClose").onclick = ()=> hide("rulesOverlay");
+
+document.getElementById("menuRestart").onclick = ()=>{ hide("menuOverlay"); show("restartOverlay"); };
+document.getElementById("restartCancel").onclick = ()=> hide("restartOverlay");
+document.getElementById("restartConfirm").onclick = ()=>{ hide("restartOverlay"); restartGame(); };
+document.getElementById("pauseRestart").onclick = ()=>{ hide("pauseOverlay"); show("restartOverlay"); };
+document.getElementById("winRestart").onclick = ()=>{ hide("winOverlay"); restartGame(); };
+
+document.getElementById("backBtn").onclick = ()=> show("exitOverlay");
+document.getElementById("menuExit").onclick = ()=>{ hide("menuOverlay"); show("exitOverlay"); };
+document.getElementById("pauseExit").onclick = ()=>{ hide("pauseOverlay"); show("exitOverlay"); };
+document.getElementById("winExit").onclick = ()=> doExit();
+document.getElementById("exitCancel").onclick = ()=> hide("exitOverlay");
+document.getElementById("exitConfirm").onclick = ()=> doExit();
+function doExit(){ window.location.href = "index.html"; }
+
+document.getElementById("menuUndo").onclick = ()=>{
+  hide("menuOverlay");
+  if(gameState.paused || gameState.gameOver){ toast("Can't undo right now"); return; }
+  if(gameState.mode!=="ROLL_READY" && gameState.mode!=="AI_THINKING" && gameState.mode!=="MOVE_SELECT"){ toast("Wait for the move to finish first"); return; }
+  clearAITimeouts();
+  if(restoreSnapshot()){ toast("Last move undone"); }
+  else { toast("Nothing to undo yet"); }
+};
+
+document.getElementById("pauseBtn").onclick = ()=>{
+  if(gameState.gameOver) return;
+  gameState.paused = true;
+  show("pauseOverlay");
+};
+document.getElementById("resumeBtn").onclick = ()=>{
+  gameState.paused = false;
+  hide("pauseOverlay");
+  if(gameState.mode==="AI_THINKING"){ scheduleAITurn(); }
+};
+
+document.getElementById("soundBtn").onclick = toggleSound;
+document.getElementById("soundSwitch").onclick = toggleSound;
+function toggleSound(){
+  gameState.soundOn = !gameState.soundOn;
+  document.getElementById("soundBtn").innerHTML = gameState.soundOn ? ICON_SOUND_ON : ICON_SOUND_OFF;
+  document.getElementById("soundSwitch").classList.toggle("on", gameState.soundOn);
+}
+document.getElementById("musicSwitch").onclick = ()=>{
+  setMusicOn(!gameState.musicOn);
+  document.getElementById("musicSwitch").classList.toggle("on", gameState.musicOn);
+};
+document.getElementById("soundBtn").innerHTML = ICON_SOUND_ON;
+document.getElementById("pauseBtn").innerHTML = ICON_PAUSE;
+document.getElementById("menuBtn").innerHTML = ICON_MENU_DOTS;
+
+/* =====================================================
+   SETUP MODAL
+===================================================== */
+let setupCount = 2;
+let setupConfig = [ {isAI:false}, {isAI:true,difficulty:"easy"}, {isAI:true,difficulty:"easy"}, {isAI:true,difficulty:"easy"} ];
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+document.querySelectorAll("#countRow .chip").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll("#countRow .chip").forEach(b=>b.classList.remove("on"));
+    btn.classList.add("on");
+    setupCount = parseInt(btn.dataset.count,10);
+    renderSlots();
+  };
+});
+function renderSlots(){
+  const c = document.getElementById("slotsContainer");
+  c.innerHTML = "";
+  const names = { red:"Red", green:"Green", yellow:"Yellow", blue:"Blue" };
+  const colors = COLOR_ORDER.slice(0,setupCount);
+  colors.forEach((color,i)=>{
+    const row = document.createElement("div");
+    row.className = "slotrow";
+    if(i===0){
+      row.innerHTML = `<div class="lbl"><span class="swatch" style="background:${PLAYER_COLORS[color]}"></span>${names[color]} (You)</div><div class="slotsel"><span class="chip on">Human</span></div>`;
+      c.appendChild(row); return;
+    }
+    const cfg = setupConfig[i];
+    const diffs = ["easy","medium","hard"];
+    row.innerHTML = `<div class="lbl"><span class="swatch" style="background:${PLAYER_COLORS[color]}"></span>${names[color]}</div><div class="slotsel">
+      <button class="chip ${!cfg.isAI?'on':''}" data-i="${i}" data-type="human">Human</button>
+      ${diffs.map(d=>`<button class="chip ${cfg.isAI && cfg.difficulty===d?'on':''}" data-i="${i}" data-type="ai" data-diff="${d}">AI ${cap(d)}</button>`).join("")}
+    </div>`;
+    c.appendChild(row);
+  });
+  c.querySelectorAll("button[data-i]").forEach(b=>{
+    b.onclick = ()=>{
+      const i = parseInt(b.dataset.i,10);
+      if(b.dataset.type==="human"){ setupConfig[i]={isAI:false}; }
+      else { setupConfig[i]={isAI:true, difficulty:b.dataset.diff}; }
+      renderSlots();
+    };
+  });
+}
+renderSlots();
+document.getElementById("startBtn").onclick = ()=>{
+  hide("setupOverlay");
+  startGame(setupCount, setupConfig.slice(0,setupCount));
+};
+
+/* =====================================================
+   GAME INIT / UI SYNC
+===================================================== */
+function startGame(count, config){
+  gameState.playerCount = count;
+  gameState.currentPlayer = 0;
+  gameState.gameOver = false;
+  gameState.paused = false;
+  gameState.consecutiveSixes = 0;
+  lastSnapshot = null;
+  players = buildPlayers(count, config);
+  tokens = createTokens(players.map(p=>p.color));
+  startMusic();
+
+  document.getElementById("modePill").textContent =
+    count+" PLAYER" + (players.some(p=>p.isAI) ? " · AI" : "");
+
+  setupUIForPlayers();
+  updateActivePlayerUI();
+  updateScoresUI();
+
+  gameState.mode = players[0].isAI ? "AI_THINKING" : "ROLL_READY";
+  updateDiceHint();
+  if(players[0].isAI) scheduleAITurn();
+
+  if(!loopStarted){ loopStarted = true; requestAnimationFrame(loop); }
+  resizeCanvas();
+}
+function restartGame(){
+  clearAITimeouts();
+  hide("winOverlay");
+  const cfg = players.map(p=>({isAI:p.isAI, difficulty:p.difficulty}));
+  startGame(gameState.playerCount, cfg);
+}
+function setupUIForPlayers(){
+  for(let i=0;i<4;i++){
+    const card = document.getElementById("pcard"+i);
+    if(i<gameState.playerCount){
+      card.classList.remove("hidden");
+      const p = players[i];
+      document.getElementById("name"+i).textContent = p.name.replace(" · AI","");
+      document.getElementById("av"+i).textContent = p.color[0].toUpperCase();
+      document.getElementById("av"+i).style.background = PLAYER_COLORS[p.color];
+      card.classList.toggle("ai", p.isAI);
+    } else {
+      card.classList.add("hidden");
+    }
+  }
+}
+function updateActivePlayerUI(){
+  for(let i=0;i<4;i++){
+    const card = document.getElementById("pcard"+i);
+    if(card) card.classList.toggle("active", i===gameState.currentPlayer);
+  }
+}
+function updateScoresUI(){
+  players.forEach((p,i)=>{
+    const el = document.getElementById("score"+i);
+    if(el) el.textContent = p.tokensHome+"/4";
+  });
+}
+function updatePillHighlights(){ /* reserved for future coin-count UI */ }
+function updateDiceHint(){
+  const status = document.getElementById("statusHint");
+  for(let i=0;i<4;i++){
+    const d = document.getElementById("pdice"+i);
+    if(!d) continue;
+    const isCurrentReady = i===gameState.currentPlayer && gameState.mode==="ROLL_READY" && isHumanTurn() && !gameState.paused;
+    d.classList.toggle("ready", isCurrentReady);
+  }
+  let text = "", active = false;
+  if(gameState.mode==="ROLL_READY" && isHumanTurn()){
+    text = playerName(currentColor())+" — tap your die to roll"; active = true;
+  } else if(gameState.mode==="MOVE_SELECT"){
+    text = "Tap a highlighted token to move it";
+  } else if(gameState.mode==="AI_THINKING"){
+    text = playerName(currentColor())+" is thinking…";
+  } else if(gameState.mode==="ANIMATING"){
+    text = "Moving…";
+  } else if(gameState.mode==="GAME_OVER"){
+    text = "Game over";
+  }
+  status.textContent = text;
+  status.classList.toggle("active", active);
+}
+function endGame(winnerPlayer){
+  gameState.mode = "GAME_OVER";
+  gameState.gameOver = true;
+  document.getElementById("winnerName").textContent = playerName(winnerPlayer.color);
+  document.getElementById("winnerScore").textContent = "All 4 tokens home";
+  document.getElementById("winOverlay").classList.remove("hidden");
+  beep(520,0.3,"triangle");
+}
+
+/* =====================================================
+   RENDERING
+===================================================== */
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function drawBoard(){
+  ctx.clearRect(0,0,BOARD_PX,BOARD_PX);
+
+  // outer premium frame (matches the rest of MAXGAME's board aesthetic)
+  roundRect(0,0,BOARD_PX,BOARD_PX,30);
+  const gradF = ctx.createLinearGradient(0,0,BOARD_PX,BOARD_PX);
+  gradF.addColorStop(0,"#2a4a32"); gradF.addColorStop(.5,"#173023"); gradF.addColorStop(1,"#0c1b13");
+  ctx.save();
+  ctx.shadowColor="rgba(0,0,0,.5)"; ctx.shadowBlur=28; ctx.shadowOffsetY=12;
+  ctx.fillStyle = gradF; ctx.fill();
+  ctx.restore();
+  roundRect(6,6,BOARD_PX-12,BOARD_PX-12,24);
+  ctx.strokeStyle="rgba(199,255,85,.22)"; ctx.lineWidth=2; ctx.stroke();
+
+  ctx.save();
+  ctx.translate(FRAME_MARGIN, FRAME_MARGIN);
+
+  roundRect(0,0,GRID_PX,GRID_PX,10);
+  ctx.fillStyle = "#efe6cd"; ctx.fill();
+  ctx.strokeStyle="rgba(0,0,0,.2)"; ctx.lineWidth=2; ctx.stroke();
+
+  drawYards();
+  drawPathCells();
+  drawHomeStretches();
+  drawCenterTriangle();
+  drawTokens();
+
+  ctx.restore();
+}
+function drawYards(){
+  Object.keys(YARD_BLOCK).forEach(color=>{
+    const [r0,c0] = YARD_BLOCK[color];
+    const x = c0*CELL, y = r0*CELL, w = 6*CELL, h = 6*CELL;
+    roundRect(x+4,y+4,w-8,h-8,16);
+    const g = ctx.createLinearGradient(x,y,x+w,y+h);
+    g.addColorStop(0, shade(PLAYER_COLORS[color],0.12));
+    g.addColorStop(1, shade(PLAYER_COLORS[color],-0.12));
+    ctx.save();
+    ctx.shadowColor="rgba(0,0,0,.35)"; ctx.shadowBlur=10; ctx.shadowOffsetY=4;
+    ctx.fillStyle = g; ctx.fill();
+    ctx.restore();
+    roundRect(x+w*0.15,y+h*0.15,w*0.7,h*0.7,14);
+    const inner = ctx.createLinearGradient(x,y,x+w,y+h);
+    inner.addColorStop(0,"#fbf5e4"); inner.addColorStop(1,"#efe6cd");
+    ctx.fillStyle = inner; ctx.fill();
+    ctx.strokeStyle="rgba(0,0,0,.12)"; ctx.lineWidth=1.5; ctx.stroke();
+    YARD_SLOTS[color].forEach(([row,col])=>{
+      const c = cellCenter(row,col);
+      ctx.beginPath(); ctx.arc(c.x,c.y,CELL*0.34,0,Math.PI*2);
+      const slotG = ctx.createRadialGradient(c.x,c.y,2,c.x,c.y,CELL*0.34);
+      slotG.addColorStop(0,"rgba(0,0,0,.16)"); slotG.addColorStop(1,"rgba(0,0,0,.04)");
+      ctx.fillStyle = slotG; ctx.fill();
+      ctx.strokeStyle = PLAYER_COLORS[color]; ctx.lineWidth=2.5; ctx.stroke();
+    });
+  });
+}
+function drawPathCells(){
+  PATH_CELLS.forEach((cell,absIndex)=>{
+    const [row,col] = cell;
+    const x = col*CELL, y = row*CELL;
+    ctx.strokeStyle = "rgba(0,0,0,.14)"; ctx.lineWidth=1;
+    let fill;
+    const startColor = COLOR_ORDER.find(c=>START_INDEX[c]===absIndex);
+    if(startColor){
+      const g = ctx.createLinearGradient(x,y,x+CELL,y+CELL);
+      g.addColorStop(0, shade(PLAYER_COLORS[startColor],0.55));
+      g.addColorStop(1, shade(PLAYER_COLORS[startColor],0.75));
+      fill = g;
+    } else {
+      const g = ctx.createLinearGradient(x,y,x+CELL,y+CELL);
+      g.addColorStop(0,"#fffdf6"); g.addColorStop(1,"#f3ecd9");
+      fill = g;
+    }
+    ctx.fillStyle = fill;
+    ctx.fillRect(x,y,CELL,CELL);
+    ctx.strokeRect(x,y,CELL,CELL);
+    if(isSafeCell(absIndex)){
+      drawStar(x+CELL/2, y+CELL/2, CELL*0.22, startColor?PLAYER_COLORS[startColor]:"#9a8f6b");
+    }
+  });
+}
+function shade(hex, amt){
+  const c = hex.replace("#","");
+  const r = parseInt(c.substring(0,2),16), g=parseInt(c.substring(2,4),16), b=parseInt(c.substring(4,6),16);
+  const mix = amt>=0 ? 255 : 0;
+  const a = Math.abs(amt);
+  const nr = Math.round(r+(mix-r)*a), ng=Math.round(g+(mix-g)*a), nb=Math.round(b+(mix-b)*a);
+  return `rgb(${clamp(nr,0,255)},${clamp(ng,0,255)},${clamp(nb,0,255)})`;
+}
+function drawStar(cx,cy,r,color){
+  ctx.save();
+  ctx.beginPath();
+  for(let i=0;i<5;i++){
+    const ang = -Math.PI/2 + i*(Math.PI*2/5);
+    const ang2 = ang + Math.PI/5;
+    const p1 = { x:cx+Math.cos(ang)*r, y:cy+Math.sin(ang)*r };
+    const p2 = { x:cx+Math.cos(ang2)*r*0.45, y:cy+Math.sin(ang2)*r*0.45 };
+    if(i===0) ctx.moveTo(p1.x,p1.y); else ctx.lineTo(p1.x,p1.y);
+    ctx.lineTo(p2.x,p2.y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = color; ctx.globalAlpha=0.85; ctx.fill();
+  ctx.restore();
+}
+function drawHomeStretches(){
+  Object.keys(HOME_STRETCH).forEach(color=>{
+    HOME_STRETCH[color].forEach(([row,col])=>{
+      const x=col*CELL, y=row*CELL;
+      ctx.fillStyle = PLAYER_COLORS[color];
+      ctx.fillRect(x,y,CELL,CELL);
+      ctx.strokeStyle="rgba(0,0,0,.15)"; ctx.lineWidth=1; ctx.strokeRect(x,y,CELL,CELL);
+    });
+  });
+}
+function drawCenterTriangle(){
+  const cx=7.5*CELL, cy=7.5*CELL, r=1.5*CELL;
+  const corners = { // outer corners of the 3x3 center block
+    tl:{x:6*CELL,y:6*CELL}, tr:{x:9*CELL,y:6*CELL}, br:{x:9*CELL,y:9*CELL}, bl:{x:6*CELL,y:9*CELL}
+  };
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(corners.tl.x,corners.tl.y); ctx.lineTo(corners.tr.x,corners.tr.y); ctx.lineTo(cx,cy); ctx.closePath();
+  ctx.fillStyle = PLAYER_COLORS.green; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(corners.tr.x,corners.tr.y); ctx.lineTo(corners.br.x,corners.br.y); ctx.lineTo(cx,cy); ctx.closePath();
+  ctx.fillStyle = PLAYER_COLORS.yellow; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(corners.br.x,corners.br.y); ctx.lineTo(corners.bl.x,corners.bl.y); ctx.lineTo(cx,cy); ctx.closePath();
+  ctx.fillStyle = PLAYER_COLORS.blue; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(corners.bl.x,corners.bl.y); ctx.lineTo(corners.tl.x,corners.tl.y); ctx.lineTo(cx,cy); ctx.closePath();
+  ctx.fillStyle = PLAYER_COLORS.red; ctx.fill();
+  ctx.strokeStyle="rgba(0,0,0,.25)"; ctx.lineWidth=2;
+  ctx.strokeRect(corners.tl.x,corners.tl.y,3*CELL,3*CELL);
+  drawStar(cx, cy, CELL*0.42, "#ffd86a");
+  ctx.beginPath(); ctx.arc(cx,cy,CELL*0.42,0,Math.PI*2);
+  ctx.strokeStyle="rgba(255,255,255,.5)"; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.restore();
+}
+function tokenPixelPos(token){
+  if(animQueue && animQueue.token===token){
+    const idx = clamp(animQueue.step, 0, animQueue.cells.length-1);
+    return animQueue.cells[idx];
+  }
+  if(token.relativePos===56) return homeCenterFor(token.color);
+  const g = tokenGridCell(token);
+  return cellCenter(g.row,g.col);
+}
+function drawTokens(){
+  // group by cell to offset stacked tokens slightly
+  const groups = {};
+  tokens.forEach(t=>{
+    if(t.relativePos===56) return; // drawn separately, stacked near center
+    const p = tokenPixelPos(t);
+    const key = Math.round(p.x)+","+Math.round(p.y);
+    (groups[key] = groups[key]||[]).push(t);
+  });
+  Object.values(groups).forEach(group=>{
+    group.forEach((t,i)=>{
+      const p = tokenPixelPos(t);
+      const off = group.length>1 ? (i-(group.length-1)/2)*8 : 0;
+      drawToken(p.x+off, p.y, t);
+    });
+  });
+  // finished tokens: small stack near center per color
+  const finishedByColor = {};
+  tokens.forEach(t=>{ if(t.relativePos===56){ (finishedByColor[t.color]=finishedByColor[t.color]||[]).push(t); } });
+  Object.keys(finishedByColor).forEach(color=>{
+    const base = homeCenterFor(color);
+    finishedByColor[color].forEach((t,i)=>{
+      drawToken(base.x+(i%2)*7-3, base.y+Math.floor(i/2)*7-3, t, 0.6);
+    });
+  });
+}
+function drawToken(x,y,token,scale){
+  scale = scale||1;
+  const r = CELL*0.32*scale;
+  const isMovable = gameState.mode==="MOVE_SELECT" && isHumanTurn() && token.color===currentColor() &&
+    legalMoves(currentColor(), gameState.diceValue).some(m=>m.token===token);
+  if(isMovable){
+    ctx.beginPath(); ctx.arc(x,y,r+6,0,Math.PI*2);
+    ctx.strokeStyle = "rgba(199,255,85,.8)"; ctx.lineWidth=3; ctx.stroke();
+  }
+  ctx.beginPath(); ctx.arc(x,y+2,r,0,Math.PI*2);
+  ctx.fillStyle="rgba(0,0,0,.25)"; ctx.fill();
+  const g = ctx.createRadialGradient(x-r*0.3,y-r*0.3,r*0.2,x,y,r);
+  const base = PLAYER_COLORS[token.color];
+  g.addColorStop(0, shade(base,0.55)); g.addColorStop(1, base);
+  ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.fillStyle=g; ctx.fill();
+  ctx.strokeStyle="rgba(0,0,0,.3)"; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.beginPath(); ctx.arc(x,y,r*0.4,0,Math.PI*2);
+  ctx.fillStyle="rgba(255,255,255,.4)"; ctx.fill();
+}
+
+/* =====================================================
+   DICE UI
+===================================================== */
+const PIP_LAYOUTS = {
+  1:[4], 2:[0,8], 3:[0,4,8], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8]
+};
+function renderDiceFace(val, playerIndex){
+  const i = playerIndex!==undefined ? playerIndex : gameState.currentPlayer;
+  const grid = document.getElementById("pdiceGrid"+i);
+  if(!grid) return;
+  grid.innerHTML = "";
+  for(let k=0;k<9;k++){
+    const pip = document.createElement("div");
+    pip.className="pip";
+    if(PIP_LAYOUTS[val].includes(k)) pip.style.opacity="1";
+    grid.appendChild(pip);
+  }
+}
+for(let i=0;i<4;i++) renderDiceFace(1,i);
+function animateDiceRoll(finalVal, cb){
+  const pIndex = gameState.currentPlayer;
+  let n=0;
+  const iv = setInterval(()=>{
+    renderDiceFace(1+Math.floor(Math.random()*6), pIndex);
+    n++;
+    if(n>=7){ clearInterval(iv); renderDiceFace(finalVal, pIndex); cb(); }
+  }, 60);
+}
+
+/* =====================================================
+   GAME LOOP
+===================================================== */
+let lastTs=0, loopStarted=false;
+function loop(ts){
+  const dt = Math.min((ts-lastTs)||0, 50);
+  lastTs = ts;
+  if(!gameState.paused && !gameState.gameOver && gameState.mode==="ANIMATING"){
+    updateAnimation(dt);
+  }
+  drawBoard();
+  updateDiceHint();
+  requestAnimationFrame(loop);
+}
+
+/* =====================================================
+   INIT
+===================================================== */
+resizeCanvas();
+</script>
+</body>
+</html>
