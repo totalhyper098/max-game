@@ -103,13 +103,13 @@ if (box && dots) {
     card.className = "game-card";
 
     const playControl =
-      g.id === "carrom"
-        ? `<a class="play-button" href="./carrom.html">
-             PLAY NOW <b>→</b>
-           </a>`
-        : `<button class="play-button" data-game="${g.id}">
-             PLAY NOW <b>→</b>
-           </button>`;
+  (g.id === "carrom" || g.id === "ludo")
+    ? `<a class="play-button" href="./${g.id}.html">
+         PLAY NOW <b>→</b>
+       </a>`
+    : `<button class="play-button" data-game="${g.id}">
+         PLAY NOW <b>→</b>
+       </button>`;
 
     card.innerHTML = `
       <div class="game-image ${g.id}-image">
