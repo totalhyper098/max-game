@@ -1025,7 +1025,6 @@ document.getElementById("startBtn").onclick = ()=>{
 ===================================================== */
 function startGame(count, config, colors){
   gameState.playerCount = count;
-  gameState.currentPlayer = 0;
   gameState.gameOver = false;
   gameState.paused = false;
   gameState.consecutiveSixes = 0;
@@ -1033,6 +1032,11 @@ function startGame(count, config, colors){
   lastSnapshot = null;
   players = buildPlayers(count, config, colors);
   tokens = createTokens(players.map(p=>p.color));
+
+  // Red always takes the first turn, regardless of which color the human
+  // picked or where they landed in the players array.
+  const redIdx = players.findIndex(p=>p.color==="red");
+  gameState.currentPlayer = redIdx>=0 ? redIdx : 0;
 
   const human = players.find(p=>!p.isAI);
   gameState.boardRotationDeg = human ? (ROTATION_FOR_COLOR[human.color]||0) : 0;
@@ -1044,9 +1048,9 @@ function startGame(count, config, colors){
   updateActivePlayerUI();
   updateScoresUI();
 
-  gameState.mode = players[0].isAI ? "AI_THINKING" : "ROLL_READY";
+  gameState.mode = players[gameState.currentPlayer].isAI ? "AI_THINKING" : "ROLL_READY";
   updateDiceHint();
-  if(players[0].isAI) scheduleAITurn();
+  if(players[gameState.currentPlayer].isAI) scheduleAITurn();
 
   if(!loopStarted){ loopStarted = true; requestAnimationFrame(loop); }
   resizeCanvas();
