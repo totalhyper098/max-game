@@ -56,9 +56,10 @@ svg{display:block;}
   display:flex; justify-content:space-between; gap:8px;
   width:min(90vw, 64vh, 540px); flex:0 0 auto;
 }
-.corner-row:empty{ display:none; }
 .corner-row.top{ margin-bottom:8px; }
 .corner-row.bottom{ margin-top:8px; }
+.corner-row.row-empty{ display:none; }
+.corner-slot{ flex:0 0 auto; min-height:1px; }
 .corner-card{
   flex:0 0 auto; z-index:6;
   display:flex; flex-direction:row; align-items:center; gap:7px;
@@ -68,7 +69,11 @@ svg{display:block;}
 }
 .corner-card.active{
   border-color:var(--line2); background:rgba(199,255,85,.09);
-  box-shadow:0 0 0 1px rgba(199,255,85,.2), 0 0 16px rgba(199,255,85,.14);
+  animation: activeGlow 1.8s ease-in-out infinite;
+}
+@keyframes activeGlow{
+  0%,100%{ box-shadow:0 0 0 1px rgba(199,255,85,.2), 0 0 12px rgba(199,255,85,.12); }
+  50%{ box-shadow:0 0 0 1px rgba(199,255,85,.4), 0 0 20px rgba(199,255,85,.24); }
 }
 @keyframes thinkPulse{
   0%,100%{ box-shadow:0 0 0 0 rgba(126,168,255,.55); }
@@ -82,7 +87,9 @@ svg{display:block;}
 }
 .corner-card .meta{min-width:0;}
 .corner-card .name{font-size:9px;font-weight:900;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56px;}
-.corner-card .score{font-size:11.5px;font-weight:950;color:var(--gold);}
+.corner-card .score{font-size:11.5px;font-weight:950;color:var(--gold);display:inline-block;}
+@keyframes scorePop{ 0%{transform:scale(1);} 40%{transform:scale(1.5);color:var(--green);} 100%{transform:scale(1);} }
+.corner-card .score.pop{ animation: scorePop .5s ease; }
 .corner-card.ai .name:after{content:" · AI";color:var(--muted2);font-weight:700;}
 .corner-card.eliminated{ opacity:.4; filter:grayscale(.7); }
 .corner-card.eliminated .name:after{content:" · OUT";color:#ff8a6a;font-weight:800;}
@@ -94,21 +101,47 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
 
 /* ===== PER-PLAYER DICE ===== */
 .pdice{
-  width:54px;height:54px;border-radius:13px;flex:0 0 auto;
-  background:linear-gradient(155deg,#fdfaf1,#e7ddc4);
+  width:54px;height:54px;border-radius:14px;flex:0 0 auto;
+  background:linear-gradient(155deg,#ffffff,#f3ecd8 45%,#e2d6b8);
   display:grid; place-items:center; position:relative;
-  box-shadow:0 4px 10px rgba(0,0,0,.35), inset 0 1px 1px rgba(255,255,255,.75);
-  border:1px solid rgba(0,0,0,.18);
-  opacity:.32; pointer-events:none;
-  transition:.2s ease, transform .1s ease;
+  box-shadow:
+    0 5px 12px rgba(0,0,0,.4),
+    inset 0 2px 2px rgba(255,255,255,.9),
+    inset 0 -3px 4px rgba(120,100,60,.22);
+  border:1px solid rgba(0,0,0,.2);
+  opacity:.3; pointer-events:none;
+  transition:opacity .2s ease, box-shadow .2s ease;
 }
 .pdice.ready{
   opacity:1; pointer-events:auto;
-  box-shadow:0 4px 14px rgba(199,255,85,.4), 0 0 0 2px rgba(199,255,85,.55), inset 0 1px 1px rgba(255,255,255,.75);
+  animation: diceBreathe 1.6s ease-in-out infinite;
 }
-.pdice:active{ transform:scale(.88); }
+@keyframes diceBreathe{
+  0%,100%{
+    box-shadow:
+      0 5px 12px rgba(0,0,0,.4), inset 0 2px 2px rgba(255,255,255,.9), inset 0 -3px 4px rgba(120,100,60,.22),
+      0 0 0 2px rgba(199,255,85,.5), 0 0 13px rgba(199,255,85,.32);
+    transform:scale(1);
+  }
+  50%{
+    box-shadow:
+      0 7px 16px rgba(0,0,0,.45), inset 0 2px 2px rgba(255,255,255,.9), inset 0 -3px 4px rgba(120,100,60,.22),
+      0 0 0 3px rgba(199,255,85,.75), 0 0 22px rgba(199,255,85,.55);
+    transform:scale(1.05);
+  }
+}
+.pdice.rolling{ animation: diceRoll .14s ease-in-out infinite !important; }
+@keyframes diceRoll{
+  0%,100%{ transform:rotate(-7deg) scale(1.03); }
+  50%{ transform:rotate(7deg) scale(.97); }
+}
+.pdice:active{ transform:scale(.86) !important; }
 .pdice-grid{ width:68%; height:68%; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); }
-.pdice-grid .pip{ width:6.4px;height:6.4px;border-radius:50%; background:#22201a; margin:auto; opacity:0; }
+.pdice-grid .pip{
+  width:7.2px;height:7.2px;border-radius:50%; margin:auto; opacity:0;
+  background:radial-gradient(circle at 35% 30%, #4a4436, #14110b 75%);
+  box-shadow: inset 0 1px 1.5px rgba(0,0,0,.65), 0 1px 0 rgba(255,255,255,.55);
+}
 .statusbar{
   text-align:center; font-size:10.5px; font-weight:800; letter-spacing:.4px;
   color:var(--muted); padding:2px 12px 6px; flex:0 0 auto;
@@ -120,13 +153,17 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
 .overlay{
   position:fixed; inset:0; background:rgba(3,8,5,.72); backdrop-filter:blur(6px);
   display:flex; align-items:center; justify-content:center; z-index:100; padding:20px;
+  animation: overlayFade .2s ease;
 }
+@keyframes overlayFade{ from{ opacity:0; } to{ opacity:1; } }
 .modal{
   width:min(420px,100%); max-height:85vh; overflow-y:auto;
   background:linear-gradient(165deg,#0d1f14,#0a1610);
   border:1px solid var(--line2); border-radius:24px; padding:22px;
   box-shadow:0 30px 80px rgba(0,0,0,.55);
+  animation: modalPop .22s cubic-bezier(.2,.9,.3,1.2);
 }
+@keyframes modalPop{ from{ opacity:0; transform:scale(.92) translateY(8px); } to{ opacity:1; transform:scale(1) translateY(0); } }
 .modal h2{font-size:20px;margin-bottom:4px;letter-spacing:-.5px;}
 .modal .sub{font-size:11px;color:var(--muted);margin-bottom:16px;}
 .modal .row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
@@ -155,8 +192,17 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
 .twobtn .danger{background:linear-gradient(135deg,#ff8a6a,#e0492c);color:#2a0d05;}
 .rules p{font-size:12px;line-height:1.7;color:#c3d2c9;margin-bottom:8px;}
 .rules b{color:var(--green);}
-.winner-name{font-size:26px;font-weight:950;color:var(--gold);margin:10px 0 2px;}
+.winner-name{font-size:26px;font-weight:950;color:var(--gold);margin:10px 0 2px; animation: winnerNamePulse 1.4s ease-in-out infinite;}
+@keyframes winnerNamePulse{ 0%,100%{ text-shadow:0 0 0 rgba(255,216,106,0); } 50%{ text-shadow:0 0 18px rgba(255,216,106,.6); } }
 .winner-score{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.win-trophy{ animation: trophyBounce 1.2s ease-in-out infinite; }
+@keyframes trophyBounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-4px); } }
+.win-spark{ position:absolute; color:var(--gold); pointer-events:none; animation: sparkFloat 2.4s ease-in-out infinite; }
+.win-spark.s1{ top:14px; left:18px; font-size:16px; animation-delay:0s; }
+.win-spark.s2{ top:24px; right:22px; font-size:20px; animation-delay:.5s; }
+.win-spark.s3{ bottom:80px; left:28px; font-size:14px; animation-delay:1s; }
+.win-spark.s4{ bottom:100px; right:16px; font-size:18px; animation-delay:1.5s; }
+@keyframes sparkFloat{ 0%,100%{ opacity:.25; transform:translateY(0) scale(.85) rotate(0deg); } 50%{ opacity:1; transform:translateY(-10px) scale(1.15) rotate(20deg); } }
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line);}
 .toggle-row:first-child{border-top:0;}
 .switch{width:42px;height:24px;border-radius:999px;background:rgba(255,255,255,.1);position:relative;border:1px solid var(--line);}
@@ -169,6 +215,13 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
   font-size:11px;opacity:0;pointer-events:none;transition:.25s ease;z-index:200; text-align:center; max-width:80%;
 }
 .toast.show{opacity:1;transform:translate(-50%,0);}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}
 </style>
 </head>
 <body>
@@ -189,15 +242,19 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
 <!-- BOARD -->
 <div class="boardarea">
   <div class="corner-row top" id="cornerRowTop">
-    <div class="corner-card" id="pcard0">
-      <div class="av" id="av0">R</div>
-      <div class="meta"><div class="name" id="name0">Red</div><div class="score" id="score0">0/4</div></div>
-      <button class="pdice" id="pdice0"><div class="pdice-grid" id="pdiceGrid0"></div></button>
+    <div class="corner-slot" id="slotTL">
+      <div class="corner-card" id="pcard0">
+        <div class="av" id="av0">R</div>
+        <div class="meta"><div class="name" id="name0">Red</div><div class="score" id="score0">0/4</div></div>
+        <button class="pdice" id="pdice0"><div class="pdice-grid" id="pdiceGrid0"></div></button>
+      </div>
     </div>
-    <div class="corner-card" id="pcard1">
-      <div class="av" id="av1">G</div>
-      <div class="meta"><div class="name" id="name1">Green</div><div class="score" id="score1">0/4</div></div>
-      <button class="pdice" id="pdice1"><div class="pdice-grid" id="pdiceGrid1"></div></button>
+    <div class="corner-slot" id="slotTR">
+      <div class="corner-card" id="pcard1">
+        <div class="av" id="av1">G</div>
+        <div class="meta"><div class="name" id="name1">Green</div><div class="score" id="score1">0/4</div></div>
+        <button class="pdice" id="pdice1"><div class="pdice-grid" id="pdiceGrid1"></div></button>
+      </div>
     </div>
   </div>
 
@@ -206,15 +263,19 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
   </div>
 
   <div class="corner-row bottom" id="cornerRowBottom">
-    <div class="corner-card" id="pcard2">
-      <div class="av" id="av2">Y</div>
-      <div class="meta"><div class="name" id="name2">Yellow</div><div class="score" id="score2">0/4</div></div>
-      <button class="pdice" id="pdice2"><div class="pdice-grid" id="pdiceGrid2"></div></button>
+    <div class="corner-slot" id="slotBL">
+      <div class="corner-card" id="pcard2">
+        <div class="av" id="av2">Y</div>
+        <div class="meta"><div class="name" id="name2">Yellow</div><div class="score" id="score2">0/4</div></div>
+        <button class="pdice" id="pdice2"><div class="pdice-grid" id="pdiceGrid2"></div></button>
+      </div>
     </div>
-    <div class="corner-card" id="pcard3">
-      <div class="av" id="av3">B</div>
-      <div class="meta"><div class="name" id="name3">Blue</div><div class="score" id="score3">0/4</div></div>
-      <button class="pdice" id="pdice3"><div class="pdice-grid" id="pdiceGrid3"></div></button>
+    <div class="corner-slot" id="slotBR">
+      <div class="corner-card" id="pcard3">
+        <div class="av" id="av3">B</div>
+        <div class="meta"><div class="name" id="name3">Blue</div><div class="score" id="score3">0/4</div></div>
+        <button class="pdice" id="pdice3"><div class="pdice-grid" id="pdiceGrid3"></div></button>
+      </div>
     </div>
   </div>
 </div>
@@ -274,7 +335,8 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
       <p><b>Goal</b> — Get all 4 of your tokens from your yard, around the board, and into your home triangle before anyone else.</p>
       <p><b>Starting</b> — Roll a <b>6</b> to bring a token out of the yard onto your start square.</p>
       <p><b>Moving</b> — Tap the die to roll, then tap the token you want to move (if you have more than one legal option).</p>
-      <p><b>Capturing</b> — Land exactly on an opponent's token to send it back to their yard. This can't happen on a star/safe cell.</p>
+      <p><b>Capturing</b> — Land exactly on a lone opponent token to send it back to their yard. This can't happen on a star/safe cell.</p>
+      <p><b>Blocks</b> — Two or more of your own tokens sharing a cell form a protected block and can't be captured there.</p>
       <p><b>Safe cells</b> — Marked with a star. Tokens there can't be captured.</p>
       <p><b>Extra turn</b> — Rolling a 6, capturing a token, or getting a token home all earn you another roll. Three 6's in a row forfeits the turn.</p>
       <p><b>Home stretch</b> — You need the exact number to enter your home triangle — overshooting means that token can't move this turn.</p>
@@ -311,8 +373,12 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
 
 <!-- WINNER MODAL -->
 <div class="overlay hidden" id="winOverlay">
-  <div class="modal" style="text-align:center;">
-    <div style="font-size:11px;font-weight:900;letter-spacing:2px;color:var(--green);">🏆 WINNER</div>
+  <div class="modal" style="text-align:center; position:relative; overflow:hidden;">
+    <span class="win-spark s1">✦</span>
+    <span class="win-spark s2">✦</span>
+    <span class="win-spark s3">✧</span>
+    <span class="win-spark s4">✦</span>
+    <div class="win-trophy" style="font-size:11px;font-weight:900;letter-spacing:2px;color:var(--green);">🏆 WINNER</div>
     <div class="winner-name" id="winnerName">Red</div>
     <div class="winner-score" id="winnerScore">All 4 tokens home</div>
     <button class="bigbtn" id="winRestart">PLAY AGAIN</button>
@@ -521,6 +587,32 @@ function tokensAt(row,col,excludeColor,excludeIdx){
   });
 }
 function isSafeCell(absIndex){ return SAFE_INDICES.has(absIndex); }
+// Two or more of the SAME color sitting together form a protected block —
+// only a LONE opponent token on the cell can actually be captured.
+function capturableTokensAt(absIndex, mover){
+  const byColor = {};
+  tokens.forEach(t=>{
+    if(t===mover || t.color===mover.color) return;
+    if(t.relativePos<0 || t.relativePos>50) return;
+    if(tokenAbsIndex(t)!==absIndex) return;
+    (byColor[t.color] = byColor[t.color]||[]).push(t);
+  });
+  let victims = [];
+  Object.values(byColor).forEach(group=>{
+    if(group.length===1) victims = victims.concat(group);
+  });
+  return victims;
+}
+function hasProtectedBlockAt(absIndex, mover){
+  const byColor = {};
+  tokens.forEach(t=>{
+    if(t===mover || t.color===mover.color) return;
+    if(t.relativePos<0 || t.relativePos>50) return;
+    if(tokenAbsIndex(t)!==absIndex) return;
+    (byColor[t.color] = byColor[t.color]||[]).push(t);
+  });
+  return Object.values(byColor).some(group=>group.length>=2);
+}
 
 /* =====================================================
    PLAYER SYSTEM
@@ -586,6 +678,7 @@ function homeCenterFor(color){
 /* =====================================================
    TURN FLOW
 ===================================================== */
+let currentlyRolling = false;
 function rollDice(){
   if((gameState.mode!=="ROLL_READY" && gameState.mode!=="AI_THINKING") || gameState.paused) return;
   players[gameState.currentPlayer].missedTurns = 0;
@@ -686,8 +779,7 @@ function resolveMoveEffects(token){
   } else if(token.relativePos>=0 && token.relativePos<=50){
     const abs = tokenAbsIndex(token);
     if(!isSafeCell(abs)){
-      const victims = tokens.filter(t=> t!==token && t.color!==token.color &&
-        t.relativePos>=0 && t.relativePos<=50 && tokenAbsIndex(t)===abs);
+      const victims = capturableTokensAt(abs, token);
       if(victims.length){
         bonusTurn = true;
         beep(160,0.15,"sawtooth");
@@ -699,6 +791,8 @@ function resolveMoveEffects(token){
           const to = cellCenter(slot[0], slot[1]);
           captureAnims.push({ token:v, from, to, elapsed:0, duration:550 });
         });
+      } else if(hasProtectedBlockAt(abs, token)){
+        toast("Blocked — two "+cap(tokens.find(t=>t.relativePos>=0&&t.relativePos<=50&&tokenAbsIndex(t)===abs&&t.color!==token.color).color)+" tokens are safe together here");
       }
     }
   }
@@ -761,8 +855,11 @@ function checkForAutoWin(){
 /* =====================================================
    AI
 ===================================================== */
-function isVulnerable(color, absIndex){
+function isVulnerable(color, absIndex, excludeToken){
   if(isSafeCell(absIndex)) return false;
+  const sameColorOthers = tokens.filter(t=> t!==excludeToken && t.color===color &&
+    t.relativePos>=0 && t.relativePos<=50 && tokenAbsIndex(t)===absIndex).length;
+  if(sameColorOthers>=1) return false; // already forms (or would form) a protected block of 2+
   for(const opp of tokens){
     if(opp.color===color) continue;
     if(opp.relativePos<0 || opp.relativePos>50) continue;
@@ -784,21 +881,20 @@ function scoreMove(move){
   if(move.newPos>=0 && move.newPos<=50){
     const abs = (START_INDEX[color]+move.newPos)%52;
 
-    const victims = tokens.filter(o=> o!==t && o.color!==color &&
-      o.relativePos>=0 && o.relativePos<=50 && tokenAbsIndex(o)===abs);
+    const victims = capturableTokensAt(abs, t);
     if(victims.length){
       score += 70 + victims.length*15;
       score += Math.max(...victims.map(v=>v.relativePos))*0.4; // punishing a far-advanced token is extra valuable
     }
 
-    if(isSafeCell(abs)){
-      score += 18;
-    } else if(isVulnerable(color, abs)){
+    if(isSafeCell(abs) || !isVulnerable(color, abs, t)){
+      score += 18; // safe cell, or lands safely (alone-but-unthreatened, or joins a block)
+    } else {
       score -= victims.length ? 8 : 26; // risky landing spot — worth it only if it just captured something
     }
 
     const curAbs = (t.relativePos>=0 && t.relativePos<=50) ? tokenAbsIndex(t) : null;
-    if(curAbs!==null && isVulnerable(color,curAbs) && !isVulnerable(color,abs)){
+    if(curAbs!==null && isVulnerable(color,curAbs,t) && !isVulnerable(color,abs,t)){
       score += 14; // escaping a token that was about to be captured
     }
   } else {
@@ -1064,8 +1160,10 @@ function restartGame(){
 }
 function setupUIForPlayers(){
   canvas.style.transform = gameState.boardRotationDeg ? `rotate(${gameState.boardRotationDeg}deg)` : "";
-  const topRow = document.getElementById("cornerRowTop");
-  const bottomRow = document.getElementById("cornerRowBottom");
+  const slots = {
+    tl: document.getElementById("slotTL"), tr: document.getElementById("slotTR"),
+    bl: document.getElementById("slotBL"), br: document.getElementById("slotBR")
+  };
   for(let i=0;i<4;i++){
     const card = document.getElementById("pcard"+i);
     if(i<gameState.playerCount){
@@ -1077,14 +1175,16 @@ function setupUIForPlayers(){
       card.classList.toggle("ai", p.isAI);
       card.classList.toggle("eliminated", !!p.eliminated);
       const finalCorner = rotateCorner(CORNER_BY_COLOR[p.color], gameState.boardRotationDeg);
-      if(finalCorner==="tl"){ topRow.insertBefore(card, topRow.firstChild); }
-      else if(finalCorner==="tr"){ topRow.appendChild(card); }
-      else if(finalCorner==="bl"){ bottomRow.insertBefore(card, bottomRow.firstChild); }
-      else { bottomRow.appendChild(card); }
+      slots[finalCorner].appendChild(card);
     } else {
       card.classList.add("hidden");
     }
   }
+  // hide a row entirely if a rotation leaves both its slots without a player
+  const topRow = document.getElementById("cornerRowTop");
+  const bottomRow = document.getElementById("cornerRowBottom");
+  topRow.classList.toggle("row-empty", !slots.tl.querySelector(".corner-card") && !slots.tr.querySelector(".corner-card"));
+  bottomRow.classList.toggle("row-empty", !slots.bl.querySelector(".corner-card") && !slots.br.querySelector(".corner-card"));
 }
 function updateActivePlayerUI(){
   for(let i=0;i<4;i++){
@@ -1095,7 +1195,14 @@ function updateActivePlayerUI(){
 function updateScoresUI(){
   players.forEach((p,i)=>{
     const el = document.getElementById("score"+i);
-    if(el) el.textContent = p.tokensHome+"/4";
+    if(!el) return;
+    const newText = p.tokensHome+"/4";
+    if(el.textContent !== newText){
+      el.textContent = newText;
+      el.classList.remove("pop");
+      void el.offsetWidth; // restart animation
+      el.classList.add("pop");
+    }
   });
 }
 function updatePillHighlights(){ /* reserved for future coin-count UI */ }
@@ -1104,7 +1211,7 @@ function updateDiceHint(){
   for(let i=0;i<4;i++){
     const d = document.getElementById("pdice"+i);
     if(!d) continue;
-    const isCurrentReady = i===gameState.currentPlayer && gameState.mode==="ROLL_READY" && isHumanTurn() && !gameState.paused;
+    const isCurrentReady = i===gameState.currentPlayer && gameState.mode==="ROLL_READY" && isHumanTurn() && !gameState.paused && !currentlyRolling;
     d.classList.toggle("ready", isCurrentReady);
   }
   let text = "", active = false;
@@ -1307,8 +1414,13 @@ function tokenPixelPos(token){
   const g = tokenGridCell(token);
   return cellCenter(g.row,g.col);
 }
+const STACK_LAYOUTS = {
+  1: [[0,0,1]],
+  2: [[-8,0,0.82],[8,0,0.82]],
+  3: [[-8,-6,0.72],[8,-6,0.72],[0,8,0.72]],
+  4: [[-8,-8,0.62],[8,-8,0.62],[-8,8,0.62],[8,8,0.62]]
+};
 function drawTokens(){
-  // group by cell to offset stacked tokens slightly
   const groups = {};
   tokens.forEach(t=>{
     if(t.relativePos===56) return; // drawn separately, stacked near center
@@ -1317,10 +1429,27 @@ function drawTokens(){
     (groups[key] = groups[key]||[]).push(t);
   });
   Object.values(groups).forEach(group=>{
+    const p = tokenPixelPos(group[0]);
+    const n = Math.min(group.length, 4);
+    const layout = STACK_LAYOUTS[n];
+
+    // a same-color pair (or more) sharing a cell is a protected block —
+    // draw a unifying ring so it's clear why it can't be captured
+    const byColor = {};
+    group.forEach(t=>{ (byColor[t.color]=byColor[t.color]||[]).push(t); });
+    Object.entries(byColor).forEach(([color,members])=>{
+      if(members.length>=2){
+        ctx.save();
+        ctx.beginPath(); ctx.arc(p.x,p.y,CELL*0.42,0,Math.PI*2);
+        ctx.strokeStyle = PLAYER_COLORS[color]; ctx.lineWidth=2; ctx.setLineDash([3,4]);
+        ctx.globalAlpha=0.75; ctx.stroke();
+        ctx.restore();
+      }
+    });
+
     group.forEach((t,i)=>{
-      const p = tokenPixelPos(t);
-      const off = group.length>1 ? (i-(group.length-1)/2)*8 : 0;
-      drawToken(p.x+off, p.y, t);
+      const [ox,oy,sc] = layout[i] || layout[layout.length-1];
+      drawToken(p.x+ox, p.y+oy, t, sc);
     });
   });
   // finished tokens: small stack near center per color
@@ -1419,11 +1548,20 @@ function renderDiceFace(val, playerIndex){
 for(let i=0;i<4;i++) renderDiceFace(1,i);
 function animateDiceRoll(finalVal, cb){
   const pIndex = gameState.currentPlayer;
+  const diceEl = document.getElementById("pdice"+pIndex);
+  currentlyRolling = true;
+  if(diceEl) diceEl.classList.add("rolling");
   let n=0;
   const iv = setInterval(()=>{
     renderDiceFace(1+Math.floor(Math.random()*6), pIndex);
     n++;
-    if(n>=7){ clearInterval(iv); renderDiceFace(finalVal, pIndex); cb(); }
+    if(n>=7){
+      clearInterval(iv);
+      renderDiceFace(finalVal, pIndex);
+      currentlyRolling = false;
+      if(diceEl) diceEl.classList.remove("rolling");
+      cb();
+    }
   }, 60);
 }
 
