@@ -294,6 +294,7 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
     <div class="row" id="colorRow"></div>
     <div id="slotsContainer"></div>
     <button class="bigbtn" id="startBtn">START MATCH</button>
+    <button class="ghostbtn" id="onlineEntryBtn">🌐 Play Online with Friends</button>
     <button class="ghostbtn" id="setupRulesBtn">View Rules</button>
   </div>
 </div>
@@ -386,8 +387,36 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
   </div>
 </div>
 
+<!-- ONLINE: CREATE/JOIN -->
+<div class="overlay hidden" id="onlineChoiceOverlay">
+  <div class="modal">
+    <h2>Play Online</h2>
+    <div class="sub">Play with friends over the internet</div>
+    <button class="bigbtn" id="onlineCreateBtn">CREATE ROOM</button>
+    <button class="ghostbtn" id="onlineJoinShowBtn">JOIN WITH CODE</button>
+    <div id="joinCodeRow" class="hidden" style="margin-top:12px;">
+      <input id="joinCodeInput" maxlength="5" placeholder="ROOM CODE" style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:#fff;font-size:16px;font-weight:900;letter-spacing:4px;text-align:center;text-transform:uppercase;">
+      <button class="bigbtn" id="onlineJoinGoBtn">JOIN</button>
+    </div>
+    <button class="ghostbtn" id="onlineChoiceBack">← Back</button>
+  </div>
+</div>
+
+<!-- ONLINE: LOBBY -->
+<div class="overlay hidden" id="onlineLobbyOverlay">
+  <div class="modal">
+    <h2>Room <span id="lobbyCode">-----</span></h2>
+    <div class="sub" id="lobbyStatus">Waiting for players…</div>
+    <div id="lobbyPlayerList" style="margin:10px 0;"></div>
+    <button class="bigbtn hidden" id="lobbyStartBtn">START GAME</button>
+    <div class="sub" id="lobbyHostHint" style="margin-top:8px;">Only the host can start the game.</div>
+    <button class="ghostbtn" id="lobbyLeaveBtn">← Leave Room</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/photon-javascript-sdk"></script>
 <script>
 "use strict";
 
@@ -464,6 +493,96 @@ const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="15" height="15" fill="curren
 const ICON_MENU_DOTS = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="5" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="12" cy="19" r="2.1"/></svg>';
 
 /* =====================================================
+   ONLINE MULTIPLAYER (Photon Realtime)
+===================================================== */
+const PHOTON_APP_ID = "53a69046-b630-48d0-955e-2f3542aa8498";
+const PHOTON_REGION = "in";
+const EVT_DICE = 1;
+const EVT_MOVE_CHOICE = 2;
+const EVT_GAME_START = 3;
+
+const PhotonNet = {
+  client: null,
+  roomCode: null,
+  isHost: false,
+  onPlayersChanged: null,
+  onGameStart: null,
+  onDice: null,
+  onMoveChoice: null,
+  onDisconnected: null,
+
+  init(){
+    const LBC = Photon.LoadBalancing.LoadBalancingClient;
+    this.client = new LBC(Photon.ConnectionProtocol.Wss, PHOTON_APP_ID, "1.0");
+    const self = this;
+
+    this.client.onStateChange = function(state){
+      if(state === LBC.State.Error || state === LBC.State.Disconnected){
+        if(self.onDisconnected) self.onDisconnected();
+      }
+    };
+    this.client.onJoinRoom = function(){
+      self.isHost = self.client.myRoomMasterActorNr() === self.client.myActor().actorNr;
+      if(self.onPlayersChanged) self.onPlayersChanged(self.getPlayerList());
+    };
+    this.client.onActorJoin = function(){ if(self.onPlayersChanged) self.onPlayersChanged(self.getPlayerList()); };
+    this.client.onActorLeave = function(){ if(self.onPlayersChanged) self.onPlayersChanged(self.getPlayerList()); };
+    this.client.onEvent = function(code, content){
+      if(code===EVT_GAME_START && self.onGameStart) self.onGameStart(content);
+      else if(code===EVT_DICE && self.onDice) self.onDice(content);
+      else if(code===EVT_MOVE_CHOICE && self.onMoveChoice) self.onMoveChoice(content);
+    };
+  },
+  getPlayerList(){
+    if(!this.client || !this.client.isJoinedToRoom()) return [];
+    return this.client.myRoomActorsArray().map(a=>({ actorNr:a.actorNr, isLocal:a.isLocal }))
+      .sort((a,b)=>a.actorNr-b.actorNr);
+  },
+  connectAndCreate(code){
+    this.init();
+    const LBC = Photon.LoadBalancing.LoadBalancingClient;
+    const self = this;
+    this.client.onStateChange = function(state){
+      if(state === LBC.State.JoinedLobby){ self.client.createRoom(code, { maxPlayers:4 }); }
+      else if(state === LBC.State.Error){ if(self.onDisconnected) self.onDisconnected("connect-failed"); }
+    };
+    this.roomCode = code;
+    this.client.connectToRegionMaster(PHOTON_REGION);
+  },
+  connectAndJoin(code){
+    this.init();
+    const LBC = Photon.LoadBalancing.LoadBalancingClient;
+    const self = this;
+    this.client.onStateChange = function(state){
+      if(state === LBC.State.JoinedLobby){ self.client.joinRoom(code); }
+      else if(state === LBC.State.Error){ if(self.onDisconnected) self.onDisconnected("connect-failed"); }
+    };
+    this.roomCode = code;
+    this.client.connectToRegionMaster(PHOTON_REGION);
+  },
+  startGame(colorOrder){
+    this.client.raiseEvent(EVT_GAME_START, { colors: colorOrder });
+  },
+  sendDice(value){
+    this.client.raiseEvent(EVT_DICE, { value });
+  },
+  sendMoveChoice(color, tokenIdx){
+    this.client.raiseEvent(EVT_MOVE_CHOICE, { color, tokenIdx });
+  },
+  leave(){
+    if(this.client && this.client.isJoinedToRoom()) this.client.leaveRoom();
+    if(this.client) this.client.disconnect();
+    this.client = null;
+  }
+};
+function makeRoomCode(){
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let s = "";
+  for(let i=0;i<5;i++) s += chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+
+/* =====================================================
    GAME STATE
 ===================================================== */
 let gameState = {
@@ -476,8 +595,10 @@ let gameState = {
   gameOver: false,
   soundOn: true,
   boardRotationDeg: 0,
-  timer: TURN_SECONDS
+  timer: TURN_SECONDS,
+  isOnline: false
 };
+let myOnlineColor = null;
 let players = []; // {color, name, isAI, difficulty, tokensHome}
 let tokens = [];  // {color, idx, relativePos(-1..56)}
 let animQueue = null; // {token, cells:[{x,y}], step, elapsed}
@@ -681,37 +802,47 @@ function homeCenterFor(color){
 let currentlyRolling = false;
 function rollDice(){
   if((gameState.mode!=="ROLL_READY" && gameState.mode!=="AI_THINKING") || gameState.paused) return;
+  if(gameState.isOnline && currentColor()!==myOnlineColor) return;
   players[gameState.currentPlayer].missedTurns = 0;
   const val = 1+Math.floor(Math.random()*6);
-  animateDiceRoll(val, ()=>{
-    gameState.diceValue = val;
-    beep(300,0.08,"square");
-    if(val===6){
-      gameState.consecutiveSixes++;
-      if(gameState.consecutiveSixes>=3){
-        toast("Three 6's in a row — turn forfeited!");
-        gameState.consecutiveSixes=0;
-        setTimeout(()=>advanceTurn(false), 700);
-        return;
-      }
-    } else {
+  if(gameState.isOnline) PhotonNet.sendDice(val);
+  animateDiceRoll(val, ()=> processDiceValue(val));
+}
+function processDiceValue(val){
+  gameState.diceValue = val;
+  beep(300,0.08,"square");
+  if(val===6){
+    gameState.consecutiveSixes++;
+    if(gameState.consecutiveSixes>=3){
+      toast("Three 6's in a row — turn forfeited!");
       gameState.consecutiveSixes=0;
-    }
-    const moves = legalMoves(currentColor(), val);
-    if(moves.length===0){
-      toast("No legal moves");
-      setTimeout(()=>advanceTurn(val===6), 700);
+      setTimeout(()=>advanceTurn(false), 700);
       return;
     }
-    if(moves.length===1 || !isHumanTurn()){
-      const chosen = isHumanTurn() ? moves[0] : aiChooseMove(moves);
-      performMove(chosen);
-    } else {
-      gameState.mode = "MOVE_SELECT";
-      updateDiceHint();
-      toast("Choose a token to move");
-    }
-  });
+  } else {
+    gameState.consecutiveSixes=0;
+  }
+  const moves = legalMoves(currentColor(), val);
+  if(moves.length===0){
+    toast("No legal moves");
+    setTimeout(()=>advanceTurn(val===6), 700);
+    return;
+  }
+  const myTurnToDecide = gameState.isOnline ? currentColor()===myOnlineColor : isHumanTurn();
+  if(moves.length===1 || (!gameState.isOnline && !isHumanTurn())){
+    const chosen = moves.length===1 ? moves[0] : aiChooseMove(moves);
+    commitMove(chosen);
+  } else {
+    gameState.mode = "MOVE_SELECT";
+    updateDiceHint();
+    if(myTurnToDecide) toast("Choose a token to move");
+  }
+}
+function commitMove(move){
+  if(gameState.isOnline && currentColor()===myOnlineColor){
+    PhotonNet.sendMoveChoice(move.token.color, move.token.idx);
+  }
+  performMove(move);
 }
 function performMove(move){
   takeSnapshot();
@@ -976,18 +1107,21 @@ for(let i=0;i<4;i++){
   document.getElementById("pdice"+i).onclick = ()=>{
     if(gameState.mode!=="ROLL_READY" || !isHumanTurn() || gameState.paused) return;
     if(i!==gameState.currentPlayer) return;
+    if(gameState.isOnline && players[i].color!==myOnlineColor) return;
     rollDice();
   };
 }
 canvas.addEventListener("pointerdown", (e)=>{
-  if(gameState.mode!=="MOVE_SELECT" || !isHumanTurn() || gameState.paused) return;
+  if(gameState.mode!=="MOVE_SELECT" || gameState.paused) return;
+  const myTurn = gameState.isOnline ? currentColor()===myOnlineColor : isHumanTurn();
+  if(!myTurn) return;
   const raw = toBoard(e.clientX, e.clientY);
   const p = unrotateBoardPoint(raw.x, raw.y);
   const col = Math.floor((p.x-FRAME_MARGIN)/CELL), row = Math.floor((p.y-FRAME_MARGIN)/CELL);
   const moves = legalMoves(currentColor(), gameState.diceValue);
   for(const mv of moves){
     const g = tokenGridCell(mv.token);
-    if(g && g.row===row && g.col===col){ performMove(mv); return; }
+    if(g && g.row===row && g.col===col){ commitMove(mv); return; }
   }
 });
 
@@ -1015,10 +1149,14 @@ document.getElementById("pauseExit").onclick = ()=>{ hide("pauseOverlay"); show(
 document.getElementById("winExit").onclick = ()=> doExit();
 document.getElementById("exitCancel").onclick = ()=> hide("exitOverlay");
 document.getElementById("exitConfirm").onclick = ()=> doExit();
-function doExit(){ window.location.href = "index.html"; }
+function doExit(){
+  if(gameState.isOnline) PhotonNet.leave();
+  window.location.href = "index.html";
+}
 
 document.getElementById("menuUndo").onclick = ()=>{
   hide("menuOverlay");
+  if(gameState.isOnline){ toast("Undo isn't available in online matches"); return; }
   if(gameState.paused || gameState.gameOver){ toast("Can't undo right now"); return; }
   if(gameState.mode!=="ROLL_READY" && gameState.mode!=="AI_THINKING" && gameState.mode!=="MOVE_SELECT"){ toast("Wait for the move to finish first"); return; }
   clearAITimeouts();
@@ -1028,6 +1166,7 @@ document.getElementById("menuUndo").onclick = ()=>{
 
 document.getElementById("pauseBtn").onclick = ()=>{
   if(gameState.gameOver) return;
+  if(gameState.isOnline){ toast("Can't pause an online match"); return; }
   gameState.paused = true;
   show("pauseOverlay");
 };
@@ -1117,14 +1256,112 @@ document.getElementById("startBtn").onclick = ()=>{
 };
 
 /* =====================================================
+   ONLINE MULTIPLAYER UI
+===================================================== */
+document.getElementById("onlineEntryBtn").onclick = ()=>{
+  hide("setupOverlay");
+  show("onlineChoiceOverlay");
+};
+document.getElementById("onlineChoiceBack").onclick = ()=>{
+  hide("onlineChoiceOverlay");
+  show("setupOverlay");
+};
+document.getElementById("onlineJoinShowBtn").onclick = ()=>{
+  document.getElementById("joinCodeRow").classList.remove("hidden");
+};
+document.getElementById("onlineCreateBtn").onclick = ()=>{
+  const code = makeRoomCode();
+  hide("onlineChoiceOverlay");
+  show("onlineLobbyOverlay");
+  document.getElementById("lobbyCode").textContent = code;
+  document.getElementById("lobbyStatus").textContent = "Connecting…";
+  wirePhotonCallbacks();
+  PhotonNet.connectAndCreate(code);
+};
+document.getElementById("onlineJoinGoBtn").onclick = ()=>{
+  const code = document.getElementById("joinCodeInput").value.trim().toUpperCase();
+  if(code.length<4){ toast("Enter a valid room code"); return; }
+  hide("onlineChoiceOverlay");
+  show("onlineLobbyOverlay");
+  document.getElementById("lobbyCode").textContent = code;
+  document.getElementById("lobbyStatus").textContent = "Connecting…";
+  wirePhotonCallbacks();
+  PhotonNet.connectAndJoin(code);
+};
+document.getElementById("lobbyLeaveBtn").onclick = ()=>{
+  PhotonNet.leave();
+  hide("onlineLobbyOverlay");
+  show("setupOverlay");
+};
+document.getElementById("lobbyStartBtn").onclick = ()=>{
+  const list = PhotonNet.getPlayerList();
+  const count = clamp(list.length, 2, 4);
+  const colors = COLOR_ORDER.slice(0, count);
+  PhotonNet.startGame(colors);
+  beginOnlineGame(colors);
+};
+
+function wirePhotonCallbacks(){
+  PhotonNet.onPlayersChanged = function(list){
+    const statusEl = document.getElementById("lobbyStatus");
+    const listEl = document.getElementById("lobbyPlayerList");
+    const startBtn = document.getElementById("lobbyStartBtn");
+    const hostHint = document.getElementById("lobbyHostHint");
+    statusEl.textContent = list.length+" of 4 players joined";
+    listEl.innerHTML = list.map((p,i)=>
+      `<div class="slotrow"><span class="swatch" style="background:${PLAYER_COLORS[COLOR_ORDER[i]]}"></span> ${cap(COLOR_ORDER[i])} ${p.isLocal?" (You)":""}</div>`
+    ).join("");
+    if(PhotonNet.isHost && list.length>=2){
+      startBtn.classList.remove("hidden");
+      hostHint.classList.add("hidden");
+    } else {
+      startBtn.classList.add("hidden");
+      hostHint.classList.remove("hidden");
+      hostHint.textContent = PhotonNet.isHost ? "Need at least 2 players to start." : "Only the host can start the game.";
+    }
+  };
+  PhotonNet.onGameStart = function(data){
+    beginOnlineGame(data.colors);
+  };
+  PhotonNet.onDice = function(data){
+    animateDiceRoll(data.value, ()=> processDiceValue(data.value));
+  };
+  PhotonNet.onMoveChoice = function(data){
+    const token = tokens.find(t=>t.color===data.color && t.idx===data.tokenIdx);
+    if(!token) return;
+    const newPos = token.relativePos===-1 ? 0 : token.relativePos+gameState.diceValue;
+    performMove({ token, newPos });
+  };
+  PhotonNet.onDisconnected = function(reason){
+    if(gameState.isOnline){
+      toast("Connection lost. The match has ended.");
+    } else {
+      toast("Couldn't connect. Try again.");
+      hide("onlineLobbyOverlay");
+      show("onlineChoiceOverlay");
+    }
+  };
+}
+function beginOnlineGame(colors){
+  hide("onlineLobbyOverlay");
+  const myActorNr = PhotonNet.client.myActor().actorNr;
+  const list = PhotonNet.getPlayerList();
+  const myIndex = list.findIndex(p=>p.actorNr===myActorNr);
+  myOnlineColor = colors[myIndex] || colors[0];
+  const config = colors.map(()=>({ isAI:false }));
+  startGame(colors.length, config, colors, true);
+}
+
+/* =====================================================
    GAME INIT / UI SYNC
 ===================================================== */
-function startGame(count, config, colors){
+function startGame(count, config, colors, isOnlineMode){
   gameState.playerCount = count;
   gameState.gameOver = false;
   gameState.paused = false;
   gameState.consecutiveSixes = 0;
   gameState.timer = TURN_SECONDS;
+  gameState.isOnline = !!isOnlineMode;
   lastSnapshot = null;
   players = buildPlayers(count, config, colors);
   tokens = createTokens(players.map(p=>p.color));
@@ -1134,11 +1371,15 @@ function startGame(count, config, colors){
   const redIdx = players.findIndex(p=>p.color==="red");
   gameState.currentPlayer = redIdx>=0 ? redIdx : 0;
 
-  const human = players.find(p=>!p.isAI);
-  gameState.boardRotationDeg = human ? (ROTATION_FOR_COLOR[human.color]||0) : 0;
+  if(gameState.isOnline){
+    gameState.boardRotationDeg = ROTATION_FOR_COLOR[myOnlineColor]||0;
+  } else {
+    const human = players.find(p=>!p.isAI);
+    gameState.boardRotationDeg = human ? (ROTATION_FOR_COLOR[human.color]||0) : 0;
+  }
 
   document.getElementById("modePill").textContent =
-    count+" PLAYER" + (players.some(p=>p.isAI) ? " · AI" : "");
+    gameState.isOnline ? (count+" PLAYER · ONLINE") : (count+" PLAYER" + (players.some(p=>p.isAI) ? " · AI" : ""));
 
   setupUIForPlayers();
   updateActivePlayerUI();
@@ -1152,11 +1393,12 @@ function startGame(count, config, colors){
   resizeCanvas();
 }
 function restartGame(){
+  if(gameState.isOnline){ toast("Restart isn't available in online matches"); return; }
   clearAITimeouts();
   hide("winOverlay");
   const cfg = players.map(p=>({isAI:p.isAI, difficulty:p.difficulty}));
   const colors = players.map(p=>p.color);
-  startGame(gameState.playerCount, cfg, colors);
+  startGame(gameState.playerCount, cfg, colors, false);
 }
 function setupUIForPlayers(){
   canvas.style.transform = gameState.boardRotationDeg ? `rotate(${gameState.boardRotationDeg}deg)` : "";
@@ -1208,19 +1450,26 @@ function updateScoresUI(){
 function updatePillHighlights(){ /* reserved for future coin-count UI */ }
 function updateDiceHint(){
   const status = document.getElementById("statusHint");
+  const myTurnNow = gameState.isOnline ? currentColor()===myOnlineColor : isHumanTurn();
   for(let i=0;i<4;i++){
     const d = document.getElementById("pdice"+i);
     if(!d) continue;
-    const isCurrentReady = i===gameState.currentPlayer && gameState.mode==="ROLL_READY" && isHumanTurn() && !gameState.paused && !currentlyRolling;
+    const isThisSlotMine = gameState.isOnline ? players[i] && players[i].color===myOnlineColor : true;
+    const isCurrentReady = i===gameState.currentPlayer && gameState.mode==="ROLL_READY" && isHumanTurn() && isThisSlotMine && !gameState.paused && !currentlyRolling;
     d.classList.toggle("ready", isCurrentReady);
   }
   let text = "", active = false;
   if(gameState.mode==="ROLL_READY" && isHumanTurn()){
-    const secs = Math.ceil(gameState.timer);
-    text = playerName(currentColor())+" — tap your die to roll ("+secs+"s)"; active = true;
-    status.classList.toggle("urgent", secs<=7);
+    if(gameState.isOnline){
+      text = myTurnNow ? "Your turn — tap your die to roll" : playerName(currentColor())+"'s turn — waiting…";
+      active = myTurnNow;
+    } else {
+      const secs = Math.ceil(gameState.timer);
+      text = playerName(currentColor())+" — tap your die to roll ("+secs+"s)"; active = true;
+      status.classList.toggle("urgent", secs<=7);
+    }
   } else if(gameState.mode==="MOVE_SELECT"){
-    text = "Tap a highlighted token to move it";
+    text = gameState.isOnline ? (myTurnNow ? "Tap a highlighted token to move it" : playerName(currentColor())+" is choosing…") : "Tap a highlighted token to move it";
     status.classList.remove("urgent");
   } else if(gameState.mode==="AI_THINKING"){
     text = playerName(currentColor())+" is thinking…";
@@ -1240,8 +1489,10 @@ function endGame(winnerPlayer){
   gameState.gameOver = true;
   document.getElementById("winnerName").textContent = playerName(winnerPlayer.color);
   document.getElementById("winnerScore").textContent = "All 4 tokens home";
+  document.getElementById("winRestart").classList.toggle("hidden", gameState.isOnline);
   document.getElementById("winOverlay").classList.remove("hidden");
   beep(520,0.3,"triangle");
+  if(gameState.isOnline) PhotonNet.leave();
 }
 
 /* =====================================================
@@ -1475,7 +1726,8 @@ function drawToken(x,y,token,scale){
   }
 
   const r = CELL*0.30*scale;
-  const isMovable = gameState.mode==="MOVE_SELECT" && isHumanTurn() && token.color===currentColor() &&
+  const myTurnForGlow = gameState.isOnline ? currentColor()===myOnlineColor : isHumanTurn();
+  const isMovable = gameState.mode==="MOVE_SELECT" && myTurnForGlow && token.color===currentColor() &&
     legalMoves(currentColor(), gameState.diceValue).some(m=>m.token===token);
   const base = PLAYER_COLORS[token.color];
 
@@ -1575,7 +1827,7 @@ function loop(ts){
   if(!gameState.paused && !gameState.gameOver){
     if(gameState.mode==="ANIMATING") updateAnimation(dt);
     updateCosmeticAnimations(dt);
-    if(gameState.mode==="ROLL_READY" && isHumanTurn()){
+    if(!gameState.isOnline && gameState.mode==="ROLL_READY" && isHumanTurn()){
       gameState.timer -= dt/1000;
       if(gameState.timer<=0){
         gameState.timer = 0;
