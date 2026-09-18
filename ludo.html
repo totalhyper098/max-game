@@ -406,6 +406,7 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
 <div class="overlay hidden" id="onlineLobbyOverlay">
   <div class="modal">
     <h2>Room <span id="lobbyCode">-----</span></h2>
+    <button class="ghostbtn" id="lobbyCopyBtn">📋 Copy Code</button>
     <div class="sub" id="lobbyStatus">Waiting for players…</div>
     <div id="lobbyPlayerList" style="margin:10px 0;"></div>
     <button class="bigbtn hidden" id="lobbyStartBtn">START GAME</button>
@@ -416,7 +417,7 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/photon-javascript-sdk"></script>
+<script src="https://cdn.jsdelivr.net/npm/photon-javascript-sdk" defer></script>
 <script>
 "use strict";
 
@@ -510,6 +511,8 @@ const PhotonNet = {
   onDice: null,
   onMoveChoice: null,
   onDisconnected: null,
+  onErrorMsg: null,
+  pendingAction: null, // 'create' | 'join'
 
   init(){
     const LBC = Photon.LoadBalancing.LoadBalancingClient;
@@ -517,9 +520,19 @@ const PhotonNet = {
     const self = this;
 
     this.client.onStateChange = function(state){
-      if(state === LBC.State.Error || state === LBC.State.Disconnected){
+      if(state === LBC.State.JoinedLobby && self.pendingAction){
+        if(self.pendingAction==="create") self.client.createRoom(self.roomCode, { maxPlayers:4 });
+        else self.client.joinRoom(self.roomCode);
+        self.pendingAction = null;
+      } else if(state === LBC.State.Error || state === LBC.State.Disconnected){
         if(self.onDisconnected) self.onDisconnected();
       }
+    };
+    this.client.onError = function(errorCode, errorMsg){
+      if(self.onErrorMsg) self.onErrorMsg("Photon error "+errorCode+": "+errorMsg);
+    };
+    this.client.onOperationResponse = function(errorCode, errorMsg, code){
+      if(errorCode && self.onErrorMsg) self.onErrorMsg("Op "+code+" failed ("+errorCode+"): "+errorMsg);
     };
     this.client.onJoinRoom = function(){
       self.isHost = self.client.myRoomMasterActorNr() === self.client.myActor().actorNr;
@@ -540,24 +553,16 @@ const PhotonNet = {
   },
   connectAndCreate(code){
     this.init();
-    const LBC = Photon.LoadBalancing.LoadBalancingClient;
-    const self = this;
-    this.client.onStateChange = function(state){
-      if(state === LBC.State.JoinedLobby){ self.client.createRoom(code, { maxPlayers:4 }); }
-      else if(state === LBC.State.Error){ if(self.onDisconnected) self.onDisconnected("connect-failed"); }
-    };
     this.roomCode = code;
+    this.pendingAction = "create";
     this.client.connectToRegionMaster(PHOTON_REGION);
   },
   connectAndJoin(code){
     this.init();
     const LBC = Photon.LoadBalancing.LoadBalancingClient;
     const self = this;
-    this.client.onStateChange = function(state){
-      if(state === LBC.State.JoinedLobby){ self.client.joinRoom(code); }
-      else if(state === LBC.State.Error){ if(self.onDisconnected) self.onDisconnected("connect-failed"); }
-    };
     this.roomCode = code;
+    this.pendingAction = "join";
     this.client.connectToRegionMaster(PHOTON_REGION);
   },
   startGame(colorOrder){
@@ -1288,6 +1293,14 @@ document.getElementById("onlineJoinGoBtn").onclick = ()=>{
   wirePhotonCallbacks();
   PhotonNet.connectAndJoin(code);
 };
+document.getElementById("lobbyCopyBtn").onclick = ()=>{
+  const code = document.getElementById("lobbyCode").textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(()=>toast("Code copied!")).catch(()=>toast("Copy failed — code: "+code));
+  } else {
+    toast("Room code: "+code);
+  }
+};
 document.getElementById("lobbyLeaveBtn").onclick = ()=>{
   PhotonNet.leave();
   hide("onlineLobbyOverlay");
@@ -1302,6 +1315,10 @@ document.getElementById("lobbyStartBtn").onclick = ()=>{
 };
 
 function wirePhotonCallbacks(){
+  PhotonNet.onErrorMsg = function(msg){
+    toast(msg);
+    console.error("[Photon]", msg);
+  };
   PhotonNet.onPlayersChanged = function(list){
     const statusEl = document.getElementById("lobbyStatus");
     const listEl = document.getElementById("lobbyPlayerList");
