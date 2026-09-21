@@ -417,7 +417,7 @@ canvas{width:100%;height:100%;display:block;touch-action:none;transition:transfo
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/photon-javascript-sdk" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script>
 "use strict";
 
@@ -494,16 +494,18 @@ const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="15" height="15" fill="curren
 const ICON_MENU_DOTS = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="5" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="12" cy="19" r="2.1"/></svg>';
 
 /* =====================================================
-   ONLINE MULTIPLAYER (Photon Realtime)
+   ONLINE MULTIPLAYER (Supabase Realtime)
 ===================================================== */
-const PHOTON_APP_ID = "53a69046-b630-48d0-955e-2f3542aa8498";
-const PHOTON_REGION = "in";
-const EVT_DICE = 1;
-const EVT_MOVE_CHOICE = 2;
-const EVT_GAME_START = 3;
+const SUPABASE_URL = "https://ltrjjgysrsdibyzfgany.supabase.co";
+const SUPABASE_KEY = "sb_publishable_6DIv70-vNTfU2D8vvUaX7w_KXbaWBbA";
+const EVT_DICE = "dice";
+const EVT_MOVE_CHOICE = "move";
+const EVT_GAME_START = "start";
 
 const PhotonNet = {
   client: null,
+  channel: null,
+  myClientId: null,
   roomCode: null,
   isHost: false,
   onPlayersChanged: null,
@@ -512,72 +514,66 @@ const PhotonNet = {
   onMoveChoice: null,
   onDisconnected: null,
   onErrorMsg: null,
-  pendingAction: null, // 'create' | 'join'
 
   init(){
-    const LBC = Photon.LoadBalancing.LoadBalancingClient;
-    this.client = new LBC(Photon.ConnectionProtocol.Wss, PHOTON_APP_ID, "1.0");
-    const self = this;
-
-    this.client.onStateChange = function(state){
-      if(state === LBC.State.JoinedLobby && self.pendingAction){
-        if(self.pendingAction==="create") self.client.createRoom(self.roomCode, { maxPlayers:4 });
-        else self.client.joinRoom(self.roomCode);
-        self.pendingAction = null;
-      } else if(state === LBC.State.Error || state === LBC.State.Disconnected){
-        if(self.onDisconnected) self.onDisconnected();
-      }
-    };
-    this.client.onError = function(errorCode, errorMsg){
-      if(self.onErrorMsg) self.onErrorMsg("Photon error "+errorCode+": "+errorMsg);
-    };
-    this.client.onOperationResponse = function(errorCode, errorMsg, code){
-      if(errorCode && self.onErrorMsg) self.onErrorMsg("Op "+code+" failed ("+errorCode+"): "+errorMsg);
-    };
-    this.client.onJoinRoom = function(){
-      self.isHost = self.client.myRoomMasterActorNr() === self.client.myActor().actorNr;
-      if(self.onPlayersChanged) self.onPlayersChanged(self.getPlayerList());
-    };
-    this.client.onActorJoin = function(){ if(self.onPlayersChanged) self.onPlayersChanged(self.getPlayerList()); };
-    this.client.onActorLeave = function(){ if(self.onPlayersChanged) self.onPlayersChanged(self.getPlayerList()); };
-    this.client.onEvent = function(code, content){
-      if(code===EVT_GAME_START && self.onGameStart) self.onGameStart(content);
-      else if(code===EVT_DICE && self.onDice) self.onDice(content);
-      else if(code===EVT_MOVE_CHOICE && self.onMoveChoice) self.onMoveChoice(content);
-    };
+    if(!this.client){
+      this.client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+    if(!this.myClientId) this.myClientId = "p_"+Math.random().toString(36).slice(2,10);
   },
   getPlayerList(){
-    if(!this.client || !this.client.isJoinedToRoom()) return [];
-    return this.client.myRoomActorsArray().map(a=>({ actorNr:a.actorNr, isLocal:a.isLocal }))
-      .sort((a,b)=>a.actorNr-b.actorNr);
+    if(!this.channel) return [];
+    const state = this.channel.presenceState();
+    const list = [];
+    Object.keys(state).forEach(key=>{
+      (state[key]||[]).forEach(meta=>{
+        list.push({ actorNr: meta.joinedAt, isLocal: meta.clientId===this.myClientId });
+      });
+    });
+    list.sort((a,b)=>a.actorNr-b.actorNr);
+    return list;
   },
-  connectAndCreate(code){
+  _setupChannel(code, isCreator){
     this.init();
     this.roomCode = code;
-    this.pendingAction = "create";
-    this.client.connectToRegionMaster(PHOTON_REGION);
-  },
-  connectAndJoin(code){
-    this.init();
-    const LBC = Photon.LoadBalancing.LoadBalancingClient;
+    this.isHost = isCreator;
     const self = this;
-    this.roomCode = code;
-    this.pendingAction = "join";
-    this.client.connectToRegionMaster(PHOTON_REGION);
+    this.channel = this.client.channel("ludo-room-"+code, {
+      config: { broadcast:{ self:false }, presence:{ key:this.myClientId } }
+    });
+
+    this.channel.on("presence", { event:"sync" }, ()=>{
+      if(self.onPlayersChanged) self.onPlayersChanged(self.getPlayerList());
+    });
+    this.channel.on("broadcast", { event:EVT_GAME_START }, ({payload})=>{ if(self.onGameStart) self.onGameStart(payload); });
+    this.channel.on("broadcast", { event:EVT_DICE }, ({payload})=>{ if(self.onDice) self.onDice(payload); });
+    this.channel.on("broadcast", { event:EVT_MOVE_CHOICE }, ({payload})=>{ if(self.onMoveChoice) self.onMoveChoice(payload); });
+
+    this.channel.subscribe((status, err)=>{
+      if(status==="SUBSCRIBED"){
+        self.channel.track({ joinedAt: Date.now(), clientId: self.myClientId });
+      } else if(status==="CHANNEL_ERROR" || status==="TIMED_OUT"){
+        if(self.onErrorMsg) self.onErrorMsg("Connection error: "+status+(err?(" — "+err.message):""));
+        if(self.onDisconnected) self.onDisconnected();
+      } else if(status==="CLOSED"){
+        if(self.onDisconnected) self.onDisconnected();
+      }
+    });
   },
+  connectAndCreate(code){ this._setupChannel(code, true); },
+  connectAndJoin(code){ this._setupChannel(code, false); },
   startGame(colorOrder){
-    this.client.raiseEvent(EVT_GAME_START, { colors: colorOrder });
+    this.channel.send({ type:"broadcast", event:EVT_GAME_START, payload:{ colors: colorOrder } });
   },
   sendDice(value){
-    this.client.raiseEvent(EVT_DICE, { value });
+    this.channel.send({ type:"broadcast", event:EVT_DICE, payload:{ value } });
   },
   sendMoveChoice(color, tokenIdx){
-    this.client.raiseEvent(EVT_MOVE_CHOICE, { color, tokenIdx });
+    this.channel.send({ type:"broadcast", event:EVT_MOVE_CHOICE, payload:{ color, tokenIdx } });
   },
   leave(){
-    if(this.client && this.client.isJoinedToRoom()) this.client.leaveRoom();
-    if(this.client) this.client.disconnect();
-    this.client = null;
+    if(this.channel && this.client){ this.client.removeChannel(this.channel); }
+    this.channel = null;
   }
 };
 function makeRoomCode(){
@@ -1361,10 +1357,9 @@ function wirePhotonCallbacks(){
 }
 function beginOnlineGame(colors){
   hide("onlineLobbyOverlay");
-  const myActorNr = PhotonNet.client.myActor().actorNr;
   const list = PhotonNet.getPlayerList();
-  const myIndex = list.findIndex(p=>p.actorNr===myActorNr);
-  myOnlineColor = colors[myIndex] || colors[0];
+  const myIndex = list.findIndex(p=>p.isLocal);
+  myOnlineColor = colors[myIndex>=0?myIndex:0] || colors[0];
   const config = colors.map(()=>({ isAI:false }));
   startGame(colors.length, config, colors, true);
 }
