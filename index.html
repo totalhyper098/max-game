@@ -3,11 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <meta name="theme-color" content="#07120d">
+  <meta name="theme-color" content="#0a0d14">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <title>MAXGAME — Board Game Arena</title>
+
+  <!-- saved skin ko paint se pehle lagao, taaki default rang ki flash na aaye -->
+  <script>
+    try{
+      var s = localStorage.getItem('maxgame.skin');
+      if(s) document.documentElement.setAttribute('data-skin', s);
+    }catch(e){}
+  </script>
 
   <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -105,20 +113,14 @@
         </span>
 
 
-        <h1>
-          PLAY
+        <!-- har shabd apne board ki baari pe chamakta hai (CSS) -->
+        <h1 class="hero-tagline">
+          <span class="tag-word w1">Strike.</span>
+          <span class="tag-word w2">Roll.</span>
           <br>
-          <em>YOUR</em>
-          <br>
-          GAME.
+          <span class="tag-word w3">Checkmate.</span>
+          <span class="tag-word w4">Pot.</span>
         </h1>
-
-
-        <p class="hero-description">
-          One arena for classic games.
-          Challenge AI, play locally with friends,
-          or compete online.
-        </p>
 
 
         <div class="hero-actions">
@@ -171,6 +173,8 @@
 
       <!-- ===============================================
            HERO ART
+           Boards baari-baari se "turn" lete hain (CSS loop)
+           aur inhe drag bhi kar sakte ho (js/ui-extras.js)
       ================================================ -->
 
       <div class="hero-art" aria-hidden="true">
@@ -199,6 +203,9 @@
               <span class="piece red"></span>
               <span class="piece black small"></span>
               <span class="piece white small"></span>
+
+              <!-- striker (animation ke liye) -->
+              <span class="piece striker"></span>
 
             </div>
 
@@ -269,7 +276,7 @@
 
             <span>♙</span>
             <span></span>
-            <span>♘</span>
+            <span><b class="knight">♘</b></span>
             <span></span>
 
           </div>
@@ -316,6 +323,8 @@
         <span class="particle particle-three"></span>
         <span class="particle particle-four"></span>
         <span class="particle particle-five"></span>
+
+        <span class="hero-hint">DRAG THE BOARDS</span>
 
       </div>
 
@@ -760,72 +769,228 @@
 
 
     <!-- ===================================================
-         FEATURED GAME / QUICK PLAY
+         SKINS  (ek button; dabane par sheet khulti hai)
+         Button ke andar sarakti hui tiles = har skin ke boards ki images.
+         Selection localStorage 'maxgame.skin' mein save hoti hai,
+         taaki carrom.html / ludo.html bhi wahi se padh sakein.
     ==================================================== -->
 
-    <section class="quick-play">
+    <section
+      class="skins"
+      id="skins"
+      aria-label="Board skins">
 
-      <div class="quick-content">
+      <button
+        class="skin-btn"
+        id="skinOpen"
+        type="button"
+        aria-haspopup="dialog"
+        aria-controls="skinSheet">
 
-        <span class="eyebrow">
-          READY TO PLAY?
+        <span class="skin-marquee" aria-hidden="true">
+          <span class="marquee-row">
+            <i class="tile t-carrom" data-skin="classic"></i>
+            <i class="tile t-ludo" data-skin="midnight"></i>
+            <i class="tile t-chess" data-skin="royal"></i>
+            <i class="tile t-pool" data-skin="emerald"></i>
+            <i class="tile t-carrom" data-skin="midnight"></i>
+            <i class="tile t-ludo" data-skin="royal"></i>
+            <i class="tile t-chess" data-skin="emerald"></i>
+            <i class="tile t-pool" data-skin="classic"></i>
+            <i class="tile t-carrom" data-skin="classic"></i>
+            <i class="tile t-ludo" data-skin="midnight"></i>
+            <i class="tile t-chess" data-skin="royal"></i>
+            <i class="tile t-pool" data-skin="emerald"></i>
+            <i class="tile t-carrom" data-skin="midnight"></i>
+            <i class="tile t-ludo" data-skin="royal"></i>
+            <i class="tile t-chess" data-skin="emerald"></i>
+            <i class="tile t-pool" data-skin="classic"></i>
+          </span>
+          <span class="marquee-row rev">
+            <i class="tile t-chess" data-skin="royal"></i>
+            <i class="tile t-pool" data-skin="emerald"></i>
+            <i class="tile t-carrom" data-skin="classic"></i>
+            <i class="tile t-ludo" data-skin="midnight"></i>
+            <i class="tile t-chess" data-skin="emerald"></i>
+            <i class="tile t-pool" data-skin="classic"></i>
+            <i class="tile t-carrom" data-skin="midnight"></i>
+            <i class="tile t-ludo" data-skin="royal"></i>
+            <i class="tile t-chess" data-skin="royal"></i>
+            <i class="tile t-pool" data-skin="emerald"></i>
+            <i class="tile t-carrom" data-skin="classic"></i>
+            <i class="tile t-ludo" data-skin="midnight"></i>
+            <i class="tile t-chess" data-skin="emerald"></i>
+            <i class="tile t-pool" data-skin="classic"></i>
+            <i class="tile t-carrom" data-skin="midnight"></i>
+            <i class="tile t-ludo" data-skin="royal"></i>
+          </span>
         </span>
 
-        <h2 id="selectedGameTitle">
-          Carrom
-        </h2>
+        <span class="skin-btn-scrim" aria-hidden="true"></span>
 
-        <p id="selectedGameDescription">
-          Precision, angles and perfect strikes.
-        </p>
+        <span class="skin-btn-copy">
 
+          <span class="skin-btn-title">Skins</span>
 
-        <div class="quick-tags">
+          <span class="skin-btn-sub">Repaint every board</span>
 
-          <span>
-            🧑 LOCAL
+          <span class="skin-btn-row">
+            <span class="skin-btn-now"><i></i><b id="skinName">Classic</b></span>
+            <span class="skin-btn-go">CHOOSE <b>→</b></span>
           </span>
 
-          <span>
-            🤖 AI
-          </span>
+        </span>
 
-          <span>
-            🌐 ONLINE
-          </span>
+      </button>
+
+
+      <!-- SKIN SHEET -->
+
+      <dialog
+        class="skin-sheet"
+        id="skinSheet"
+        aria-labelledby="skinSheetTitle">
+
+        <div class="skin-sheet-body">
+
+          <div class="skin-sheet-head">
+
+            <div>
+              <h2 id="skinSheetTitle">Choose your skin</h2>
+              <p>Every board on the page repaints instantly.</p>
+            </div>
+
+            <button
+              class="sheet-close"
+              type="button"
+              data-close
+              aria-label="Close">
+              ✕
+            </button>
+
+          </div>
+
+
+          <div class="skin-grid">
+
+          <button
+            class="skin-card active"
+            type="button"
+            data-skin="classic"
+            aria-pressed="true">
+
+            <span class="skin-preview" aria-hidden="true">
+              <i class="tile t-carrom"></i>
+              <i class="tile t-ludo"></i>
+              <i class="tile t-chess"></i>
+              <i class="tile t-pool"></i>
+            </span>
+
+            <span class="skin-info">
+              <strong class="skin-name">Classic</strong>
+              <small class="skin-desc">Walnut boards, ivory coins</small>
+            </span>
+
+            <span class="skin-state">EQUIPPED</span>
+
+          </button>
+
+
+          <button
+            class="skin-card"
+            type="button"
+            data-skin="midnight"
+            aria-pressed="false">
+
+            <span class="skin-preview" aria-hidden="true">
+              <i class="tile t-carrom"></i>
+              <i class="tile t-ludo"></i>
+              <i class="tile t-chess"></i>
+              <i class="tile t-pool"></i>
+            </span>
+
+            <span class="skin-info">
+              <strong class="skin-name">Midnight</strong>
+              <small class="skin-desc">Lacquer black, cyan glow</small>
+            </span>
+
+            <span class="skin-state">USE SKIN</span>
+
+          </button>
+
+
+          <button
+            class="skin-card"
+            type="button"
+            data-skin="royal"
+            aria-pressed="false">
+
+            <span class="skin-preview" aria-hidden="true">
+              <i class="tile t-carrom"></i>
+              <i class="tile t-ludo"></i>
+              <i class="tile t-chess"></i>
+              <i class="tile t-pool"></i>
+            </span>
+
+            <span class="skin-info">
+              <strong class="skin-name">Royal</strong>
+              <small class="skin-desc">Ivory marble, gold trim</small>
+            </span>
+
+            <span class="skin-state">USE SKIN</span>
+
+          </button>
+
+
+          <button
+            class="skin-card"
+            type="button"
+            data-skin="emerald"
+            aria-pressed="false">
+
+            <span class="skin-preview" aria-hidden="true">
+              <i class="tile t-carrom"></i>
+              <i class="tile t-ludo"></i>
+              <i class="tile t-chess"></i>
+              <i class="tile t-pool"></i>
+            </span>
+
+            <span class="skin-info">
+              <strong class="skin-name">Emerald</strong>
+              <small class="skin-desc">Green lacquer, baize felt</small>
+            </span>
+
+            <span class="skin-state">USE SKIN</span>
+
+          </button>
+
+          </div>
+
+
+          <button
+            class="primary-button skin-done"
+            type="button"
+            data-close>
+            DONE
+          </button>
 
         </div>
 
-
-        <button
-          class="primary-button quick-play-button"
-          id="quickPlay"
-          type="button">
-
-          PLAY CARROM
-
-          <b>→</b>
-
-        </button>
-
-      </div>
-
-
-      <div class="quick-art">
-
-        <div class="quick-orbit"></div>
-
-        <span class="quick-piece q1"></span>
-        <span class="quick-piece q2"></span>
-        <span class="quick-piece q3"></span>
-
-        <strong>
-          XI
-        </strong>
-
-      </div>
+      </dialog>
 
     </section>
+
+
+    <!--
+      app.js compatibility: purane Quick Play ke elements yahan hidden rakhe hain,
+      taaki app.js ko getElementById(...) null na mile aur baaki page na ruke.
+      app.js se Quick Play ka code hata do to ye poora block delete kar sakte ho.
+    -->
+    <div class="hidden" aria-hidden="true">
+      <h2 id="selectedGameTitle">Carrom</h2>
+      <p id="selectedGameDescription"></p>
+      <button id="quickPlay" type="button"></button>
+    </div>
 
 
 
@@ -1064,6 +1229,9 @@
   ====================================================== -->
 
   <script type="module" src="js/app.js"></script>
+
+  <!-- skins + hero drag (app.js se alag, isse app.js ko chhua nahi) -->
+  <script type="module" src="js/ui-extras.js"></script>
 
 </body>
   </html>
